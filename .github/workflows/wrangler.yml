@@ -1,0 +1,23 @@
+name: Deploy Wrangler
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [ actions ]
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy to Cloudflare Workers with Wrangler
+        uses: cloudflare/wrangler-action@1.2.0
+        with:
+          apiToken: ${{ secrets.WRANGLER_API_TOKEN }}
+          workingDirectory: wrangler
