@@ -7,4 +7,4 @@ kv_namespaces = [
    { binding = "META", id = "239e6a0c4c8d47569eb202278fd99e58" },
    { binding = "TX_FUNCTIONS", id = "bb7ba59b38e040bbab7d71dfdb826911" },
 ]
-vars = { STELLAR_NETWORK = "TESTNET", TURRET_ADDRESS = "GDD4PR3ZYXM63JWWSIRQ4UAOZ7PM336P5GSXCRYQKAP7AUOWCNCENXVT", TURRET_RUN_URL = "https://h9xfbbzuod.execute-api.us-east-1.amazonaws.com" }
+vars = { STELLAR_NETWORK = "TESTNET", TURRET_ADDRESS = "GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX", TURRET_RUN_URL = "https://h9xfbbzuod.execute-api.us-east-1.amazonaws.com" }
