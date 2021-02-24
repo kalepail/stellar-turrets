@@ -62,6 +62,6 @@ Assuming both `npm run deploy`'s are now firing off without a hitch you should h
 At the time of this writing:
 - Fees are not being collected for either contract upload or execution.
 - The txFunction `/heal` endpoint has not been implemented
-For these reasons we strongly suggest both:
-A) Leaving your `STELLAR_NETWORK` set to `TESTNET`
+For these reasons we strongly suggest both:  
+A) Leaving your `STELLAR_NETWORK` set to `TESTNET`  
 B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching signers from your Turret to
