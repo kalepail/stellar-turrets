@@ -3,7 +3,7 @@ name: Deploy Serverless
 on:
   workflow_dispatch:
   push:
-    branches: [ actions ]
+    branches: [ master ]
   
 jobs:
   deploy:
