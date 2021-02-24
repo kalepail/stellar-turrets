@@ -1,20 +1,16 @@
 name: Deploy Wrangler
 
 on:
-  push:
-    branches: [ actions ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  push:
+    branches: [ actions ]
+  
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Deploy to Cloudflare Workers with Wrangler
@@ -22,15 +18,13 @@ jobs:
         with:
           apiToken: ${{ secrets.WRANGLER_API_TOKEN }}
           workingDirectory: wrangler
-          # A new line deliminated string of environment variable names that should be configured as Worker secrets
-#           secrets: # optional
 
       # Runs a single command using the runners shell
-#       - name: Run a one-line script
-#         run: echo Hello, world!
+      # - name: Run a one-line script
+      #   run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-#       - name: Run a multi-line script
-#         run: |
-#           echo Add other actions to build,
-#           echo test, and deploy your project.
+      # - name: Run a multi-line script
+      #   run: |
+      #     echo Add other actions to build,
+      #     echo test, and deploy your project.
