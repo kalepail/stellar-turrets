@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Deploy Wrangler
 
 # Controls when the action will run. 
 on:
@@ -30,7 +30,7 @@ jobs:
           # (Legacy) Your Cloudflare API Key
 #           apiKey: # optional
           # Your Cloudflare API Token
-          apiToken: ${{ secrets.WRANGLER_API_SECRET }}
+          apiToken: ${{ secrets.WRANGLER_API_TOKEN }}
           # (Legacy) Your Cloudflare Email
 #           email: # optional
           # The environment you'd like to publish your Workers project to - must be defined in wrangler.toml
