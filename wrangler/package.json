@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "main": "./src/index.js",
+  "scripts": {
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.1",
+    "cfw-easy-utils": "^0.2.3",
+    "sha.js": "^2.4.11",
+    "stellar-base": "^4.0.3",
+    "tiny-request-router": "^1.2.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.13.0",
+    "@babel/preset-env": "^7.13.5",
+    "babel-loader": "^8.2.2",
+    "path": "^0.12.7",
+    "webpack": "^4.46.0"
+  }
+}

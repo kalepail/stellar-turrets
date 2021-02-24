@@ -1,0 +1,9 @@
+org: tyvdh
+app: tss-serverless
+component: express
+name: tss-serverless
+
+inputs:
+  src: ./
+  env:
+    turretBaseUrl: https://tss-wrangler.tyler.workers.dev

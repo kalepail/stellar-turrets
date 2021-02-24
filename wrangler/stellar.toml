@@ -1,0 +1,6 @@
+[TSS]
+TURRETS=[
+  'GDD4PR3ZYXM63JWWSIRQ4UAOZ7PM336P5GSXCRYQKAP7AUOWCNCENXVT'
+]
+
+# wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
