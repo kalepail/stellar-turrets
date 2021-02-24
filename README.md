@@ -1,6 +1,6 @@
 # Stellar Turing Signing Server Reference Implementation
 
-This TSS reference implementation employs two serverless services. Cloudflare workers and an AWS lambda function. The reason for this is that txFunctions are by their nature unsafe arbitrary Javascript functions. Cloudflare doesn't allow the execution of such functions thus we're splitting the workload between the much more performant Cloudflare workers and an AWS lambda function which will serve as our txFunction execution environment.
+This TSS reference implementation employs two serverless services. Cloudflare workers and an AWS lambda function. The reason for this is that txFunctions are by their nature unsafe arbitrary Javascript functions. Cloudflare doesn't allow the execution of such functions thus we're splitting the workload between the much more performant and affordable Cloudflare workers and an AWS lambda function which will serve as our txFunction execution environment.
 
 See below for specific instructions for setting up and running both services.
 
