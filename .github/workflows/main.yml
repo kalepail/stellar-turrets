@@ -36,7 +36,7 @@ jobs:
           # The environment you'd like to publish your Workers project to - must be defined in wrangler.toml
 #           environment: # optional
           # The relative path which Wrangler commands should be run from
-          workingDirectory: wrangler
+          workingDirectory: /wrangler
           # The version of Wrangler you'd like to use to publish your Workers project
 #           wranglerVersion: # optional
           # A new line deliminated string of environment variable names that should be configured as Worker secrets
