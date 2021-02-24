@@ -15,12 +15,13 @@ Next install their wrangler cli tool globally on your machine.
 Next you should modify the `wrangler.toml` file to update my hard coded values with your own.
 
 1. For the `account_id` go to the workers page on [dash.cloudflare.com](https://dash.cloudflare.com) and copy your `Account ID` from the main homepage.
-2. For `kv_namespaces` create two new kv namespaces via the wrangler cli:
+2. For `kv_namespaces` create two new kv namespaces via the wrangler cli:  
 ```
 wrangler kv:namespace create "META"
 wrangler kv:namespace create "TX_FUNCTIONS"
-```
+```  
 Each of those commands will spit out the object you should use to replace the existing values in the `wrangler.toml` file.
+
 3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public networks. For `TURRET_ADDRESS` just use any random valid, funded Stellar account you'd like. This is the account into which fees will be paid as contracts are uploaded and run on your Turret. Finally set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url.
 
 Now that the `wrangler.toml` file has been updated let's move to the `stellar.toml` file. This file is where you'll create your Turret's `stellar.toml` file particularly noting the `[TSS].TURRETS` array. This will be an array of other Turret addresses that you trust to cohost contracts with in the case of txFunction healing. For now just make sure to include your own `TURRET_ADDRESS` which you selected in the previous steps.
@@ -61,6 +62,6 @@ Assuming both `npm run deploy`'s are now firing off without a hitch you should h
 At the time of this writing:
 - Fees are not being collected for either contract upload or execution.
 - The txFunction /heal endpoint has not been implemented
-For these reasons we strongly suggest both:
-A) Leaving your `STELLAR_NETWORK` set to `TESTNET`
-B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching signers from your Turret to
+For these reasons we strongly suggest both:  
+A) Leaving your `STELLAR_NETWORK` set to `TESTNET`  
+B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching signers from your Turret to  
