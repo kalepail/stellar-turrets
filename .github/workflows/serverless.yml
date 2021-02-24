@@ -22,6 +22,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: npm ci
+        working-directory: serverless
 
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
@@ -29,3 +30,4 @@ jobs:
           args: deploy
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+          SERVICE_ROOT: serverless
