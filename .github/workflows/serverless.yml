@@ -2,7 +2,6 @@ name: Deploy Serverless
 
 on:
   workflow_dispatch:
-
   push:
     branches: [ actions ]
   
