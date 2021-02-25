@@ -4,6 +4,8 @@ import { each, groupBy } from 'lodash'
 
 import BigNumber from 'bignumber.js'
 
+// TODO: how do we ensure stored Turret fees aren't reused in this settle endpoint?
+
 export default async ({ request }) => {
   const { fees, sourceAccount } = await request.json()
 
