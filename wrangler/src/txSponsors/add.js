@@ -11,8 +11,8 @@ export default async ({ request }) => {
 
   const txSponsor = await TX_SPONSORS.get(transaction.source)
 
-  if (txSponsor)
-    return response.text('OK')
+  if (txSponsor === 'OK')
+    return response.text(txSponsor)
 
   if (!find(transaction._operations, (op) => 
     op.type === 'payment'

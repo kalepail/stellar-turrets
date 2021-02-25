@@ -7,6 +7,8 @@ import { Utils } from '../@utils/stellar-sdk-utils'
 
 import txSponsorsSettle from '../txSponsors/settle'
 
+// AAAAAgAAAADnIJuzYT8MC0Kpo9WiygcXRILWCMsY3Q8Fkwg2gaEnOAAAAGQAHjWWAAAAEAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA3hWVRaoRP1N/Fp/x9qCICiwTuCur5gaSpFNRRCQanoyAAAAAQAAAAAAAAABAAAAAHjsM/OE0yi61zuStQL6QnUG8R6XjCSfjDWrMDuw6N7QAAAAAAAAAAAF9eEAAAAAAAAAAAGBoSc4AAAAQHxB8KhEqDwDDI3bbLmxLQqbqNQS4lAdpEQBEhzWaJ0TCUj0J5XqVfjMyrwnOfyPCwjU2HaZsTeHhgwRE8EYjAs=
+
 export default async ({ event, request, params }) => {
   const now = moment.utc().format('x')
   const { txFunctionHash } = params
