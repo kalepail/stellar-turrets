@@ -13,15 +13,15 @@ export default async (txFunctionFee) => {
   await fetch(`${horizon}/transactions`, {
     method: 'POST',
     body: txBody
-  }).then(async (res) => {
+  })
+  .then(async (res) => {
     if (res.ok)
       return res.json()
 
     await TX_SPONSORS.put(transaction.source, 'FAIL')
     throw res
   })
-
-  await TX_FEES.delete(transactionHash)
+  .finally(() => TX_FEES.delete(transactionHash))
 
   return response.text('OK')
 }
