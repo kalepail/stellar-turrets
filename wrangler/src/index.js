@@ -1,7 +1,7 @@
 import { Router } from 'tiny-request-router'
 import { response } from 'cfw-easy-utils'
 
-import { parseError } from './@js/utils'
+import { parseError } from './@utils/parse'
 
 import turretToml from './turret/toml'
 import turretDetails from './turret/details'
@@ -11,6 +11,8 @@ import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
+
+import txSponsorsAdd from './txSponsors/add'
 
 const router = new Router()
 
@@ -26,6 +28,9 @@ router
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
 
+router
+.post('/tx-sponsors', txSponsorsAdd)
+
 async function handleRequest(event) {
   try {
     const cache = caches.default
@@ -36,6 +41,8 @@ async function handleRequest(event) {
     if (method === 'OPTIONS')
       return response.cors()
 
+    // TODO: check and re-enable cache in production
+
     // else if (method === 'GET') {
     //   const cacheMatch = await cache.match(href)
 
@@ -43,13 +50,16 @@ async function handleRequest(event) {
     //     return cacheMatch
     // }
 
+    ////
+
     const routerMatch = router.match(method, pathname)
 
     if (routerMatch) {
       const routerResponse = await routerMatch.handler({
-        cache,
-        ...event,
         ...routerMatch,
+        event,
+        request,
+        cache,
       })
 
       if (

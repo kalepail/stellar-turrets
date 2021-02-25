@@ -1,7 +1,16 @@
 import { response } from 'cfw-easy-utils'
-import { Transaction, Networks, Keypair } from 'stellar-base'
+import { Transaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
+import BigNumber from 'bignumber.js'
+import moment from 'moment'
 
-export default async ({ request, params }) => {
+import { Utils } from '../@utils/stellar-sdk-utils'
+
+import txSponsorsSettle from '../txSponsors/settle'
+
+// AAAAAgAAAADnIJuzYT8MC0Kpo9WiygcXRILWCMsY3Q8Fkwg2gaEnOAAAAGQAHjWWAAAAEAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA3hWVRaoRP1N/Fp/x9qCICiwTuCur5gaSpFNRRCQanoyAAAAAQAAAAAAAAABAAAAAHjsM/OE0yi61zuStQL6QnUG8R6XjCSfjDWrMDuw6N7QAAAAAAAAAAAF9eEAAAAAAAAAAAGBoSc4AAAAQHxB8KhEqDwDDI3bbLmxLQqbqNQS4lAdpEQBEhzWaJ0TCUj0J5XqVfjMyrwnOfyPCwjU2HaZsTeHhgwRE8EYjAs=
+
+export default async ({ event, request, params }) => {
+  const now = moment.utc().format('x')
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
@@ -16,8 +25,84 @@ export default async ({ request, params }) => {
 
   const body = await request.json()
   const { txFunctionFee } = body
+  const feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
+  const feeTxnHash = feeTxn.hash().toString('hex')
 
   delete body.txFunctionFee
+
+  await fetch(`https://horizon-testnet.stellar.org/transactions/${feeTxnHash}`)
+  .then(async (res) => {
+    if (res.ok) {
+      await TX_FEES.delete(feeTxnHash)
+      throw `txFunctionFee ${feeTxnHash} has already been submitted`
+    }
+    else if (res.status === 404)
+      return
+    else
+      throw res
+  })
+
+  const txSponsor = await TX_SPONSORS.get(feeTxn.source)
+
+  if (!txSponsor)
+    throw `txSponsor ${feeTxn.source} could not be found on this turret`
+
+  if (txSponsor !== 'OK')
+    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsor}]`
+
+  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
+  const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
+  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0).plus('0.0005') // TODO: support for per txFunction dynamic variable fee
+
+  if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
+    event.waitUntil(txSponsorsSettle(txFunctionFee))
+    throw {status: 402, message: `txFunctionFee has been spent`}
+  }
+
+  // Fee Checks:
+    // txn has been signed by source
+    // memo hash is hash for contract
+    // fee is greater than or equal to the base fee
+    // sequence # is not 0
+    // timeBounds minTime and maxTime are both 0
+    // only one operation of type payment
+    // source for op must be excluded
+    // payment destination is our TURRET_ADDRESS
+    // payment asset is XLM
+    // payment amount must be within tolerance
+  if (
+    !feeMetadata // Only check incoming feeTxn if it hasn't already been validated and stored in the KV
+    && !(
+      Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+
+      && feeTxn.memo.value?.toString('hex') === txFunctionHash
+
+      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(BASE_FEE)
+      && new BigNumber(feeTxn.sequence).isGreaterThan(0)
+      && new BigNumber(feeTxn.timeBounds.minTime).isEqualTo(0)
+      && new BigNumber(feeTxn.timeBounds.maxTime).isEqualTo(0)
+
+      && feeTxn.operations.length === 1
+
+      && feeTxn.operations[0].type === 'payment'
+      && feeTxn.operations[0].destination === TURRET_ADDRESS
+      && feeTxn.operations[0].asset.isNative()
+      && feeTotalBigNumber.isGreaterThanOrEqualTo(1) // TODO: don't hard code this
+      && feeTotalBigNumber.isLessThanOrEqualTo(10) // TODO: don't hard code this
+      && !feeTxn.operations[0].source
+    )
+  ) throw `Missing or invalid txFunctionFee`
+
+  const feeTotal = feeTotalBigNumber.toFixed(7)
+  const feeSpent = feeSpentBigNumber.toFixed(7)
+
+  await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
+    date: now,
+    xdr: txFunctionFee,
+    sponsor: feeTxn.source,
+    total: feeTotal,
+    spent: feeSpent
+  }})
 
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
@@ -44,5 +129,10 @@ export default async ({ request, params }) => {
     xdr,
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature
+  }, {
+    headers: {
+      'X-Fee-Total': feeTotal,
+      'X-Fee-Spent': feeSpent
+    }
   })
 }

@@ -1,4 +1,4 @@
 - [ ] Wiki API docs
 - [x] ~Implement txFunction heal functionality~
 - [x] ~Implement fees for contract uploads~
-- [ ] Implement fees for contract runs
+- [x] Implement fees for contract runs

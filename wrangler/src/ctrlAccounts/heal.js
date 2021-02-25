@@ -105,12 +105,12 @@ export default async ({ request, params }) => {
   const removeSigner = find(incomingTurretKeys, {turret: removeTurret})
 
   if (!removeSigner || removeSigner.toml)
-    throw {status: 400, message: 'Signer is not able to be removed'}
+    throw 'Signer is not able to be removed'
 
   const addSigner = find(incomingTurretKeys, {turret: addTurret})
 
   if (!addSigner || !addSigner.toml)
-    throw {status: 400, message: 'Signer is not able to be added'}
+    throw 'Signer is not able to be added'
 
   const hasThreshold = chain(incomingTurretKeys)
   .filter((signer) => signer.toml && signer.weight)
@@ -120,12 +120,12 @@ export default async ({ request, params }) => {
   // return response.json({hasThreshold, requiredThreshold})
 
   if (hasThreshold < requiredThreshold)
-    throw {status: 400, message: 'Insufficient signer threshold'}
+    throw 'Insufficient signer threshold'
 
   const turrets = intersection(...compact(map(incomingTurretKeys, 'toml.TSS.TURRETS')))
 
   if (turrets.indexOf(addSigner.turret) === -1)
-    throw {status: 400, message: `New turret isn't trusted by existing signer turrets`}
+    throw `New turret isn't trusted by existing signer turrets`
 
   const transaction = await fetch(`${horizon}/accounts/${sourceAccount}`)
   .then((res) => {
