@@ -1,15 +1,14 @@
 import { response } from 'cfw-easy-utils'
-import { Transaction, Networks, Keypair } from 'stellar-base'
-import { parse } from '@iarna/toml'
+import { Transaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
 import BigNumber from 'bignumber.js'
+import moment from 'moment'
 
 import { Utils } from '../@utils/stellar-sdk-utils'
 
-import turretToml from '../turret/toml'
+import txSponsorsSettle from '../txSponsors/settle'
 
-// AAAAAgAAAABTqjFHz0quLSka8SOrkw7R07aqDNUHAe+Qm5PX0jMiGwAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA3hWVRaoRP1N/Fp/x9qCICiwTuCur5gaSpFNRRCQanoyAAAAAgAAAAAAAAABAAAAAHjsM/OE0yi61zuStQL6QnUG8R6XjCSfjDWrMDuw6N7QAAAAAAAAAAAAABOIAAAAAAAAAAoAAAAFc3RhdGUAAAAAAAABAAAADWFiYy0xMjMtbm9uY2UAAAAAAAAAAAAAAdIzIhsAAABA6NQHreumZMIWH/u8WFS4VnSWPCvxHIrm9o8sqjpE81mDJOGvLy1eVkjE6vs5XqEA3x9gCFLUbrmOLETGQuGkCg==
-
-export default async ({ request, params }) => {
+export default async ({ event, request, params }) => {
+  const now = moment.utc().format('x')
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
@@ -29,71 +28,79 @@ export default async ({ request, params }) => {
 
   delete body.txFunctionFee
 
-  // Sponsor Checks:
-    // Account exists
-    // Account has an acceptable balance
-    // Account has added trusted Turret signers at acceptable weights
-      // m-of-n scheme should be within a tolerable range (e.g. 3 of 5 not 14 of 15)
-    // Account is in good historical standing
-    // If this is a new sponsor account test whole flow to begin historical standing and ensure sponsorship can't be gamed
-  // const { TSS: { TURRETS: tomlTurrets } } = await turretToml()
-  // .then(async (res) => {
-  //   if (res.ok)
-  //     return parse(await res.text())
-  //   throw res
-  // })
+  await fetch(`https://horizon-testnet.stellar.org/transactions/${feeTxnHash}`)
+  .then(async (res) => {
+    if (res.ok) {
+      await TX_FEES.delete(feeTxnHash)
+      throw `txFunctionFee ${feeTxnHash} has already been submitted`
+    }
+    else if (res.status === 404)
+      return
+    else
+      throw res
+  })
+
+  const txSponsor = await TX_SPONSORS.get(feeTxn.source)
+
+  if (!txSponsor)
+    throw `txSponsor ${feeTxn.source} could not be found on this turret`
+
+  if (txSponsor !== 'OK')
+    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsor}]`
+
+  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
+  const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
+  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0).plus('0.0005') // TODO: support for per txFunction dynamic variable fee
+
+  if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
+    event.waitUntil(txSponsorsSettle(txFunctionFee))
+    throw {status: 402, message: `txFunctionFee has been spent`}
+  }
 
   // Fee Checks:
     // txn has been signed by source
     // memo hash is hash for contract
-    // fee is 0
-    // sequence # is 0
-    // timebounds min and max are 0
-    // only two operations, one of type payment and one of type manageData
-    // sources for ops must be excluded
+    // fee is greater than or equal to the base fee
+    // sequence # is not 0
+    // timeBounds minTime and maxTime are both 0
+    // only one operation of type payment
+    // source for op must be excluded
     // payment destination is our TURRET_ADDRESS
     // payment asset is XLM
     // payment amount must be within tolerance
-    // has a manageData op with a state name and non empty value
-  if(!(
-    Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+  if (
+    !feeMetadata // Only check incoming feeTxn if it hasn't already been validated and stored in the KV
+    && !(
+      Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
 
-    && feeTxn.memo.value.toString('hex') === txFunctionHash
+      && feeTxn.memo.value?.toString('hex') === txFunctionHash
 
-    && parseInt(feeTxn.fee) === 0
-    && parseInt(feeTxn.sequence) === 0
-    && parseInt(feeTxn.timeBounds.minTime) === 0
-    && parseInt(feeTxn.timeBounds.maxTime) === 0
+      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(BASE_FEE)
+      && new BigNumber(feeTxn.sequence).isGreaterThan(0)
+      && new BigNumber(feeTxn.timeBounds.minTime).isEqualTo(0)
+      && new BigNumber(feeTxn.timeBounds.maxTime).isEqualTo(0)
 
-    && feeTxn.operations.length === 2
+      && feeTxn.operations.length === 1
 
-    && feeTxn.operations[0].type === 'payment'
-    && feeTxn.operations[0].destination === TURRET_ADDRESS
-    && feeTxn.operations[0].asset.isNative()
-    && new BigNumber(feeTxn.operations[0].amount).isGreaterThanOrEqualTo('0.0005') // TODO: support for per txFunction dynamic variable fee
-    && !feeTxn.operations[0].source
+      && feeTxn.operations[0].type === 'payment'
+      && feeTxn.operations[0].destination === TURRET_ADDRESS
+      && feeTxn.operations[0].asset.isNative()
+      && feeTotalBigNumber.isGreaterThanOrEqualTo(1) // TODO: don't hard code this
+      && feeTotalBigNumber.isLessThanOrEqualTo(10) // TODO: don't hard code this
+      && !feeTxn.operations[0].source
+    )
+  ) throw `Missing or invalid txFunctionFee`
 
-    && feeTxn.operations[1].type === 'manageData'
-    && feeTxn.operations[1].name === 'state'
-    && feeTxn.operations[1].value
-    && !feeTxn.operations[1].source
-  )) throw `Missing or invalid txFunctionFee`
+  const feeTotal = feeTotalBigNumber.toFixed(7)
+  const feeSpent = feeSpentBigNumber.toFixed(7)
 
-  // TODO: Reinstate this once fee testing is done
-  
-  // if (await TX_FEES.get(feeTxnHash))
-  //   throw `txFunctionFee ${feeTxnHash} has already been submitted`
-  // else
-    await TX_FEES.put(feeTxnHash, 'OK', {metadata: txFunctionFee})
-
-  // const txSponsor = await TX_SPONSORS.get(feeTxn.source)
-
-  // if (!txSponsor)
-    await TX_SPONSORS.put(feeTxn.source, 'OK', {metadata: {
-      score: 1
-    }})
-  
-  ////
+  await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
+    date: now,
+    xdr: txFunctionFee,
+    sponsor: feeTxn.source,
+    total: feeTotal,
+    spent: feeSpent
+  }})
 
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
@@ -120,5 +127,10 @@ export default async ({ request, params }) => {
     xdr,
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature
+  }, {
+    headers: {
+      'X-Fee-Total': feeTotal,
+      'X-Fee-Spent': feeSpent
+    }
   })
 }

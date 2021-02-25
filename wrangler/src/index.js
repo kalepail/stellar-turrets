@@ -12,8 +12,7 @@ import txFunctionsRun from './txFunctions/run'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
 
-import txSponsorsGet from './txSponsors/get'
-import txSponsorsSettle from './txSponsors/settle'
+import txSponsorsAdd from './txSponsors/add'
 
 const router = new Router()
 
@@ -30,8 +29,7 @@ router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
 
 router
-.get('/tx-sponsors', txSponsorsGet)
-.post('/tx-sponsors', txSponsorsSettle)
+.post('/tx-sponsors', txSponsorsAdd)
 
 async function handleRequest(event) {
   try {
@@ -43,6 +41,8 @@ async function handleRequest(event) {
     if (method === 'OPTIONS')
       return response.cors()
 
+    // TODO: check and re-enable cache in production
+
     // else if (method === 'GET') {
     //   const cacheMatch = await cache.match(href)
 
@@ -50,13 +50,16 @@ async function handleRequest(event) {
     //     return cacheMatch
     // }
 
+    ////
+
     const routerMatch = router.match(method, pathname)
 
     if (routerMatch) {
       const routerResponse = await routerMatch.handler({
-        cache,
-        ...event,
         ...routerMatch,
+        event,
+        request,
+        cache,
       })
 
       if (
