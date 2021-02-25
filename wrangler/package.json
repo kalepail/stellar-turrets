@@ -5,8 +5,11 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "bignumber.js": "^9.0.1",
+    "bluebird": "^3.7.2",
     "cfw-easy-utils": "^0.2.3",
+    "lodash": "^4.17.21",
     "sha.js": "^2.4.11",
     "stellar-base": "^4.0.3",
     "tiny-request-router": "^1.2.2"
