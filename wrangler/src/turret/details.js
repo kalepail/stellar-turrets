@@ -17,8 +17,8 @@ export default async () => {
   })
 
   return response.json({
-    stellarNetwork: STELLAR_NETWORK,
-    turretAddress: TURRET_ADDRESS,
+    network: STELLAR_NETWORK,
+    turret: TURRET_ADDRESS,
     functions: txFunctions
   }, {
     headers: {

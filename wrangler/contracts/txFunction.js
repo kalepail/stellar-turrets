@@ -6,7 +6,7 @@
     },
     body: JSON.stringify(body)
   })
-  .then(async (res) => {
+  .then((res) => {
     if (res.ok)
       return res.text()
     throw res

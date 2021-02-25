@@ -9,19 +9,22 @@ import turretDetails from './turret/details'
 import txFunctionsGet from './txFunctions/get'
 import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
-// import txFunctionsHeal from './txFunctions/heal'
+
+import ctrlAccountsHeal from './ctrlAccounts/heal'
 
 const router = new Router()
 
 router
-.get('/.well-known/stellar.toml', turretToml)
 .get('/', turretDetails)
+.get('/.well-known/stellar.toml', turretToml)
 
 router
-.get('/tx-functions/:txFunctionHash', txFunctionsGet)
 .post('/tx-functions', txFunctionsUpload)
+.get('/tx-functions/:txFunctionHash', txFunctionsGet)
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
-// .put('/tx-functions', txFunctionsHeal)
+
+router
+.put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
 
 async function handleRequest(event) {
   try {

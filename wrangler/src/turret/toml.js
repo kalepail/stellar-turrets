@@ -4,7 +4,7 @@ export default async () => {
   const stellarToml = await META.get('STELLAR_TOML')
 
   if (!stellarToml)
-    throw {status: 404}
+    throw {status: 404, message: `stellar.toml file could not be found on this turret`}
 
   return response.text(stellarToml, {
     headers: {

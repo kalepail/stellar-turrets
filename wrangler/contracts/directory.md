@@ -1,4 +1,5 @@
 # txFunctions.js
+https://runkit.com/tyvdh/tss-contract
 
 ## Fields
 ```json
@@ -17,8 +18,8 @@ W3sibmFtZSI6ImRlc3RpbmF0aW9uIiwidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiU3RlbGxh
 
 ## Contract / Signer
 ```
-3ad932d8b521c627ff5cf0a1af5e5b6276d4af69118f3b83a9a3c0d1934ef457
-GDM2AIT22QYQUCHRYLK5C2N45ZPZ6SFR7AACQMVD6L4UF566D2ZBEH7F
+78565516a844fd4dfc5a7fc7da822028b04ee0aeaf981a4a914d4510906a7a32
+GB2BZXNG3JLUX4HYWRHREDMPJ4YINBLEHGZB4US2NJ2IPFNK65MCOOLG
 ```
 
 ## Controlled Account
