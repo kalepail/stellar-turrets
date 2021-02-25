@@ -14,14 +14,19 @@ export default async ({ request, params }) => {
   const txFunctionBuffer = Buffer.from(value)
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
+  const body = await request.json()
+  const { txFunctionFee } = body
+
+  delete body.txFunctionFee
+
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      ...await request.json(),
-      function: txFunction,
+      ...body,
+      txFunction,
     })
   })
   .then(async (res) => {

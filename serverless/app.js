@@ -17,16 +17,15 @@ app.post('/:txFunctionHash', async (req, res) => {
   try {
     const { body, params } = req
     const { txFunctionHash } = params
-    const { function: txFunctionCode } = body.function
-    ? body
-    : await fetch(`${process.env.turretBaseUrl}/tx-functions/${txFunctionHash}`)
-      .then(async (res) => {
-        if (res.ok)
-          return res.json()
-        throw res
-      })
+    const txFunctionCode = body.txFunction || await fetch(`${process.env.turretBaseUrl}/tx-functions/${txFunctionHash}`)
+    .then(async (res) => {
+      if (res.ok) {
+        const { function: txFunction } = await res.json()
+        return txFunction
+      } throw res
+    })
 
-    delete body.function
+    delete body.txFunction
 
     const vm = new VM({
       console: 'off',
