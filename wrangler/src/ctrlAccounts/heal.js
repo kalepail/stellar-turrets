@@ -29,17 +29,20 @@ export default async ({ request, params }) => {
     throw res
   })
   .then((account) => {
-    const existingSigners = map(account.data, (value, key) => {
+    const existingSigners = chain(account.data) 
+    .map((value, key) => {
       value = Buffer.from(value, 'base64').toString('utf8')
 
       const signer = find(account.signers, {key: value})
 
-      return key.indexOf('TSS') === 0 ? {
+      return key.indexOf('TSS') === 0 && signer ? {
         turret: key.replace('TSS_', ''),
         signer: value,
-        weight: signer?.weight || 0
+        weight: signer.weight
       } : null
     })
+    .compact()
+    .value()
 
     return {
       requiredThreshold: account.thresholds.high_threshold,
