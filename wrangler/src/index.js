@@ -1,7 +1,7 @@
 import { Router } from 'tiny-request-router'
 import { response } from 'cfw-easy-utils'
 
-import { parseError } from './@js/utils'
+import { parseError } from './@utils/parse'
 
 import turretToml from './turret/toml'
 import turretDetails from './turret/details'
@@ -11,6 +11,9 @@ import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
+
+import txSponsorsGet from './txSponsors/get'
+import txSponsorsSettle from './txSponsors/settle'
 
 const router = new Router()
 
@@ -25,6 +28,10 @@ router
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
+
+router
+.get('/tx-sponsors', txSponsorsGet)
+.post('/tx-sponsors', txSponsorsSettle)
 
 async function handleRequest(event) {
   try {

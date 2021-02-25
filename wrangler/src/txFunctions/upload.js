@@ -18,7 +18,7 @@ export default async ({ request }) => {
   const txFunctionExists = await TX_FUNCTIONS.get(txFunctionHash, 'arrayBuffer')
 
   if (txFunctionExists)
-    throw {status: 400, message: `txFunction ${txFunctionHash} has already been uploaded to this turret`}
+    throw `txFunction ${txFunctionHash} has already been uploaded to this turret`
 
   const txFunctionSignerKeypair = Keypair.random()
   const txFunctionSignerSecret = txFunctionSignerKeypair.secret()
@@ -42,7 +42,7 @@ export default async ({ request }) => {
     await fetch(`https://horizon-testnet.stellar.org/transactions/${transactionHash}`)
     .then((res) => {
       if (res.ok)
-        throw 'txFunctionFee has already been submitted'
+        throw `txFunctionFee ${transactionHash} has already been submitted`
       else if (res.status === 404)
         return
       else
@@ -74,15 +74,13 @@ export default async ({ request }) => {
     })
   }
 
-  await TX_FUNCTIONS.put(txFunctionHash, Buffer.concat([txFunctionBuffer, txFunctionFieldsBuffer]), {
-    metadata: {
-      cost,
-      payment: null,
-      length: txFunctionBufferLength,
-      txFunctionSignerSecret,
-      txFunctionSignerPublicKey,
-    }
-  })
+  await TX_FUNCTIONS.put(txFunctionHash, Buffer.concat([txFunctionBuffer, txFunctionFieldsBuffer]), {metadata: {
+    cost,
+    payment: null,
+    length: txFunctionBufferLength,
+    txFunctionSignerSecret,
+    txFunctionSignerPublicKey,
+  }})
 
   return response.json({
     hash: txFunctionHash,

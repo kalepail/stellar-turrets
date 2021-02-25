@@ -14,7 +14,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      window: path.resolve(path.join(__dirname, 'src/@js/window')),
+      window: path.resolve(path.join(__dirname, 'src/@utils/window')),
     }),
   ]
 }

@@ -19,6 +19,8 @@ Next you should modify the `wrangler.toml` file to update my hard coded values w
 ```
 $ wrangler kv:namespace create "META"
 $ wrangler kv:namespace create "TX_FUNCTIONS"
+$ wrangler kv:namespace create "TX_FEES"
+$ wrangler kv:namespace create "TX_SPONSORS"
 ```
 Each of those commands will spit out the object you should use to replace the existing values in the `wrangler.toml` file.
 
