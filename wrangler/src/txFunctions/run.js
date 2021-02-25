@@ -7,7 +7,7 @@ export default async ({ request, params }) => {
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
 
   if (!value)
-    throw {status: 404}
+    throw {status: 404, message: `txFunction could not be found this turret`}
 
   const { length, txFunctionSignerPublicKey, txFunctionSignerSecret } = metadata
 

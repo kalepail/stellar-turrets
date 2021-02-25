@@ -1,25 +1,28 @@
 import { response } from 'cfw-easy-utils'
 import { Keypair, TransactionBuilder, Networks, BASE_FEE, Operation, Account } from 'stellar-base'
-import { map, find, compact, intersection, chain, uniqBy } from 'lodash'
+import { map, find, compact, intersection, chain } from 'lodash'
 import Bluebird from 'bluebird'
 import { parse } from '@iarna/toml'
 
 import txFunctionsGet from '../txFunctions/get'
 import turretToml from '../turret/toml'
 
-const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
-
 export default async ({ request, params }) => {
-  const { txFunctionHash } = params
-
+  const { 
+    functionHash: txFunctionHash, 
+    sourceAccount, 
+    removeTurret, 
+    addTurret 
+  } = await request.json()
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
 
   if (!value)
-    throw {status: 404}
+    throw {status: 404, message: `txFunction could not be found this turret`}
 
-  const { sourceAccount, controlledAccount, removeTurret, addTurret } = await request.json()
+  const { ctrlAccount } = params
+  const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
 
-  const { requiredThreshold, existingSigners } = await fetch(`${horizon}/accounts/${controlledAccount}`)
+  const { requiredThreshold, existingSigners } = await fetch(`${horizon}/accounts/${ctrlAccount}`)
   .then((res) => {
     if (res.ok)
       return res.json()
@@ -31,10 +34,10 @@ export default async ({ request, params }) => {
 
       const signer = find(account.signers, {key: value})
 
-      return key.indexOf('TSS') === 0 && signer ? {
+      return key.indexOf('TSS') === 0 ? {
         turret: key.replace('TSS_', ''),
         signer: value,
-        weight: signer.weight
+        weight: signer?.weight || 0
       } : null
     })
 
@@ -44,11 +47,17 @@ export default async ({ request, params }) => {
     }
   })
 
-  const incomingTurretKeys = await Bluebird.map(uniqBy([
-    {turret: addTurret},
-    ...existingSigners
-  ], 'turret'), async (signer) => {
-    return {
+  // return response.json({requiredThreshold, existingSigners})
+
+  const incomingTurretKeys = await Bluebird.map(
+    chain([
+      {turret: addTurret},
+      ...existingSigners
+    ])
+    .orderBy('weight', 'asc')
+    .uniqBy('turret')
+    .value(), 
+    async (signer) => ({
       ...signer,
       ...await fetch(`${horizon}/accounts/${signer.turret}`)
       .then((res) => {
@@ -84,8 +93,11 @@ export default async ({ request, params }) => {
           })
         }))
       })
-    }
-  })
+      .catch(() => null)
+    })
+  )
+
+  // return response.json({incomingTurretKeys})
 
   const removeSigner = find(incomingTurretKeys, {turret: removeTurret})
 
@@ -101,6 +113,8 @@ export default async ({ request, params }) => {
   .filter((signer) => signer.toml && signer.weight)
   .sumBy('weight')
   .value()
+
+  // return response.json({hasThreshold, requiredThreshold})
 
   if (hasThreshold < requiredThreshold)
     throw {status: 400, message: 'Insufficient signer threshold'}
