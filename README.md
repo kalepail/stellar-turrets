@@ -60,6 +60,8 @@ When you finally get success on this task you'll be rewarded with an endpoint wh
 ## Congrats!
 Assuming both `npm run deploy`'s are now firing off without a hitch you should have a fully functional Turing Signing Server ready to participate in the TSS network delivering decentralized smart contracting functionality to anyone and everyone who chooses to use your Turret. Nice!
 
+## [API Docs](https://github.com/tyvdh/stellar-tss/wiki)
+
 ## Disclaimer
 This is alpha software, more than that this repo is just a reference implementation for the [TSS protocol](https://tss.stellar.org/).
 
