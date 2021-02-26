@@ -1,5 +1,5 @@
-- [ ] Support for per txFunction [dynamic variable fees](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L55)
-- [ ] Support dynamic variable tolerance fees ([here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L90-L91) & [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txSponsors/add.js#L20))
+- [ ] Add support for per txFunction [dynamic variable fees](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L55)
+- [ ] Add support for variable tolerance fees ([here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L90-L91) & [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txSponsors/add.js#L20))
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
 
 # Done
