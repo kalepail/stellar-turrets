@@ -1,4 +1,4 @@
-- [ ] Wiki API docs
+- [x] [~Wiki API docs~](https://github.com/tyvdh/stellar-tss/wiki)
 - [x] ~Implement txFunction heal functionality~
 - [x] ~Implement fees for contract uploads~
 - [x] Implement fees for contract runs
