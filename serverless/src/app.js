@@ -1,17 +1,31 @@
 const express = require('express')
-const { VM } = require('vm2')
 
-const fetch = require('node-fetch')
-const StellarSdk = require('stellar-sdk')
-const lodash = require('lodash')
-const BigNumber = require('bignumber.js')
-const Bluebird = require('bluebird')
-const moment = require('moment')
+global.fetch = require('node-fetch')
+global.StellarSdk = require('stellar-sdk')
+global.BigNumber = require('bignumber.js')
 
 const app = express()
 
+// TODO: Enforce an auth requirement between the serverless and wrangler apps
+  // Ensure the incoming authorization bearer token has been signed by the TURRET_ADDRESS (will require adding TURRET_ADDRESS as a secret param)
+
+app.use((req, res, next) => {
+  const turretUrl = new URL(process.env.turretBaseUrl)
+  const { hostname } = turretUrl
+
+  if (hostname.indexOf(req.headers['cf-worker']) === -1)
+    res
+    .status(403)
+    .send()
+
+  else {
+    res.set('Access-Control-Allow-Origin', process.env.turretBaseUrl)
+    next()
+  }
+})
+
 app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.urlencoded({ extended: true }))
 
 app.post('/:txFunctionHash', async (req, res) => {
   try {
@@ -27,21 +41,7 @@ app.post('/:txFunctionHash', async (req, res) => {
 
     delete body.txFunction
 
-    const vm = new VM({
-      console: 'off',
-      wasm: false,
-      eval: false,
-      sandbox: {
-        fetch,
-        lodash,
-        moment,
-        StellarSdk,
-        BigNumber,
-        Bluebird,
-      }
-    })
-
-    const txFunction = vm.run(txFunctionCode)
+    const txFunction = new Function(`return ${txFunctionCode}`)()
     const result = await txFunction(body)
 
     res.send(result)
@@ -51,17 +51,17 @@ app.post('/:txFunctionHash', async (req, res) => {
     if (typeof err === 'string')
       err = {message: err, status: 400}
 
-    if (
-      err.headers
-      && err.headers.has('content-type')
-    ) err.message = err.headers.get('content-type').indexOf('json') > -1
+    if (err?.headers.has('content-type')) 
+      err.message = err.headers.get('content-type').indexOf('json') > -1
       ? await err.json()
       : await err.text()
 
     if (!err.status)
       err.status = 400
 
-    res.status(err.status).send({
+    res
+    .status(err.status)
+    .send({
       ...(
         typeof err.message === 'string'
         ? {message: err.message}
@@ -73,7 +73,9 @@ app.post('/:txFunctionHash', async (req, res) => {
 })
 
 app.use((req, res) => {
-  res.status(404).send('Not Found')
+  res
+  .status(404)
+  .send('Not Found')
 })
 
 module.exports = app

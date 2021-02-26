@@ -4,6 +4,11 @@ component: express
 name: tss-serverless
 
 inputs:
-  src: ./
+  src:
+    src: ./
+    hook: npm run build
+    dist: ./
+  memory: 256
+  timeout: 8
   env:
     turretBaseUrl: https://tss-wrangler.tyler.workers.dev

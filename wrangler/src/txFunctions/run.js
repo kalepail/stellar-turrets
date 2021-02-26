@@ -104,10 +104,12 @@ export default async ({ event, request, params }) => {
     spent: feeSpent
   }})
 
+  const turrentRunAuthToken = 'ABC' // TODO: this should be a message signed by the TURRET_ADDRESS (Will require adding a TURRET_SECRET for signing these auth messages)
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authentication': `Bearer ${turrentRunAuthToken}`
     },
     body: JSON.stringify({
       ...body,
