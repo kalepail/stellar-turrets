@@ -7,8 +7,6 @@ import { parse } from '@iarna/toml'
 import txFunctionsGet from '../txFunctions/get'
 import turretToml from '../turret/toml'
 
-// TODO: prevent self swapping. Turrets should not be able to add or remove themselves from a ctrlAccount
-
 export default async ({ request, params }) => {
   const { 
     functionHash: txFunctionHash, 
@@ -16,6 +14,12 @@ export default async ({ request, params }) => {
     removeTurret, 
     addTurret 
   } = await request.json()
+
+  if (
+    removeTurret === TURRET_ADDRESS
+    || addTurret === TURRET_ADDRESS
+  ) throw `Turrets may not add or remove themselves from a ctrlAccount`
+
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
 
   if (!value)
