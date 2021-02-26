@@ -1,6 +1,6 @@
 import { response } from 'cfw-easy-utils'
 
-// TODO: don't return a `functions:` list?
+// ??: don't return a `functions:` list
 
 export default async () => {
   // const txFunctions = await TX_FUNCTIONS.list()
