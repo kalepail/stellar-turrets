@@ -65,6 +65,6 @@ Assuming both `npm run deploy`'s are now firing off without a hitch you should h
 ## Disclaimer
 This is alpha software, more than that this repo is just a reference implementation for the [TSS protocol](https://tss.stellar.org/).
 
-For this reason I strongly suggest both:  
+For this reason I strongly suggest either:  
 A) Leaving your `STELLAR_NETWORK` set to `TESTNET`  
-B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching your Turret signers to
+or B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching your Turret signers to
