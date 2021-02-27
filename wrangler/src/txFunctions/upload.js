@@ -68,6 +68,7 @@ export default async ({ request }) => {
     return response.json({
       message: typeof err === 'string' ? err : 'Failed to process txFunctionFee',
       status: 402,
+      turret: TURRET_ADDRESS,
       cost,
     }, {
       status: 402
@@ -76,7 +77,7 @@ export default async ({ request }) => {
 
   await TX_FUNCTIONS.put(txFunctionHash, Buffer.concat([txFunctionBuffer, txFunctionFieldsBuffer]), {metadata: {
     cost,
-    payment: null,
+    payment: transactionHash,
     length: txFunctionBufferLength,
     txFunctionSignerSecret,
     txFunctionSignerPublicKey,
@@ -85,6 +86,5 @@ export default async ({ request }) => {
   return response.json({
     hash: txFunctionHash,
     signer: txFunctionSignerPublicKey,
-    cost
   })
 }

@@ -52,7 +52,7 @@ export default async ({ event, request, params }) => {
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
   const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
-  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0).plus('0.0005') // TODO: support for per txFunction dynamic variable fee
+  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0).plus('0.0005') // TODO: support for per txFunction dynamic variable fee (use the cfw-easy-utils stopwatch?)
 
   if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
     event.waitUntil(txSponsorsSettle(txFunctionFee))

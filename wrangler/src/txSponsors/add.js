@@ -19,7 +19,14 @@ export default async ({ request }) => {
     && op.destination === TURRET_ADDRESS
     && new BigNumber(op.amount).isGreaterThanOrEqualTo(10) // TODO: don't hard code this
     && op.asset.isNative()
-  )) throw 'Missing or invalid txFunctionFee'
+  )) return response.json({
+    message: 'Missing or invalid txFunctionFee',
+    status: 402,
+    turret: TURRET_ADDRESS,
+    cost: 10, // TODO: don't hard code this
+  }, {
+    status: 402
+  })
 
   await fetch(`https://horizon-testnet.stellar.org/transactions/${transactionHash}`)
   .then((res) => {

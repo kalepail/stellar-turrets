@@ -9,17 +9,24 @@ https://runkit.com/tyvdh/tss-contract
     "type": "string",
     "description": "Stellar public key you'd like to pay",
     "rule": "Must be a valid and funded Stellar public key"
+  },
+  {
+    "name": "source",
+    "type": "string",
+    "description": "Stellar public key controlled account",
+    "rule": "Should be the Stellar address which has Turret signers attached"
   }
 ]
 ```
 ```
-W3sibmFtZSI6ImRlc3RpbmF0aW9uIiwidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiU3RlbGxhciBwdWJsaWMga2V5IHlvdSdkIGxpa2UgdG8gcGF5IiwicnVsZSI6Ik11c3QgYmUgYSB2YWxpZCBhbmQgZnVuZGVkIFN0ZWxsYXIgcHVibGljIGtleSJ9XQ==
+W3sibmFtZSI6ImRlc3RpbmF0aW9uIiwidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiU3RlbGxhciBwdWJsaWMga2V5IHlvdSdkIGxpa2UgdG8gcGF5IiwicnVsZSI6Ik11c3QgYmUgYSB2YWxpZCBhbmQgZnVuZGVkIFN0ZWxsYXIgcHVibGljIGtleSJ9LHsibmFtZSI6InNvdXJjZSIsInR5cGUiOiJzdHJpbmciLCJkZXNjcmlwdGlvbiI6IlN0ZWxsYXIgcHVibGljIGtleSBjb250cm9sbGVkIGFjY291bnQiLCJydWxlIjoiU2hvdWxkIGJlIHRoZSBTdGVsbGFyIGFkZHJlc3Mgd2hpY2ggaGFzIFR1cnJldCBzaWduZXJzIGF0dGFjaGVkIn1d
 ```
 
 ## Contract / Signer
 ```
-78565516a844fd4dfc5a7fc7da822028b04ee0aeaf981a4a914d4510906a7a32
-GB2BZXNG3JLUX4HYWRHREDMPJ4YINBLEHGZB4US2NJ2IPFNK65MCOOLG
+0b859a9b24cf6986563ed0e96493d3eb90eee58466c28827e2d037848c194fb5
+GDVU7UT2GMFFZOXPGU5UDLLQGIWCWC3QD4MGRAMC6ZM2P4RR2F4NSFWU # self
+GA3MQ6WHXM27OO6WBHI5SJG5Q24AKQGUJGYLJUJRALS6JRJI77HV2WLO # alexroy
 ```
 
 ## Controlled Account
