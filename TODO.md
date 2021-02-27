@@ -1,9 +1,9 @@
-- [ ] Add support for per txFunction [dynamic variable fees](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L55)
 - [ ] Add support for variable tolerance fees (e.g. [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L90-L91) & [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txSponsors/add.js#L20))
-- [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
+- [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
 
 # Done
+- [x] [~Add support for per txFunction dynamic variable fees~](https://github.com/tyvdh/stellar-tss/commit/785036ec693a937ad3d0f4178fcddea33f1eb4a3)
 - [x] [~Lock down the Serverless service to only accept requests originating from the Wrangler worker~](https://github.com/tyvdh/stellar-tss/pull/5)
 - [x] [~Prevent self swapping in the ctrlAccounts heal.js function~](https://github.com/tyvdh/stellar-tss/commit/75c77311822f8e75b4dcac654fbd2eac45a6d755)
 - [x] [~Wiki API docs~](https://github.com/tyvdh/stellar-tss/wiki)
