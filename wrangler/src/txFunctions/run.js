@@ -1,4 +1,4 @@
-import { response } from 'cfw-easy-utils'
+import { response, Stopwatch } from 'cfw-easy-utils'
 import { Transaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
@@ -10,7 +10,6 @@ import txSponsorsSettle from '../txSponsors/settle'
 // AAAAAgAAAADnIJuzYT8MC0Kpo9WiygcXRILWCMsY3Q8Fkwg2gaEnOAAAAGQAHjWWAAAAEAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA3hWVRaoRP1N/Fp/x9qCICiwTuCur5gaSpFNRRCQanoyAAAAAQAAAAAAAAABAAAAAHjsM/OE0yi61zuStQL6QnUG8R6XjCSfjDWrMDuw6N7QAAAAAAAAAAAF9eEAAAAAAAAAAAGBoSc4AAAAQHxB8KhEqDwDDI3bbLmxLQqbqNQS4lAdpEQBEhzWaJ0TCUj0J5XqVfjMyrwnOfyPCwjU2HaZsTeHhgwRE8EYjAs=
 
 export default async ({ event, request, params }) => {
-  const now = moment.utc().format('x')
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
@@ -52,7 +51,7 @@ export default async ({ event, request, params }) => {
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
   const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
-  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0).plus('0.0005') // TODO: support for per txFunction dynamic variable fee (use the cfw-easy-utils stopwatch?)
+  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0)
 
   if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
     event.waitUntil(txSponsorsSettle(txFunctionFee))
@@ -93,17 +92,6 @@ export default async ({ event, request, params }) => {
     )
   ) throw `Missing or invalid txFunctionFee`
 
-  const feeTotal = feeTotalBigNumber.toFixed(7)
-  const feeSpent = feeSpentBigNumber.toFixed(7)
-
-  await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
-    date: now,
-    xdr: txFunctionFee,
-    sponsor: feeTxn.source,
-    total: feeTotal,
-    spent: feeSpent
-  }})
-
   let { value: turretAuthData, metadata: turretAuthSignature } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
 
   if (!turretAuthSignature) {
@@ -119,7 +107,13 @@ export default async ({ event, request, params }) => {
     })
   }
 
-  const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
+  const watch = new Stopwatch()
+  const { 
+    xdr, 
+    cost,
+    feeTotal,
+    feeSpent
+  } = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -132,8 +126,28 @@ export default async ({ event, request, params }) => {
     })
   })
   .then(async (res) => {
+    watch.mark('Ran txFunction')
+
+    const now = moment.utc().format('x')
+    const cost = new BigNumber(watch.getTotalTime()).dividedBy(100000).toFixed(7) // Don't hard code the dividedBy value
+    const feeTotal = feeTotalBigNumber.toFixed(7)
+    const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
+
+    await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
+      date: now,
+      xdr: txFunctionFee,
+      sponsor: feeTxn.source,
+      total: feeTotal,
+      spent: feeSpent
+    }})
+
     if (res.ok)
-      return res.text()
+      return {
+        xdr: await res.text(),
+        cost,
+        feeTotal,
+        feeSpent,
+      }
     throw res
   })
 
@@ -145,8 +159,10 @@ export default async ({ event, request, params }) => {
   return response.json({
     xdr,
     signer: txFunctionSignerPublicKey,
-    signature: txFunctionSignature
+    signature: txFunctionSignature,
+    cost
   }, {
+    stopwatch: watch,
     headers: {
       'X-Fee-Total': feeTotal,
       'X-Fee-Spent': feeSpent
