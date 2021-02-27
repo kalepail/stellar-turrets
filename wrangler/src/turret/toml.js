@@ -8,6 +8,7 @@ export default async () => {
 
   return response.text(stellarToml, {
     headers: {
+      'Content-Type': 'text/plain',
       'Cache-Control': 'public, max-age=2419200', // 28 days
     }
   })

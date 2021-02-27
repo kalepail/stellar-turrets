@@ -104,12 +104,27 @@ export default async ({ event, request, params }) => {
     spent: feeSpent
   }})
 
-  const turrentRunAuthToken = 'ABC' // TODO: this should be a message signed by the TURRET_ADDRESS (Will require adding a TURRET_SECRET for signing these auth messages)
+  let { value: turretAuthData, metadata: turretAuthSignature } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
+
+  if (!turretAuthSignature) {
+    const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
+    const turretAuthBuffer = crypto.getRandomValues(Buffer.alloc(256))
+
+    turretAuthData = turretAuthBuffer.toString('base64')
+    turretAuthSignature = turretSignerKeypair.sign(turretAuthBuffer).toString('base64')
+
+    await META.put('TURRET_AUTH_TOKEN', turretAuthData, {
+      expirationTtl: 2419200,
+      metadata: turretAuthSignature
+    })
+  }
+
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authentication': `Bearer ${turrentRunAuthToken}`
+      'X-Turret-Data': turretAuthData,
+      'X-Turret-Signature': turretAuthSignature,
     },
     body: JSON.stringify({
       ...body,

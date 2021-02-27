@@ -12,3 +12,4 @@ inputs:
   timeout: 8
   env:
     turretBaseUrl: https://tss-wrangler.tyler.workers.dev
+    turretAddress: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX

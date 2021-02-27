@@ -9,7 +9,7 @@
     "bignumber.js": "^4.1.0",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
-    "stellar-sdk": "^8.0.0"
+    "stellar-base": "^4.0.3"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.13.0",
