@@ -104,10 +104,27 @@ export default async ({ event, request, params }) => {
     spent: feeSpent
   }})
 
+  let { value: turretAuthData, metadata: turretAuthSignature } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
+
+  if (!turretAuthSignature) {
+    const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
+    const turretAuthBuffer = crypto.getRandomValues(Buffer.alloc(256))
+
+    turretAuthData = turretAuthBuffer.toString('base64')
+    turretAuthSignature = turretSignerKeypair.sign(turretAuthBuffer).toString('base64')
+
+    await META.put('TURRET_AUTH_TOKEN', turretAuthData, {
+      expirationTtl: 2419200,
+      metadata: turretAuthSignature
+    })
+  }
+
   const xdr = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-Turret-Data': turretAuthData,
+      'X-Turret-Signature': turretAuthSignature,
     },
     body: JSON.stringify({
       ...body,

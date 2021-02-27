@@ -1,17 +1,24 @@
 {
   "private": true,
   "main": "app.js",
+  "scripts": {
+    "deploy": "sls deploy",
+    "build": "npx rimraf app.js node_modules && npm i && npx webpack build && npx rimraf node_modules && npm i --no-optional"
+  },
   "dependencies": {
     "bignumber.js": "^4.1.0",
-    "bluebird": "^3.7.2",
     "express": "^4.17.1",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
-    "stellar-sdk": "^8.0.0",
-    "vm2": "^3.9.2"
+    "stellar-base": "^4.0.3"
   },
-  "scripts": {
-    "deploy": "sls deploy"
+  "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.13.0",
+    "@babel/preset-env": "^7.13.5",
+    "babel-loader": "^8.2.2",
+    "path": "^0.12.7",
+    "rimraf": "^2.7.1",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-node-externals": "^2.5.2"
   }
 }

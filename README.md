@@ -30,28 +30,34 @@ Now that the `wrangler.toml` file has been updated let's move to the `stellar.to
 
 Once you've got that go ahead and upload it to the `META` kv store you instantiated earlier.
 ```
-wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
+$ wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
 ```
 Make sure to run these wrangler commands from the `./wranger` directory
 
 Finally to deploy the project run:
 ```
-npm i
-npm run deploy
+$ npm i
+$ npm run deploy
 ```
 From within the `./wrangler` directory.
 
 You may have to work through a few errors to get logged into your Cloudflare account but the wrangler cli errors are typically quite helpful. Feel free to update this README with more clear instructions as it's been ages since I started from scratch on my first wrangler project.
 
+4. Once you've successfully got your project created and running upload a `TURRET_SIGNER` Stellar secret key to your Cloudflare worker.
+```
+$ wrangler secret put TURRET_SIGNER
+```
+When the dialog asks your for a value paste in a valid Stellar secret key. Most often this will be the secret counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
+
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
 
-There's only one thing you'll need to update in this repo in the `serverless.yml` file. The `inputs.env.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on.
+There's only two things you'll need to update in this repo in the `serverless.yml` file. The `inputs.env.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `inputs.env.turretAddress` should be replaced with your Turret's `TURRET_ADDRESS` set in the Wrangler setup.
 
 Now it'll be the fun task of getting:
 ```
-npm i
-npm run deploy
+$ npm i
+$ npm run deploy
 ```
 To successfully run from within the `./serverless` directory. Follow any errors carefully and you should be able to get successfully deployed pretty quickly. The most probable issue will be you need to manually create an app in the [Serverless dashboard](https://app.serverless.com/tyvdh) and attach some new IAM credentials to it manually. There's a helpful UI walk through they have so you should be able to sort it out. Again feel free to update these docs with more clear instructions as you sort out the nuances of setting the Serverless service up.
 
