@@ -1,9 +1,9 @@
-- [ ] Lock down the Serverless service to only accept requests originating from the Wrangler worker
 - [ ] Add support for per txFunction [dynamic variable fees](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L55)
 - [ ] Add support for variable tolerance fees ([here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L90-L91) & [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txSponsors/add.js#L20))
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
 
 # Done
+- [x] [~Lock down the Serverless service to only accept requests originating from the Wrangler worker~](https://github.com/tyvdh/stellar-tss/pull/5)
 - [x] [~Prevent self swapping in the ctrlAccounts heal.js function~](https://github.com/tyvdh/stellar-tss/commit/75c77311822f8e75b4dcac654fbd2eac45a6d755)
 - [x] [~Wiki API docs~](https://github.com/tyvdh/stellar-tss/wiki)
 - [x] [~Implement fees for contract runs~](https://github.com/tyvdh/stellar-tss/pull/3)
