@@ -8,6 +8,7 @@ inputs:
     src: ./
     hook: npm run build
     dist: ./
+    exclude: node_modules/**
   memory: 256
   timeout: 8
   env:
