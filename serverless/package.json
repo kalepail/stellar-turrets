@@ -14,6 +14,7 @@
     "stellar-base": "^4.0.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.8",
     "@babel/plugin-proposal-optional-chaining": "^7.13.0",
     "@babel/preset-env": "^7.13.5",
     "babel-loader": "^8.2.2",
