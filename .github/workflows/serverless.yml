@@ -16,9 +16,6 @@ jobs:
         with:
           node-version: '12'
 
-      - run: sudo apt-get install -y libsodium-dev
-      - run: sudo npm install -g node-gyp
-
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
         with:
