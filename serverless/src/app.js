@@ -7,19 +7,13 @@ global.BigNumber = require('bignumber.js')
 const app = express()
 const { Keypair } = StellarBase
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.get('/', (req, res) => {
+  res.json({
+    version: VERSION,
+  })
+})
 
 app.use((req, res, next) => {
-  const { headers } = req
-  const turretUrl = new URL(process.env.turretBaseUrl)
-  const { hostname } = turretUrl
-
-  if (hostname.indexOf(headers['cf-worker']) === -1) 
-    return res
-    .status(403)
-    .send()
-
   res.set({
     'Access-Control-Allow-Origin': process.env.turretBaseUrl,
     'Access-Control-Allow-Methods': 'OPTIONS, POST',
@@ -27,6 +21,8 @@ app.use((req, res, next) => {
   })
   next()
 })
+
+app.use(express.json())
 
 app.post('/:txFunctionHash', async (req, res) => {
   try {

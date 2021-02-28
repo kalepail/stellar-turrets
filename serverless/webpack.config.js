@@ -1,5 +1,11 @@
-const nodeExternals = require('webpack-node-externals')
 const path = require('path')
+const webpack = require('webpack')
+const nodeExternals = require('webpack-node-externals')
+const GitRevisionPlugin = require('git-revision-webpack-plugin')
+
+const pkg = require('./package.json')
+
+const gitRevisionPlugin = new GitRevisionPlugin()
 
 module.exports = {
   mode: 'production',
@@ -25,5 +31,10 @@ module.exports = {
         exclude: /node_modules/
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(`v${pkg.version}-${gitRevisionPlugin.commithash()}`),
+    }),
+  ]
 }

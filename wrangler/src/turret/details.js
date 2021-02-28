@@ -4,6 +4,7 @@ export default async () => {
   return response.json({
     network: STELLAR_NETWORK,
     turret: TURRET_ADDRESS,
+    version: VERSION,
     fee: { // TODO: don't hard code these
       min: 1,
       max: 10
