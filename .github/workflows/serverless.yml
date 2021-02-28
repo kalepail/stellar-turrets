@@ -16,8 +16,6 @@ jobs:
 
       - run: sudo apt-get install -y libsodium-dev
 
-      - run: sudo npm install -g npx
-
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
         with:

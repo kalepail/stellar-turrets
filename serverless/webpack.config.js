@@ -9,6 +9,7 @@ const commitHash = (
   || require('child_process')
     .execSync('git rev-parse HEAD')
     .toString()
+    .replace(/\r?\n|\r/g, '')
 )
 
 module.exports = {
