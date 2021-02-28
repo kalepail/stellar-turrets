@@ -19,6 +19,9 @@ jobs:
       - run: npm ci
         working-directory: serverless
 
+      - run: npm run build
+        working-directory: serverless
+
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
         with:
