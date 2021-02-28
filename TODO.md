@@ -1,4 +1,5 @@
 - [ ] Add support for variable tolerance fees (e.g. [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txFunctions/run.js#L90-L91) & [here](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/txSponsors/add.js#L20))
+- [ ] Cron swallow `txFunctionFees` fees after {x} time and report that {x} time in the `turret/details.js` endpoint
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
 - [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
 
