@@ -1,15 +1,15 @@
 const path = require('path')
 const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
-// const GitRevisionPlugin = require('git-revision-webpack-plugin')
 
 const pkg = require('./package.json')
 
-// const gitRevisionPlugin = new GitRevisionPlugin()
-
-const commitHash = require('child_process')
-.execSync('git rev-parse HEAD')
-.toString()
+const commitHash = (
+  process.env.GITHUB_SHA 
+  || require('child_process')
+    .execSync('git rev-parse HEAD')
+    .toString()
+)
 
 module.exports = {
   mode: 'production',
