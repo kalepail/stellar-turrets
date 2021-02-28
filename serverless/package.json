@@ -2,9 +2,11 @@
   "private": true,
   "version": "0.0.0",
   "main": "app.js",
+  "type": "commonjs",
   "scripts": {
     "deploy": "sls deploy",
-    "build": "npm i -D rimraf && npx rimraf app.js node_modules && npm i && npx webpack build && npx rimraf node_modules && npm i --no-optional"
+    "build": "npm i -D rimraf && npx rimraf app.js node_modules && npm i && npx webpack build && npx rimraf node_modules",
+    "webpack": "npx webpack build"
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
@@ -17,11 +19,9 @@
     "@babel/plugin-proposal-optional-chaining": "^7.13.0",
     "@babel/preset-env": "^7.13.5",
     "babel-loader": "^8.2.2",
-    "git-revision-webpack-plugin": "^3.0.6",
     "path": "^0.12.7",
     "rimraf": "^2.7.1",
     "webpack": "^5.24.2",
-    "webpack-cli": "^4.5.0",
-    "webpack-node-externals": "^2.5.2"
+    "webpack-cli": "^4.5.0"
   }
 }

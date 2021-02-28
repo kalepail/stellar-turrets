@@ -1,16 +1,16 @@
 const express = require('express')
 
-global.fetch = require('node-fetch')
-global.StellarBase = require('stellar-base')
-global.BigNumber = require('bignumber.js')
+const fetch = require('node-fetch')
+const StellarBase = require('stellar-base')
+const BigNumber = require('bignumber.js')
 
 const app = express()
-const { Keypair } = StellarBase
+const { Keypair, FastSigning } = StellarBase
 
 app.get('/', (req, res) => {
   res.json({
     version: VERSION,
-    FastSigning: global.StellarBase.FastSigning
+    FastSigning
   })
 })
 
@@ -50,7 +50,10 @@ app.post('/:txFunctionHash', async (req, res) => {
 
     delete body.txFunction
 
-    const txFunction = new Function(`return ${txFunctionCode}`)()
+    const txFunction = new Function(
+      'fetch, StellarBase, BigNumber', 
+      `return ${txFunctionCode}`
+    )(fetch, StellarBase, BigNumber)
     const result = await txFunction(body)
 
     res.send(result)

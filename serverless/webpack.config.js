@@ -1,6 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const nodeExternals = require('webpack-node-externals')
 
 const pkg = require('./package.json')
 
@@ -14,6 +13,11 @@ const commitHash = (
 
 module.exports = {
   mode: 'production',
+  optimization: {
+    minimize: true
+  },
+  // mode: 'development',
+  // devtool: false,
   entry: {
     app: './src/app.js',
   },
@@ -23,9 +27,10 @@ module.exports = {
     filename: '[name].js',
   },
   target: 'node',
-  externals: [nodeExternals()],
-  optimization: {
-    minimize: true
+  externalsPresets: { node: true },
+  resolve: {
+    extensions: ['.js'],
+    mainFields: ['main'],
   },
   module: {
     rules: [
@@ -40,6 +45,6 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(`v${pkg.version}-${commitHash}`),
-    }),
+    })
   ]
 }
