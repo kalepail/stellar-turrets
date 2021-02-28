@@ -12,9 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
 
-      - uses: mikeal/npx@master
+      - run: sudo apt-get install -y libsodium-dev
+      
+      - run: npm install -g npx
 
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
