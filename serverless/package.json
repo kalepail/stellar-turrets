@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "deploy": "sls deploy",
-    "build": "npx webpack build"
+    "build": "npm i && npx webpack build"
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
