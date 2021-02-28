@@ -17,8 +17,8 @@ export default async ({ request }) => {
   if (!find(transaction._operations, (op) => 
     op.type === 'payment'
     && op.destination === TURRET_ADDRESS
-    && new BigNumber(op.amount).isGreaterThanOrEqualTo(10) // TODO: don't hard code this
     && op.asset.isNative()
+    && new BigNumber(op.amount).isGreaterThanOrEqualTo(10) // TODO: don't hard code this
   )) return response.json({
     message: 'Missing or invalid txFunctionFee',
     status: 402,
