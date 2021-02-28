@@ -14,9 +14,6 @@ jobs:
 
       - uses: actions/setup-node@v2
 
-      - run: npm ci
-        working-directory: serverless
-
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
         with:
