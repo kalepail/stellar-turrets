@@ -6,8 +6,8 @@ name: tss-serverless
 inputs:
   src:
     src: ./
-    hook: npm run build
-    dist: ./
+    # hook: npm run build
+    # dist: ./
     exclude: node_modules/**
   memory: 256
   timeout: 8
