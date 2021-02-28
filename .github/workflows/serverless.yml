@@ -14,6 +14,8 @@ jobs:
 
       - uses: actions/setup-node@v1
 
+      - uses: mikeal/npx@master
+
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
         with:
