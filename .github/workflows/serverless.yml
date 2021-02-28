@@ -7,17 +7,17 @@ on:
   
 jobs:
   deploy:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
-      # - run: sudo apt-get install -y libsodium-dev
-      # - run: sudo npm install -g node-gyp
-
       - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
+
+      - run: sudo apt-get install -y libsodium-dev
+      - run: sudo npm install -g node-gyp
 
       - name: Deploy to AWS with Serverless
         uses: serverless/github-action@master
