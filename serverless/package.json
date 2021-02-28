@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "deploy": "sls deploy",
-    "build": "npx rimraf app.js node_modules && npm i && npx webpack build && npx rimraf node_modules && npm i --no-optional"
+    "build": "npm i -D rimraf && npx rimraf app.js node_modules && npm i && npx webpack build && npx rimraf node_modules && npm i --no-optional"
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
