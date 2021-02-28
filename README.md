@@ -7,20 +7,15 @@ See below for specific instructions for setting up and running both services.
 ## Wrangler (Cloudflare)
 If you haven't already go ahead and [signup for Cloudflare workers](https://dash.cloudflare.com/). You can attempt to run on their free tier but I highly suggest just biting the very affordable bullet and upgrading to their $5/mo plan which will allow you to scale much more nicely.
 
-Next install their wrangler cli tool globally on your machine.
-
-- https://developers.cloudflare.com/workers/cli-wrangler/install-update
-- https://github.com/cloudflare/wrangler
-
 Next you should modify the `wrangler.toml` file to update my hard coded values with your own.
 
 1. For the `account_id` go to the workers page on [dash.cloudflare.com](https://dash.cloudflare.com) and copy your `Account ID`.
-2. For `kv_namespaces` create two new kv namespaces via the wrangler cli:
+2. For `kv_namespaces` create four new kv namespaces via the wrangler cli:
 ```
-$ wrangler kv:namespace create "META"
-$ wrangler kv:namespace create "TX_FUNCTIONS"
-$ wrangler kv:namespace create "TX_FEES"
-$ wrangler kv:namespace create "TX_SPONSORS"
+$ npx wrangler kv:namespace create "META"
+$ npx wrangler kv:namespace create "TX_FUNCTIONS"
+$ npx wrangler kv:namespace create "TX_FEES"
+$ npx wrangler kv:namespace create "TX_SPONSORS"
 ```
 Each of those commands will spit out the object you should use to replace the existing values in the `wrangler.toml` file.
 
@@ -30,7 +25,7 @@ Now that the `wrangler.toml` file has been updated let's move to the `stellar.to
 
 Once you've got that go ahead and upload it to the `META` kv store you instantiated earlier.
 ```
-$ wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
+$ npx wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
 ```
 Make sure to run these wrangler commands from the `./wranger` directory
 
@@ -45,7 +40,7 @@ You may have to work through a few errors to get logged into your Cloudflare acc
 
 4. Once you've successfully got your project created and running upload a `TURRET_SIGNER` Stellar secret key to your Cloudflare worker.
 ```
-$ wrangler secret put TURRET_SIGNER
+$ npx wrangler secret put TURRET_SIGNER
 ```
 When the dialog asks your for a value paste in a valid Stellar secret key. Most often this will be the secret counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
 
