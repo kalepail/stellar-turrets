@@ -10,6 +10,7 @@ const { Keypair } = StellarBase
 app.get('/', (req, res) => {
   res.json({
     version: VERSION,
+    FastSigning: global.StellarBase.FastSigning
   })
 })
 
