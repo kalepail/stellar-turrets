@@ -2,8 +2,8 @@ name: Deploy Serverless
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ master ]
+  push:
+    branches: [ master ]
   
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v2
 
       - run: sudo apt-get install -y libsodium-dev
-      
+
       - run: npm install -g npx
 
       - name: Deploy to AWS with Serverless
