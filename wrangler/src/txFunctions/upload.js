@@ -26,11 +26,13 @@ export default async ({ request }) => {
 
   const cost = new BigNumber(txFunctionBufferLength).dividedBy(1000).toFixed(7)
 
+  let transactionHash
+
   try {
     const txFunctionFee = body.get('txFunctionFee')
 
     const transaction = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-    const transactionHash = transaction.hash().toString('hex')
+          transactionHash = transaction.hash().toString('hex')
 
     if (!find(transaction._operations, (op) => 
       op.type === 'payment'

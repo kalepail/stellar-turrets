@@ -23,7 +23,7 @@ module.exports = {
   },
   output: {
     libraryTarget: 'commonjs-module',
-    path: path.resolve(__dirname),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
   },
   target: 'node',

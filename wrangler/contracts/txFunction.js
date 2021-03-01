@@ -1,4 +1,4 @@
-(body) => {
+module.exports = (body) => {
   return fetch('https://tss-contract-5wkzvvzhfmmp.runkit.sh', {
     method: 'POST',
     headers: {

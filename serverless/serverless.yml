@@ -1,16 +1,48 @@
 org: tyvdh
 app: tss-serverless
-component: express
-name: tss-serverless
+service: tss-serverless
 
-inputs:
-  src:
-    src: ./
-    # hook: npm run build
-    # dist: ./
-    exclude: node_modules/**
-  memory: 256
-  timeout: 8
-  env:
-    turretBaseUrl: https://tss-wrangler.tyler.workers.dev
+package:
+  exclude:
+    - '**'
+  include:
+    - dist/**
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment:
+    turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
     turretAddress: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+  tracing:
+    lambda: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTelemetryRecords
+        - xray:PutTraceSegments
+      Resource: '*'
+
+functions:
+  run:
+    handler: dist/app.default
+    memorySize: 256
+    timeout: 8
+    events:
+      - httpApi:
+          method: POST
+          path: /{txFunctionHash}
+          cors:
+            allowedOrigins:
+              - ${self:provider.environment.turretBaseUrl}
+            allowedHeaders:
+              - Content-Type 
+              - X-Turret-Data
+              - X-Turret-Signature
+            allowedMethods:
+              - OPTIONS
+              - POST
+      - httpApi:
+          method: GET
+          path: /
+          cors: true

@@ -1,40 +1,34 @@
-const express = require('express')
-
 const fetch = require('node-fetch')
 const StellarBase = require('stellar-base')
 const BigNumber = require('bignumber.js')
 
-const app = express()
-const { Keypair, FastSigning } = StellarBase
+const { Keypair } = StellarBase
 
-app.get('/', (req, res) => {
-  res.json({
-    version: VERSION,
-    FastSigning
-  })
-})
-
-app.use((req, res, next) => {
-  res.set({
-    'Access-Control-Allow-Origin': process.env.turretBaseUrl,
-    'Access-Control-Allow-Methods': 'OPTIONS, POST',
-    'Access-Control-Allow-Headers': 'Content-Type, X-Turret-Data, X-Turret-Signature',
-  })
-  next()
-})
-
-app.use(express.json())
-
-app.post('/:txFunctionHash', async (req, res) => {
+export default async (event, context) => {
   try {
-    const { body, headers, params } = req
+    if (
+      event.rawPath === '/'
+      && event.requestContext.http.method === 'GET'
+    ) return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        version: VERSION,
+      })
+    }
 
-    const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretAddress)
-    const turretRunAuthBuffer = Buffer.from(headers['x-turret-data'], 'base64')
-    const turretRunAuthSignatureBuffer = Buffer.from(headers['x-turret-signature'], 'base64')
+    const body = JSON.parse(event.body)
+    const params = event.pathParameters
+    const headers = event.headers
 
-    if (!turretSignerKeypair.verify(turretRunAuthBuffer, turretRunAuthSignatureBuffer)) 
-      throw { status: 403 }
+    // const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretAddress)
+    // const turretRunAuthBuffer = Buffer.from(headers['x-turret-data'], 'base64')
+    // const turretRunAuthSignatureBuffer = Buffer.from(headers['x-turret-signature'], 'base64')
+
+    // if (!turretSignerKeypair.verify(turretRunAuthBuffer, turretRunAuthSignatureBuffer)) 
+    //   throw { status: 403 }
 
     const { txFunctionHash } = params
     const txFunctionCode = (
@@ -50,13 +44,17 @@ app.post('/:txFunctionHash', async (req, res) => {
 
     delete body.txFunction
 
-    const txFunction = new Function(
-      'fetch, StellarBase, BigNumber', 
-      `return ${txFunctionCode}`
-    )(fetch, StellarBase, BigNumber)
+    // const txFunction = new Function(
+    //   'fetch, StellarBase, BigNumber', 
+    //   `return ${txFunctionCode}`
+    // )(fetch, StellarBase, BigNumber)
+    const txFunction = eval(txFunctionCode)
     const result = await txFunction(body)
 
-    res.send(result)
+    return {
+      statusCode: 200,
+      body: result
+    }
   }
 
   catch(err) {
@@ -71,23 +69,19 @@ app.post('/:txFunctionHash', async (req, res) => {
     if (!err.status)
       err.status = 400
 
-    res
-    .status(err.status)
-    .send({
-      ...(
-        typeof err.message === 'string'
-        ? {message: err.message}
-        : err.message
-      ),
-      status: err.status,
-    })
+    return {
+      statusCode: err.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...(
+          typeof err.message === 'string'
+          ? {message: err.message}
+          : err.message
+        ),
+        status: err.status,
+      })
+    }
   }
-})
-
-app.use((req, res) => {
-  res
-  .status(404)
-  .send('Not Found')
-})
-
-module.exports = app
+}
