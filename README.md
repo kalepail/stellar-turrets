@@ -47,7 +47,7 @@ When the dialog asks your for a value paste in a valid Stellar secret key. Most 
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
 
-There's only two things you'll need to update in this repo in the `serverless.yml` file. The `inputs.env.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `inputs.env.turretAddress` should be replaced with your Turret's `TURRET_ADDRESS` set in the Wrangler setup.
+There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretAddress` should be replaced with your Turret's `TURRET_ADDRESS` set in the Wrangler setup.
 
 Now it'll be the fun task of getting:
 ```

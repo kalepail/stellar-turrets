@@ -2,8 +2,8 @@ name: Deploy Serverless
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ master ]
+  push:
+    branches: [ master ]
   
 defaults:
   run:
