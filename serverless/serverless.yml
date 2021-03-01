@@ -26,6 +26,9 @@ provider:
 functions:
   run:
     handler: dist/app.default
+    maximumRetryAttempts: 0
+    maximumRecordAgeInSeconds: 0
+    reservedConcurrency: 32
     memorySize: 256
     timeout: 8
     events:
