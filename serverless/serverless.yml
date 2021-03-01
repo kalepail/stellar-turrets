@@ -27,9 +27,9 @@ functions:
   run:
     handler: dist/app.default
     maximumRetryAttempts: 0
-    maximumRecordAgeInSeconds: 0
-    reservedConcurrency: 32
-    memorySize: 256
+    maximumRecordAgeInSeconds: 60
+    provisionedConcurrency: 8
+    memorySize: 128
     timeout: 8
     events:
       - httpApi:
