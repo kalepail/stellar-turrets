@@ -1,6 +1,6 @@
-const fetch = require('node-fetch')
-const StellarBase = require('stellar-base')
-const BigNumber = require('bignumber.js')
+import fetch from 'node-fetch'
+import StellarBase from 'stellar-base'
+import BigNumber from 'bignumber.js'
 
 const { Keypair } = StellarBase
 
