@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import StellarBase from 'stellar-base'
 import BigNumber from 'bignumber.js'
 
-const { Keypair } = StellarBase
+const { Keypair, FastSigning } = StellarBase
 
 export default async (event) => {
   try {
@@ -16,6 +16,7 @@ export default async (event) => {
       },
       body: JSON.stringify({
         version: VERSION,
+        FastSigning,
       })
     }
 
