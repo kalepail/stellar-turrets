@@ -4,7 +4,7 @@ const BigNumber = require('bignumber.js')
 
 const { Keypair } = StellarBase
 
-export default async (event, context) => {
+export default async (event) => {
   try {
     if (
       event.rawPath === '/'
