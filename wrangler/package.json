@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "./src/index.js",
   "scripts": {
-    "deploy": "npx wrangler publish"
+    "deploy": "wrangler publish"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
