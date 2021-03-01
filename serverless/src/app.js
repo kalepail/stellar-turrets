@@ -23,12 +23,12 @@ export default async (event, context) => {
     const params = event.pathParameters
     const headers = event.headers
 
-    // const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretAddress)
-    // const turretRunAuthBuffer = Buffer.from(headers['x-turret-data'], 'base64')
-    // const turretRunAuthSignatureBuffer = Buffer.from(headers['x-turret-signature'], 'base64')
+    const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretAddress)
+    const turretRunAuthBuffer = Buffer.from(headers['x-turret-data'], 'base64')
+    const turretRunAuthSignatureBuffer = Buffer.from(headers['x-turret-signature'], 'base64')
 
-    // if (!turretSignerKeypair.verify(turretRunAuthBuffer, turretRunAuthSignatureBuffer)) 
-    //   throw { status: 403 }
+    if (!turretSignerKeypair.verify(turretRunAuthBuffer, turretRunAuthSignatureBuffer)) 
+      throw { status: 403 }
 
     const { txFunctionHash } = params
     const txFunctionCode = (
@@ -44,11 +44,10 @@ export default async (event, context) => {
 
     delete body.txFunction
 
-    // const txFunction = new Function(
-    //   'fetch, StellarBase, BigNumber', 
-    //   `return ${txFunctionCode}`
-    // )(fetch, StellarBase, BigNumber)
-    const txFunction = eval(txFunctionCode)
+    const txFunction = new Function(
+      'module, fetch, StellarBase, BigNumber, global, globalThis, process', // leave these (global, globalThis, process) empty to effectively unset them
+      `'use strict'; ${txFunctionCode}; return module.exports;`
+    )({exports: null}, fetch, StellarBase, BigNumber)
     const result = await txFunction(body)
 
     return {
