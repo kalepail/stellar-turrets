@@ -28,7 +28,7 @@ functions:
     handler: dist/app.default
     maximumRetryAttempts: 0
     maximumRecordAgeInSeconds: 60
-    provisionedConcurrency: 8
+    provisionedConcurrency: 4
     memorySize: 128
     timeout: 8
     events:
