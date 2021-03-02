@@ -2,6 +2,7 @@
 - [ ] Cron swallow `txFunctionFees` fees after {x} time and report that {x} time in the `turret/details.js` endpoint
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
 - [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
+- [ ] Force txFunction upload txFunctionFee to have the txFunction hash as a memo id
 
 # Done
 - [x] [~Add support for per txFunction dynamic variable fees~](https://github.com/tyvdh/stellar-tss/commit/785036ec693a937ad3d0f4178fcddea33f1eb4a3)

@@ -29,7 +29,7 @@ functions:
     maximumRetryAttempts: 0
     maximumRecordAgeInSeconds: 60
     provisionedConcurrency: 4
-    memorySize: 128
+    memorySize: 256
     timeout: 8
     events:
       - httpApi:
