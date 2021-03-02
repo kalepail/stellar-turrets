@@ -9,7 +9,7 @@
     "@iarna/toml": "^2.2.5",
     "bignumber.js": "^9.0.1",
     "bluebird": "^3.7.2",
-    "cfw-easy-utils": "npm:@tinyanvil/cfw-easy-utils@^0.2.3",
+    "cfw-easy-utils": "^0.2.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "sha.js": "^2.4.11",
