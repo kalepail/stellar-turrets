@@ -20,7 +20,6 @@
     "@babel/core": "^7.13.8",
     "@babel/plugin-proposal-optional-chaining": "^7.13.8",
     "@babel/preset-env": "^7.13.9",
-    "@cloudflare/wrangler": "^1.13.0",
     "babel-loader": "^8.2.2",
     "git-revision-webpack-plugin": "^3.0.6",
     "path": "^0.12.7",
