@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const pkg = require('./package.json')
 
@@ -43,6 +44,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(`v${pkg.version}-${commitHash}`),
     })
