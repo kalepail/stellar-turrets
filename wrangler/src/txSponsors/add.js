@@ -18,12 +18,12 @@ export default async ({ request }) => {
     op.type === 'payment'
     && op.destination === TURRET_ADDRESS
     && op.asset.isNative()
-    && new BigNumber(op.amount).isGreaterThanOrEqualTo(10) // TODO: don't hard code this
+    && new BigNumber(op.amount).isGreaterThanOrEqualTo(2000) // TODO: don't hard code this
   )) return response.json({
     message: 'Missing or invalid txFunctionFee',
     status: 402,
     turret: TURRET_ADDRESS,
-    cost: 10, // TODO: don't hard code this
+    cost: 2000, // TODO: don't hard code this
   }, {
     status: 402
   })

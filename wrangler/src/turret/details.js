@@ -8,7 +8,7 @@ export default async () => {
     runner: TURRET_RUN_URL,
     fee: { // TODO: don't hard code these
       min: 1,
-      max: 10
+      max: 2000
     }
   }, {
     headers: {
