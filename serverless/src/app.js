@@ -46,9 +46,9 @@ export default async (event) => {
     delete body.txFunction
 
     const txFunction = new Function(
-      'module, fetch, StellarBase, BigNumber, global, globalThis, process', // leave these (global, globalThis, process) empty to effectively unset them
+      'module, require, fetch, StellarBase, BigNumber, global, globalThis, process', // leave these (global, globalThis, process) empty to effectively unset them
       `'use strict'; ${txFunctionCode}; return module.exports;`
-    )({exports: null}, fetch, StellarBase, BigNumber)
+    )({exports: null}, require, fetch, StellarBase, BigNumber)
     const result = await txFunction(body)
 
     return {
