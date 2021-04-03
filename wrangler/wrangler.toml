@@ -9,4 +9,4 @@ kv_namespaces = [
    { binding = "TX_FEES", id = "5170a0b5ab9f451b9433ad16e25f04ed" },
    { binding = "TX_SPONSORS", id = "0d4cf078935b4278a8b1670182a4890e" }
 ]
-vars = { STELLAR_NETWORK = "TESTNET", TURRET_ADDRESS = "GCAQY54O7ABHNQDXNM3YLISXMX2B5M63GLB5SH6AIS66K7UXFYZ2GVPD", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/" }
+vars = { STELLAR_NETWORK = "TESTNET", TURRET_ADDRESS = "GAATC6A7OOY7P36FTDFEHKHG7OS72A3NTSGM4RA6HJ5GKHUOEVRWGM76", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/" }
