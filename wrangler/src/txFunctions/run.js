@@ -110,7 +110,8 @@ export default async ({ event, request, params }) => {
 
   const watch = new Stopwatch()
   const { 
-    xdr, 
+    xdr,
+    error,
     cost,
     feeTotal,
     feeSpent
@@ -151,7 +152,27 @@ export default async ({ event, request, params }) => {
       feeSpent,
     }
 
-    throw res
+    return {
+      error: {
+        status: res.status || 400,
+        ...res.headers.get('content-type').indexOf('json') > -1 ? await res.json() : await res.text()
+      },
+      cost,
+      feeTotal,
+      feeSpent,
+    }
+  })
+
+  if (error) return response.json({
+    ...error,
+    cost
+  }, {
+    status: error.status,
+    stopwatch: watch,
+    headers: {
+      'X-Fee-Total': feeTotal,
+      'X-Fee-Spent': feeSpent
+    }
   })
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])

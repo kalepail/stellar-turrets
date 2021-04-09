@@ -1,11 +1,11 @@
-- [ ] txFunction run should bill regardless of success or failure and report that in the headers regardless of response status
-- [ ] Force txFunction upload txFunctionFee to have the txFunction hash as a memo id
-- [ ] Cron swallow `txFunctionFees` fees after {x} time and report that {x} time in the `turret/details.js` endpoint
+- [ ] Force the txFunction upload txFunctionFee to have the txFunction hash as a memo id
+- [ ] Cron job to swallow `txFunctionFees` fees after {x} time and report that {x} time in the `turret/details.js` endpoint
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
 - [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
 - [ ] Concept of grouping txFunctions into buckets so a single txFunctionFee could be valid for any txFunction in the bucket
 
 # Done
+- [x] txFunction run should bill regardless of success or failure and report that in the headers regardless of response status
 - [x] Add support for variable tolerance fees
 - [x] Support a global variable for the horizon endpoint the Turret will use by default
 - [x] [~Add support for per txFunction dynamic variable fees~](https://github.com/tyvdh/stellar-tss/commit/785036ec693a937ad3d0f4178fcddea33f1eb4a3)
