@@ -21,6 +21,7 @@ export default async (event) => {
     }
 
     const body = JSON.parse(event.body)
+    const { HORIZON_URL, STELLAR_NETWORK } = body
     const params = event.pathParameters
     const headers = event.headers
 
@@ -43,12 +44,31 @@ export default async (event) => {
       })
     )
 
+    delete body.HORIZON_URL
+    delete body.STELLAR_NETWORK
     delete body.txFunction
 
-    const txFunction = new Function(
-      'module, require, fetch, StellarBase, BigNumber, global, globalThis, process', // leave these (global, globalThis, process) empty to effectively unset them
+    const txFunction = new Function(`
+      module,
+      HORIZON_URL,
+      STELLAR_NETWORK,
+      fetch,
+      StellarBase,
+      BigNumber,      
+      global,
+      globalThis,
+      process,
+      require
+    `, // leave these (global, globalThis, process) empty to effectively unset them
       `'use strict'; ${txFunctionCode}; return module.exports;`
-    )({exports: null}, require, fetch, StellarBase, BigNumber)
+    )(
+      {exports: null}, 
+      HORIZON_URL,
+      STELLAR_NETWORK,
+      fetch,
+      StellarBase, 
+      BigNumber
+    )
     const result = await txFunction(body)
 
     return {

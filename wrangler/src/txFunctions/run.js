@@ -123,8 +123,8 @@ export default async ({ event, request, params }) => {
     },
     body: JSON.stringify({
       ...body,
-      horizonUrl: HORIZON_URL,
-      stellarNetwork: STELLAR_NETWORK,
+      HORIZON_URL,
+      STELLAR_NETWORK,
       txFunction,
     })
   })
