@@ -16,8 +16,9 @@ export default async ({ request }) => {
 
   const txFunction = body.get('txFunction')
   const txFunctionBuffer = Buffer.from(txFunction)
-  const txFunctionBufferLength = txFunctionBuffer.length
-  const txFunctionHash = shajs('sha256').update(txFunctionBuffer).update(txFunctionFieldsBuffer).digest('hex')
+
+  const txFunctionConcat = Buffer.concat([txFunctionBuffer, txFunctionFieldsBuffer])
+  const txFunctionHash = shajs('sha256').update(txFunctionConcat).digest('hex')
 
   const txFunctionExists = await TX_FUNCTIONS.get(txFunctionHash, 'arrayBuffer')
 
@@ -28,7 +29,7 @@ export default async ({ request }) => {
   const txFunctionSignerSecret = txFunctionSignerKeypair.secret()
   const txFunctionSignerPublicKey = txFunctionSignerKeypair.publicKey()
 
-  const cost = new BigNumber(txFunctionBufferLength).dividedBy(UPLOAD_DIVISOR).toFixed(7)
+  const cost = new BigNumber(txFunctionConcat).dividedBy(UPLOAD_DIVISOR).toFixed(7)
 
   let transactionHash
 
@@ -80,10 +81,10 @@ export default async ({ request }) => {
     })
   }
 
-  await TX_FUNCTIONS.put(txFunctionHash, Buffer.concat([txFunctionBuffer, txFunctionFieldsBuffer]), {metadata: {
+  await TX_FUNCTIONS.put(txFunctionHash, txFunctionConcat, {metadata: {
     cost,
     payment: transactionHash,
-    length: txFunctionBufferLength,
+    length: txFunctionConcat.length,
     txFunctionSignerSecret,
     txFunctionSignerPublicKey,
   }})

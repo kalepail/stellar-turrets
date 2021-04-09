@@ -58,7 +58,7 @@ export default async ({ event, request, params }) => {
 
   // Fee Checks:
     // txn has been signed by source
-    // memo hash is hash for contract
+    // memo hash is hash for txFunctions
     // fee is greater than or equal to the base fee
     // sequence # is not 0
     // timeBounds minTime and maxTime are both 0
