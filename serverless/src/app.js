@@ -24,7 +24,7 @@ export default async (event) => {
     const params = event.pathParameters
     const headers = event.headers
 
-    const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretAddress)
+    const turretSignerKeypair = Keypair.fromPublicKey(process.env.turretSigner)
     const turretRunAuthBuffer = Buffer.from(headers['x-turret-data'], 'base64')
     const turretRunAuthSignatureBuffer = Buffer.from(headers['x-turret-signature'], 'base64')
 

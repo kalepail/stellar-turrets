@@ -13,7 +13,7 @@ provider:
   runtime: nodejs12.x
   environment:
     turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
-    turretAddress: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+    turretSigner: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
   tracing:
     lambda: true
   iamRoleStatements:

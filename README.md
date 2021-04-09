@@ -42,12 +42,12 @@ You may have to work through a few errors to get logged into your Cloudflare acc
 ```
 $ npx wrangler secret put TURRET_SIGNER
 ```
-When the dialog asks your for a value paste in a valid Stellar secret key. Most often this will be the secret counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
+When the dialog asks your for a value paste in a valid Stellar **secret key**. Most often this will be the secret key counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
 
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
 
-There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretAddress` should be replaced with your Turret's `TURRET_ADDRESS` set in the Wrangler setup.
+There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretSigner` should be replaced with your Turret's `TURRET_SIGNER` **public key** set in the Wrangler setup. This connection is what secures and protects access between the Cloudflare and Serverless APIs. Remember Cloudflare gets the **private key** and Serverless gets the **public key**.
 
 Now it'll be the fun task of getting:
 ```
