@@ -90,7 +90,10 @@ export default async ({ event, request, params }) => {
     )
   ) throw `Missing or invalid txFunctionFee`
 
-  let { value: turretAuthData, metadata: turretAuthSignature } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
+  let { 
+    value: turretAuthData, 
+    metadata: turretAuthSignature 
+  } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
 
   if (!turretAuthData) {
     const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
