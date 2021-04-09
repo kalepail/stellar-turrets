@@ -1,8 +1,5 @@
-- [ ] Force the txFunction upload txFunctionFee to have the txFunction hash as a memo id
 - [ ] Cron job to swallow `txFunctionFees` fees after {x} time and report that {x} time in the `turret/details.js` endpoint
-- [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in production
-- [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing
-- [ ] Concept of grouping txFunctions into buckets so a single txFunctionFee could be valid for any txFunction in the bucket
+- [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in PUBLIC environments
 
 # Done
 - [x] txFunction run should bill regardless of success or failure and report that in the headers regardless of response status
@@ -15,3 +12,9 @@
 - [x] [~Implement fees for txFunction runs~](https://github.com/tyvdh/stellar-tss/pull/3)
 - [x] [~Implement fees for txFunction uploads~](https://github.com/tyvdh/stellar-tss/commit/6c8b299e22fec41fa546cc3a7d2f74016c5f2351)
 - [x] [~Implement txFunction heal functionality~](https://github.com/tyvdh/stellar-tss/pull/2)
+
+# Ideas
+- [ ] Support for grouping txFunctions into buckets so a single txFunctionFee could be valid for any txFunction in a given bucket. (save on the number of `txFunctionFees` you have to keep track of. Useful if your service makes use of several different txFunctions. Promotes txFunction modularity without incurring the costs of txFunctionFee tracking)
+- [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing (Protect against XLM price fluctuations permitting more reliable pricing)
+- [ ] Ability to flag a contract as a test which will then only live for {x} days. With the idea such a contract upload would incur lower or zero fees to upload
+- [ ] Force the txFunction upload txFunctionFee to have the txFunction hash as a memo id (Not sure what the rationale behind this was)
