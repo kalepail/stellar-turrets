@@ -18,17 +18,17 @@ export default async ({ request }) => {
     op.type === 'payment'
     && op.destination === TURRET_ADDRESS
     && op.asset.isNative()
-    && new BigNumber(op.amount).isGreaterThanOrEqualTo(10) // TODO: don't hard code this
+    && new BigNumber(op.amount).isGreaterThanOrEqualTo(XLM_FEE_MAX)
   )) return response.json({
     message: 'Missing or invalid txFunctionFee',
     status: 402,
     turret: TURRET_ADDRESS,
-    cost: 10, // TODO: don't hard code this
+    cost: XLM_FEE_MAX,
   }, {
     status: 402
   })
 
-  await fetch(`https://horizon-testnet.stellar.org/transactions/${transactionHash}`)
+  await fetch(`${HORIZON_URL}/transactions/${transactionHash}`)
   .then((res) => {
     if (res.ok)
       throw `txFunctionFee ${transactionHash} has already been submitted`
@@ -38,12 +38,11 @@ export default async ({ request }) => {
       throw res
   })
 
-  const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
   const tx = transaction.toXDR()
   const txBody = new FormData()
         txBody.append('tx', tx)
 
-  await fetch(`${horizon}/transactions`, {
+  await fetch(`${HORIZON_URL}/transactions`, {
     method: 'POST',
     body: txBody
   }).then((res) => {

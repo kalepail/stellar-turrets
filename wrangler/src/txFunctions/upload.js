@@ -10,6 +10,10 @@ export default async ({ request }) => {
   const txFunctionFields = body.get('txFunctionFields')
   const txFunctionFieldsBuffer = txFunctionFields ? Buffer.from(txFunctionFields, 'base64') : Buffer.from('')
 
+  // Test to ensure txFunctionFields is valid JSON
+  if (txFunctionFields)
+    JSON.parse(txFunctionFieldsBuffer.toString())
+
   const txFunction = body.get('txFunction')
   const txFunctionBuffer = Buffer.from(txFunction)
   const txFunctionBufferLength = txFunctionBuffer.length
@@ -24,7 +28,7 @@ export default async ({ request }) => {
   const txFunctionSignerSecret = txFunctionSignerKeypair.secret()
   const txFunctionSignerPublicKey = txFunctionSignerKeypair.publicKey()
 
-  const cost = new BigNumber(txFunctionBufferLength).dividedBy(1000).toFixed(7)
+  const cost = new BigNumber(txFunctionBufferLength).dividedBy(UPLOAD_DIVISOR).toFixed(7)
 
   let transactionHash
 
@@ -41,7 +45,7 @@ export default async ({ request }) => {
       && op.asset.isNative()
     )) throw 'Missing or invalid txFunctionFee'
 
-    await fetch(`https://horizon-testnet.stellar.org/transactions/${transactionHash}`)
+    await fetch(`${HORIZON_URL}/transactions/${transactionHash}`)
     .then((res) => {
       if (res.ok)
         throw `txFunctionFee ${transactionHash} has already been submitted`
@@ -51,12 +55,11 @@ export default async ({ request }) => {
         throw res
     })
 
-    const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
     const tx = transaction.toXDR()
     const txBody = new FormData()
           txBody.append('tx', tx)
 
-    await fetch(`${horizon}/transactions`, {
+    await fetch(`${HORIZON_URL}/transactions`, {
       method: 'POST',
       body: txBody
     }).then((res) => {

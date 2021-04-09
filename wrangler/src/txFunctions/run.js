@@ -27,7 +27,7 @@ export default async ({ event, request, params }) => {
 
   delete body.txFunctionFee
 
-  await fetch(`https://horizon-testnet.stellar.org/transactions/${feeTxnHash}`)
+  await fetch(`${HORIZON_URL}/transactions/${feeTxnHash}`)
   .then(async (res) => {
     if (res.ok) {
       await TX_FEES.delete(feeTxnHash)
@@ -84,8 +84,8 @@ export default async ({ event, request, params }) => {
       && feeTxn.operations[0].type === 'payment'
       && feeTxn.operations[0].destination === TURRET_ADDRESS
       && feeTxn.operations[0].asset.isNative()
-      && feeTotalBigNumber.isGreaterThanOrEqualTo(1) // TODO: don't hard code this
-      && feeTotalBigNumber.isLessThanOrEqualTo(10) // TODO: don't hard code this
+      && feeTotalBigNumber.isGreaterThanOrEqualTo(XLM_FEE_MIN)
+      && feeTotalBigNumber.isLessThanOrEqualTo(XLM_FEE_MAX)
       && !feeTxn.operations[0].source
     )
   ) throw `Missing or invalid txFunctionFee`
@@ -120,6 +120,8 @@ export default async ({ event, request, params }) => {
     },
     body: JSON.stringify({
       ...body,
+      horizonUrl: HORIZON_URL,
+      stellarNetwork: STELLAR_NETWORK,
       txFunction,
     })
   })
@@ -127,7 +129,7 @@ export default async ({ event, request, params }) => {
     watch.mark('Ran txFunction')
 
     const now = moment.utc().format('x')
-    const cost = new BigNumber(watch.getTotalTime()).dividedBy(100000).toFixed(7) // Don't hard code the dividedBy value
+    const cost = new BigNumber(watch.getTotalTime()).dividedBy(RUN_DIVISOR).toFixed(7)
     const feeTotal = feeTotalBigNumber.toFixed(7)
     const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
 

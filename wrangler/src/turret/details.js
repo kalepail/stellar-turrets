@@ -2,13 +2,18 @@ import { response } from 'cfw-easy-utils'
 
 export default async () => {
   return response.json({
-    network: STELLAR_NETWORK,
     turret: TURRET_ADDRESS,
-    version: VERSION,
+    network: STELLAR_NETWORK,
+    horizon: HORIZON_URL,
     runner: TURRET_RUN_URL,
-    fee: { // TODO: don't hard code these
-      min: 1,
-      max: 10
+    version: VERSION,
+    fee: {
+      min: XLM_FEE_MIN,
+      max: XLM_FEE_MAX
+    },
+    divisor: {
+      upload: UPLOAD_DIVISOR, 
+      run: RUN_DIVISOR
     }
   }, {
     headers: {
