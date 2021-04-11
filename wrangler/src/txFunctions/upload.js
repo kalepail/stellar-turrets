@@ -29,7 +29,7 @@ export default async ({ request }) => {
   const txFunctionSignerSecret = txFunctionSignerKeypair.secret()
   const txFunctionSignerPublicKey = txFunctionSignerKeypair.publicKey()
 
-  const cost = new BigNumber(txFunctionConcat).dividedBy(UPLOAD_DIVISOR).toFixed(7)
+  const cost = new BigNumber(txFunctionConcat.length).dividedBy(UPLOAD_DIVISOR).toFixed(7)
 
   let transactionHash
 
