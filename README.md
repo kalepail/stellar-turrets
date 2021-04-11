@@ -27,7 +27,7 @@ Once you've got that go ahead and upload it to the `META` kv store you instantia
 ```
 $ npx wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
 ```
-Make sure to run these wrangler commands from the `./wranlger` directory
+Make sure to run these wrangler commands from the `./wrangler` directory
 
 Finally to deploy the project run:
 ```
