@@ -39,13 +39,16 @@ export default async ({ event, request, params }) => {
       throw res
   })
 
-  const txSponsor = await TX_SPONSORS.get(feeTxn.source)
+  const { 
+    value: txSponsorFunctions, 
+    metadata: txSponsorMetadata 
+  } = await TX_SPONSORS.getWithMetadata(feeTxn.source, 'json')
 
-  if (!txSponsor)
+  if (!txSponsorFunctions)
     throw `txSponsor ${feeTxn.source} could not be found on this turret`
 
-  if (txSponsor !== 'OK')
-    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsor}]`
+  if (txSponsorMetadata.status !== 'OK')
+    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsorMetadata.status}]`
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
   const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
@@ -72,7 +75,8 @@ export default async ({ event, request, params }) => {
     && !(
       Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
 
-      && feeTxn.memo.value?.toString('hex') === txFunctionHash
+      && feeTxn.memo.value?.toString('hex') === txSponsorMetadata.memoHash
+      && txSponsorFunctions.indexOf(txFunctionHash) > -1
 
       && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(BASE_FEE)
       && new BigNumber(feeTxn.sequence).isGreaterThan(0)
