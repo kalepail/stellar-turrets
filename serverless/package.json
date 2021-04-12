@@ -1,8 +1,10 @@
 {
+  "name": "stellar-tss",
   "private": true,
   "version": "0.0.0",
   "main": "app.js",
   "scripts": {
+    "install": "npx envdist",
     "deploy": "npm run build && serverless deploy",
     "build": "webpack build"
   },
