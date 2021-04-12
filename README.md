@@ -47,14 +47,20 @@ When the dialog asks your for a value paste in a valid Stellar **secret key**. M
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
 
-There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretSigner` should be replaced with your Turret's `TURRET_SIGNER` **public key** set in the Wrangler setup. This connection is what secures and protects access between the Cloudflare and Serverless APIs. Remember Cloudflare gets the **private key** and Serverless gets the **public key**.
-
 Now it'll be the fun task of getting:
 ```
 $ npm i
 $ npm run deploy
 ```
-To successfully run from within the `./serverless` directory. Follow any errors carefully and you should be able to get successfully deployed pretty quickly. The most probable issue will be you need to manually create an app in the [Serverless dashboard](https://app.serverless.com/tyvdh) and attach some new IAM credentials to it manually. There's a helpful UI walk through they have so you should be able to sort it out. Again feel free to update these docs with more clear instructions as you sort out the nuances of setting the Serverless service up.
+To successfully run from within the `./serverless` directory.
+
+You will be prompted for `SLS_ORG`, `TURRET_BASE_URL` and `TURRET_SIGNER_ACCOUNT`. The first one must match your organization you use in serverless to deploy the lambda. `TURRET_BASE_URL` needs to reflect the worker base url where your wrangler service is hosted on. The `TURRET_SIGNER_ACCOUNT` needs to be set to your Turret's `TURRET_SIGNER` **public key** that you have set in the Wrangler setup step before.
+
+This connection is what secures and protects access between the Cloudflare and Serverless APIs. Remember Cloudflare gets the **private key** and Serverless gets the **public key**.
+
+Follow any errors carefully and you should be able to get successfully deployed pretty quickly. The most probable issue will be you need to manually create an app in the [Serverless dashboard](https://app.serverless.com/) and attach some new IAM credentials to it manually. There's a helpful UI walk through they have so you should be able to sort it out. Again feel free to update these docs with more clear instructions as you sort out the nuances of setting the Serverless service up.
+
+*If* you are going to use the github action to deploy serverless, you need to set the three variables from above as repo-secrets as well.
 
 When you finally get success on this task you'll be rewarded with an endpoint where your function is hosted. Copy that base url and paste it as the value for the `TURRET_RUN_URL` `var` back in the `wrangler.toml` file in the `./wrangler` directory. Don't forget to redeploy that project after this update.
 
