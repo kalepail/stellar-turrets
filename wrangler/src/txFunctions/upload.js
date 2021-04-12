@@ -84,7 +84,7 @@ export default async ({ request }) => {
   await TX_FUNCTIONS.put(txFunctionHash, txFunctionConcat, {metadata: {
     cost,
     payment: transactionHash,
-    length: txFunctionConcat.length,
+    length: txFunctionBuffer.length,
     txFunctionSignerSecret,
     txFunctionSignerPublicKey,
   }})
