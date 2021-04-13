@@ -2,6 +2,7 @@
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in PUBLIC environments
 
 # Done
+- [x] Support fee bump txFunctionFees for txFunction runs (Would permit using the same txSponsors for different pending txFunction fees per user. User pays sequence number, txSponsor pays fee)
 - [x] Support for grouping txFunctions into buckets so a single txFunctionFee could be valid for any txFunction in a given bucket. (save on the number of `txFunctionFees` you have to keep track of. Useful if your service makes use of several different txFunctions. Promotes txFunction modularity without incurring the costs of txFunctionFee tracking)
 - [x] txFunction run should bill regardless of success or failure and report that in the headers regardless of response status
 - [x] Add support for variable tolerance fees
@@ -15,7 +16,6 @@
 - [x] [~Implement txFunction heal functionality~](https://github.com/tyvdh/stellar-tss/pull/2)
 
 # Ideas
-- [ ] Support fee bump txFunctionFees for txFunction runs (Would permit using the same txSponsors for different pending txFunction fees per user)
 - [ ] Add support for a stablecoin base conversion to XLM to allow for more reliable pricing (Protect against XLM price fluctuations permitting more reliable pricing)
 - [ ] Ability to flag a contract as a test which will then only live for {x} days. With the idea such a contract upload would incur lower or zero fees to upload
 - [ ] Force the txFunction upload txFunctionFee to have the txFunction hash as a memo id (Not sure what the rationale behind this was)

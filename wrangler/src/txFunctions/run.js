@@ -1,5 +1,5 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
-import { Transaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
+import { Transaction, FeeBumpTransaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 
@@ -21,11 +21,40 @@ export default async ({ event, request, params }) => {
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
   const body = await request.json()
-  const { txFunctionFee } = body
-  const feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-  const feeTxnHash = feeTxn.hash().toString('hex')
+  let { txFunctionFee, txFunctionFeeBump } = body
+
+  if (
+    (
+      txFunctionFee 
+      && txFunctionFeeBump 
+    ) // If both fail
+    || (
+      !txFunctionFee 
+      && !txFunctionFeeBump
+    ) // If neither fail
+  ) throw {message: `Please include at least but only one of either txFunctionFee or txFunctionFeeBump`}
+
+  let feeBumpTxn
+  let feeTxn
+  let feeTxnHash
+  let feeTxnSource
+
+  if (txFunctionFee) {
+    feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
+    feeTxnHash = feeTxn.hash().toString('hex')
+    feeTxnSource = feeTxn.source
+  }
+
+  else if (txFunctionFeeBump) {
+    feeBumpTxn = new FeeBumpTransaction(txFunctionFeeBump, Networks[STELLAR_NETWORK])
+    feeTxnHash = feeBumpTxn.hash().toString('hex')
+    feeTxnSource = feeBumpTxn.feeSource
+    feeTxn = feeBumpTxn.innerTransaction
+    txFunctionFee = txFunctionFeeBump
+  }
 
   delete body.txFunctionFee
+  delete body.txFunctionFeeBump
 
   await fetch(`${HORIZON_URL}/transactions/${feeTxnHash}`)
   .then(async (res) => {
@@ -42,13 +71,13 @@ export default async ({ event, request, params }) => {
   const { 
     value: txSponsorFunctions, 
     metadata: txSponsorMetadata 
-  } = await TX_SPONSORS.getWithMetadata(feeTxn.source, 'json')
+  } = await TX_SPONSORS.getWithMetadata(feeTxnSource, 'json')
 
   if (!txSponsorFunctions)
-    throw `txSponsor ${feeTxn.source} could not be found on this turret`
+    throw `txSponsor ${feeTxnSource} could not be found on this turret`
 
   if (txSponsorMetadata.status !== 'OK')
-    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsorMetadata.status}]`
+    throw `txSponsor ${feeTxnSource} is in poor standing with this turret [${txSponsorMetadata.status}]`
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
   const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
@@ -58,6 +87,12 @@ export default async ({ event, request, params }) => {
     event.waitUntil(txSponsorsSettle(txFunctionFee))
     throw {status: 402, message: `txFunctionFee has been spent`}
   }
+
+  // Support straight payments
+  // Support fee bumping
+  // Support sequence number delegation
+
+  // TODO: throw if extra signers
 
   // Fee Checks:
     // txn has been signed by source
@@ -72,13 +107,28 @@ export default async ({ event, request, params }) => {
     // payment amount must be within tolerance
   if (
     !feeMetadata // Only check incoming feeTxn if it hasn't already been validated and stored in the KV
+
     && !(
-      Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+      Utils.verifyTxSignedBy(feeTxn, feeTxnSource) // ensure payment is signed
+
+      && feeBumpTxn // ensure fee bump is signed
+      ? feeBumpTxn.signatures.length === 1 
+        && Utils.verifyTxSignedBy(feeBumpTxn, feeTxnSource)
+      : true
+
+      && feeTxn.source !== feeTxnSource // sequence number source !== payment operation source
+      ? feeTxn.signatures.length === 2 
+        && Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+      : feeTxn.signatures.length === 1
 
       && feeTxn.memo.value?.toString('hex') === txSponsorMetadata.memoHash
       && txSponsorFunctions.indexOf(txFunctionHash) > -1
 
-      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(BASE_FEE)
+      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(
+        feeBumpTxn 
+        ? 0 
+        : BASE_FEE
+      )
       && new BigNumber(feeTxn.sequence).isGreaterThan(0)
       && new BigNumber(feeTxn.timeBounds.minTime).isEqualTo(0)
       && new BigNumber(feeTxn.timeBounds.maxTime).isEqualTo(0)
@@ -90,7 +140,11 @@ export default async ({ event, request, params }) => {
       && feeTxn.operations[0].asset.isNative()
       && feeTotalBigNumber.isGreaterThanOrEqualTo(XLM_FEE_MIN)
       && feeTotalBigNumber.isLessThanOrEqualTo(XLM_FEE_MAX)
-      && !feeTxn.operations[0].source
+      && (
+        feeTxn.operations[0].source
+        ? feeTxn.operations[0].source === feeTxnSource 
+        : !feeTxn.operations[0].source
+      )
     )
   ) throw `Missing or invalid txFunctionFee`
 
@@ -144,7 +198,7 @@ export default async ({ event, request, params }) => {
     await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
       date: now,
       xdr: txFunctionFee,
-      sponsor: feeTxn.source,
+      sponsor: feeTxnSource,
       total: feeTotal,
       spent: feeSpent
     }})
