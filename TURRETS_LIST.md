@@ -10,3 +10,4 @@
 | https://tss-wrangler.q32.workers.dev |  | [Someone in Texas](https://twitter.com/a_tx_person) |  |
 | https://tss-wrangler-test.lumensspace.workers.dev |  | [hanseartic](https://github.com/hanseartic) |  |
 | https://tss-wrangler.jesmarsc.workers.dev |  | [jesmarsc](https://github.com/jesmarsc) |  | 
+| https://tss-wrangler.mozart.workers.dev |  | [Olvis E. Gil Ríos](https://github.com/Olvisgil) |  | 
