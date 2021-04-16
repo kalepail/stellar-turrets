@@ -1,0 +1,12 @@
+name = "${WRANGLER_WORKER_NAME}"
+type = "webpack"
+webpack_config = "webpack.config.js"
+account_id = "${WRANGLER_ACCOUNT_ID}"
+workers_dev = true
+kv_namespaces = [
+   { binding = "META", id = "${WRANGLER_META}" },
+   { binding = "TX_FUNCTIONS", id = "${WRANGLER_TX_FUNCTIONS}" },
+   { binding = "TX_FEES", id = "${WRANGLER_TX_FEES}" },
+   { binding = "TX_SPONSORS", id = "${WRANGLER_TX_SPONSORS}" }
+]
+vars = { STELLAR_NETWORK = "${STELLAR_NETWORK}", HORIZON_URL = "${HORIZON_URL}", TURRET_ADDRESS = "${TURRET_ADDRESS}", TURRET_RUN_URL = "${TURRET_FUNCTION_RUNNER_URL}", XLM_FEE_MIN = 1, XLM_FEE_MAX = 10, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }

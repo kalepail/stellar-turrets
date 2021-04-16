@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "main": "./src/index.js",
   "scripts": {
+    "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist",
+    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs -d '\n') && envsubst < wrangler.toml.dist > wrangler.toml",
     "deploy": "wrangler publish"
   },
   "dependencies": {

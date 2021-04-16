@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,8 +14,23 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
-          
+
       - uses: actions/checkout@v2
+
+      - name: Customize toml-file
+        env:
+          STELLAR_NETWORK: ${{ secrets.STELLAR_NETWORK }}
+          HORIZON_URL: ${{ secrets.HORIZON_URL }}
+          TURRET_ADDRESS: ${{ secrets.TURRET_ADDRESS }}
+          TURRET_FUNCTION_RUNNER_URL: ${{ secrets.TURRET_FUNCTION_RUNNER_URL }}
+          WRANGLER_ACCOUNT_ID: ${{ secrets.WRANGLER_ACCOUNT_ID }}
+          WRANGLER_WORKER_NAME: ${{ secrets.WRANGLER_WORKER_NAME }}
+          WRANGLER_META: ${{ secrets.WRANGLER_META }}
+          WRANGLER_TX_FUNCTIONS: ${{ secrets.WRANGLER_TX_FUNCTIONS }}
+          WRANGLER_TX_FEES: ${{ secrets.WRANGLER_TX_FEES }}
+          WRANGLER_TX_SPONSORS: ${{ secrets.WRANGLER_TX_SPONSORS }}
+        run: npm run init
+        working-directory: wrangler
 
       - name: Deploy to Cloudflare Workers with Wrangler
         uses: cloudflare/wrangler-action@1.2.0

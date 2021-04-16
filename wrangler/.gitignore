@@ -117,3 +117,5 @@ dist
 
 # Cloudflare Workers dist builds.
 worker
+
+wrangler.toml
