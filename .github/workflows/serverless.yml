@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
-  
+
 defaults:
   run:
     working-directory: serverless
@@ -25,11 +25,11 @@ jobs:
         with:
           node-version: '12'
 
-      - run: |
-           echo "SLS_ORG=${{ secrets.SLS_ORG }}" >> $GITHUB_ENV
-           echo "TURRET_BASE_URL=${{ secrets.TURRET_BASE_URL }}" >> $GITHUB_ENV
-           echo "TURRET_SIGNER_ACCOUNT=${{ secrets.TURRET_SIGNER_ACCOUNT }}" >> $GITHUB_ENV
       - run: npx envdist -e
+        env:
+          SLS_ORG: ${{ secrets.SLS_ORG }}
+          TURRET_BASE_URL: ${{ secrets.TURRET_BASE_URL }}
+          TURRET_SIGNER_ACCOUNT: ${{ secrets.TURRET_SIGNER_ACCOUNT }}
 
       - run: npm ci
       - run: npm run build
