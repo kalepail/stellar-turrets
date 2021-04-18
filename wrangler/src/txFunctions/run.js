@@ -85,7 +85,7 @@ export default async ({ event, request, params }) => {
       && feeTxn.operations[0].destination === TURRET_ADDRESS
       && feeTxn.operations[0].asset.isNative()
       && feeTotalBigNumber.isGreaterThanOrEqualTo(1) // TODO: don't hard code this
-      && feeTotalBigNumber.isLessThanOrEqualTo(10) // TODO: don't hard code this
+      && feeTotalBigNumber.isLessThanOrEqualTo(2000) // TODO: don't hard code this
       && !feeTxn.operations[0].source
     )
   ) throw `Missing or invalid txFunctionFee`
