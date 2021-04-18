@@ -1,5 +1,5 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
-import { Transaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
+import { Transaction, FeeBumpTransaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 
@@ -21,13 +21,42 @@ export default async ({ event, request, params }) => {
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
   const body = await request.json()
-  const { txFunctionFee } = body
-  const feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-  const feeTxnHash = feeTxn.hash().toString('hex')
+  let { txFunctionFee, txFunctionFeeBump } = body
+
+  if (
+    (
+      txFunctionFee 
+      && txFunctionFeeBump 
+    ) // If both fail
+    || (
+      !txFunctionFee 
+      && !txFunctionFeeBump
+    ) // If neither fail
+  ) throw {message: `Please include at least but only one of either txFunctionFee or txFunctionFeeBump`}
+
+  let feeBumpTxn
+  let feeTxn
+  let feeTxnHash
+  let feeTxnSource
+
+  if (txFunctionFee) {
+    feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
+    feeTxnHash = feeTxn.hash().toString('hex')
+    feeTxnSource = feeTxn.source
+  }
+
+  else if (txFunctionFeeBump) {
+    feeBumpTxn = new FeeBumpTransaction(txFunctionFeeBump, Networks[STELLAR_NETWORK])
+    feeTxnHash = feeBumpTxn.hash().toString('hex')
+    feeTxnSource = feeBumpTxn.feeSource
+    feeTxn = feeBumpTxn.innerTransaction
+    txFunctionFee = txFunctionFeeBump
+  }
 
   delete body.txFunctionFee
+  delete body.txFunctionFeeBump
 
-  await fetch(`https://horizon-testnet.stellar.org/transactions/${feeTxnHash}`)
+  await fetch(`${HORIZON_URL}/transactions/${feeTxnHash}`)
   .then(async (res) => {
     if (res.ok) {
       await TX_FEES.delete(feeTxnHash)
@@ -39,13 +68,16 @@ export default async ({ event, request, params }) => {
       throw res
   })
 
-  const txSponsor = await TX_SPONSORS.get(feeTxn.source)
+  const { 
+    value: txSponsorFunctions, 
+    metadata: txSponsorMetadata 
+  } = await TX_SPONSORS.getWithMetadata(feeTxnSource, 'json')
 
-  if (!txSponsor)
-    throw `txSponsor ${feeTxn.source} could not be found on this turret`
+  if (!txSponsorFunctions)
+    throw `txSponsor ${feeTxnSource} could not be found on this turret`
 
-  if (txSponsor !== 'OK')
-    throw `txSponsor ${feeTxn.source} is in poor standing with this turret [${txSponsor}]`
+  if (txSponsorMetadata.status !== 'OK')
+    throw `txSponsor ${feeTxnSource} is in poor standing with this turret [${txSponsorMetadata.status}]`
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
   const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
@@ -56,9 +88,15 @@ export default async ({ event, request, params }) => {
     throw {status: 402, message: `txFunctionFee has been spent`}
   }
 
+  // Support straight payments
+  // Support fee bumping
+  // Support sequence number delegation
+
+  // TODO: throw if extra signers
+
   // Fee Checks:
     // txn has been signed by source
-    // memo hash is hash for contract
+    // memo hash is hash for txFunctions
     // fee is greater than or equal to the base fee
     // sequence # is not 0
     // timeBounds minTime and maxTime are both 0
@@ -69,12 +107,28 @@ export default async ({ event, request, params }) => {
     // payment amount must be within tolerance
   if (
     !feeMetadata // Only check incoming feeTxn if it hasn't already been validated and stored in the KV
+
     && !(
-      Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+      Utils.verifyTxSignedBy(feeTxn, feeTxnSource) // ensure payment is signed
 
-      && feeTxn.memo.value?.toString('hex') === txFunctionHash
+      && feeBumpTxn // ensure fee bump is signed
+      ? feeBumpTxn.signatures.length === 1 
+        && Utils.verifyTxSignedBy(feeBumpTxn, feeTxnSource)
+      : true
 
-      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(BASE_FEE)
+      && feeTxn.source !== feeTxnSource // sequence number source !== payment operation source
+      ? feeTxn.signatures.length === 2 
+        && Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
+      : feeTxn.signatures.length === 1
+
+      && feeTxn.memo.value?.toString('hex') === txSponsorMetadata.memoHash
+      && txSponsorFunctions.indexOf(txFunctionHash) > -1
+
+      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(
+        feeBumpTxn 
+        ? 0 
+        : BASE_FEE
+      )
       && new BigNumber(feeTxn.sequence).isGreaterThan(0)
       && new BigNumber(feeTxn.timeBounds.minTime).isEqualTo(0)
       && new BigNumber(feeTxn.timeBounds.maxTime).isEqualTo(0)
@@ -84,13 +138,20 @@ export default async ({ event, request, params }) => {
       && feeTxn.operations[0].type === 'payment'
       && feeTxn.operations[0].destination === TURRET_ADDRESS
       && feeTxn.operations[0].asset.isNative()
-      && feeTotalBigNumber.isGreaterThanOrEqualTo(1) // TODO: don't hard code this
-      && feeTotalBigNumber.isLessThanOrEqualTo(2000) // TODO: don't hard code this
-      && !feeTxn.operations[0].source
+      && feeTotalBigNumber.isGreaterThanOrEqualTo(XLM_FEE_MIN)
+      && feeTotalBigNumber.isLessThanOrEqualTo(XLM_FEE_MAX)
+      && (
+        feeTxn.operations[0].source
+        ? feeTxn.operations[0].source === feeTxnSource 
+        : !feeTxn.operations[0].source
+      )
     )
   ) throw `Missing or invalid txFunctionFee`
 
-  let { value: turretAuthData, metadata: turretAuthSignature } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
+  let { 
+    value: turretAuthData, 
+    metadata: turretAuthSignature 
+  } = await META.getWithMetadata('TURRET_AUTH_TOKEN')
 
   if (!turretAuthData) {
     const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
@@ -107,7 +168,8 @@ export default async ({ event, request, params }) => {
 
   const watch = new Stopwatch()
   const { 
-    xdr, 
+    xdr,
+    error,
     cost,
     feeTotal,
     feeSpent
@@ -120,6 +182,8 @@ export default async ({ event, request, params }) => {
     },
     body: JSON.stringify({
       ...body,
+      HORIZON_URL,
+      STELLAR_NETWORK,
       txFunction,
     })
   })
@@ -127,14 +191,14 @@ export default async ({ event, request, params }) => {
     watch.mark('Ran txFunction')
 
     const now = moment.utc().format('x')
-    const cost = new BigNumber(watch.getTotalTime()).dividedBy(100000).toFixed(7) // Don't hard code the dividedBy value
+    const cost = new BigNumber(watch.getTotalTime()).dividedBy(RUN_DIVISOR).toFixed(7)
     const feeTotal = feeTotalBigNumber.toFixed(7)
     const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
 
     await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
       date: now,
       xdr: txFunctionFee,
-      sponsor: feeTxn.source,
+      sponsor: feeTxnSource,
       total: feeTotal,
       spent: feeSpent
     }})
@@ -146,7 +210,27 @@ export default async ({ event, request, params }) => {
       feeSpent,
     }
 
-    throw res
+    return {
+      error: {
+        status: res.status || 400,
+        ...res.headers.get('content-type').indexOf('json') > -1 ? await res.json() : await res.text()
+      },
+      cost,
+      feeTotal,
+      feeSpent,
+    }
+  })
+
+  if (error) return response.json({
+    ...error,
+    cost
+  }, {
+    status: error.status,
+    stopwatch: watch,
+    headers: {
+      'X-Fee-Total': feeTotal,
+      'X-Fee-Spent': feeSpent
+    }
   })
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])

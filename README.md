@@ -19,15 +19,15 @@ $ npx wrangler kv:namespace create "TX_SPONSORS"
 ```
 Each of those commands will spit out the object you should use to replace the existing values in the `wrangler.toml` file.
 
-3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar networks. For `TURRET_ADDRESS` just use any random valid, funded Stellar account you'd like. This is the account into which fees will be paid as contracts are uploaded and run on your Turret. Finally set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url.
+3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar network passphrases. For `HORIZON_URL` place in the url for the horizon service your Turret will consume. This should match with either the Test or Public network passphrase which you just set for the `STELLAR_NETWORK` variable. For `TURRET_ADDRESS` just use any valid, funded, Stellar account you privately own. This is the account into which fees will be paid as txFunctions are uploaded and run on your Turret. Next set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url. Finally set the `XLM_FEE_MIN`, `XLM_FEE_MAX`, `UPLOAD_DIVISOR`, and  `RUN_DIVISOR` values to reasonable defaults. (For more info on these fee variables review the [Fee Wiki](https://github.com/tyvdh/stellar-tss/wiki/fees).)
 
-Now that the `wrangler.toml` file has been updated let's move to the `stellar.toml` file. This file is where you'll create your Turret's `stellar.toml` file particularly noting the `[TSS].TURRETS` array. This will be an array of other Turret addresses that you trust to cohost contracts with in the case of txFunction healing. For now just make sure to include your own `TURRET_ADDRESS` which you selected in the previous steps.
+Now that the `wrangler.toml` file has been updated let's move to the `stellar.toml` file. This file is where you'll create your Turret's `stellar.toml` file particularly noting the `[TSS].TURRETS` array. This will be an array of other Turret addresses that you trust to cohost txFunctions with in the case of txFunction healing. For now just make sure to include your own `TURRET_ADDRESS` which you selected in the previous steps.
 
 Once you've got that go ahead and upload it to the `META` kv store you instantiated earlier.
 ```
 $ npx wrangler kv:key put --binding=META "STELLAR_TOML" ./stellar.toml --path
 ```
-Make sure to run these wrangler commands from the `./wranger` directory
+Make sure to run these wrangler commands from the `./wrangler` directory
 
 Finally to deploy the project run:
 ```
@@ -42,12 +42,12 @@ You may have to work through a few errors to get logged into your Cloudflare acc
 ```
 $ npx wrangler secret put TURRET_SIGNER
 ```
-When the dialog asks your for a value paste in a valid Stellar secret key. Most often this will be the secret counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
+When the dialog asks your for a value paste in a valid Stellar **secret key**. Most often this will be the secret key counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
 
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
 
-There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretAddress` should be replaced with your Turret's `TURRET_ADDRESS` set in the Wrangler setup.
+There's only two things you'll need to update in this repo in the `serverless.yml` file. The `provider.environment.turretBaseUrl` should be replaced with the worker base url which your wrangler service is hosted on. The `provider.environment.turretSigner` should be replaced with your Turret's `TURRET_SIGNER` **public key** set in the Wrangler setup. This connection is what secures and protects access between the Cloudflare and Serverless APIs. Remember Cloudflare gets the **private key** and Serverless gets the **public key**.
 
 Now it'll be the fun task of getting:
 ```

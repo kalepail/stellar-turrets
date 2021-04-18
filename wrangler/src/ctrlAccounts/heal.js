@@ -26,9 +26,8 @@ export default async ({ request, params }) => {
     throw {status: 404, message: `txFunction could not be found this turret`}
 
   const { ctrlAccount } = params
-  const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
 
-  const { requiredThreshold, existingSigners } = await fetch(`${horizon}/accounts/${ctrlAccount}`)
+  const { requiredThreshold, existingSigners } = await fetch(`${HORIZON_URL}/accounts/${ctrlAccount}`)
   .then((res) => {
     if (res.ok)
       return res.json()
@@ -68,7 +67,7 @@ export default async ({ request, params }) => {
     .value(), 
     async (signer) => ({
       ...signer,
-      ...await fetch(`${horizon}/accounts/${signer.turret}`)
+      ...await fetch(`${HORIZON_URL}/accounts/${signer.turret}`)
       .then((res) => {
         if (res.ok)
           return res.json()
@@ -133,7 +132,7 @@ export default async ({ request, params }) => {
   if (turrets.indexOf(addSigner.turret) === -1)
     throw `New turret isn't trusted by existing signer turrets`
 
-  const transaction = await fetch(`${horizon}/accounts/${sourceAccount}`)
+  const transaction = await fetch(`${HORIZON_URL}/accounts/${sourceAccount}`)
   .then((res) => {
     if (res.ok)
       return res.json()

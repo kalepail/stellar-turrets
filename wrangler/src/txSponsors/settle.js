@@ -5,12 +5,11 @@ export default async (txFunctionFee) => {
   const transaction = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
   const transactionHash = transaction.hash().toString('hex')
 
-  const horizon = STELLAR_NETWORK === 'PUBLIC' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
   const tx = transaction.toXDR()
   const txBody = new FormData()
         txBody.append('tx', tx)
 
-  await fetch(`${horizon}/transactions`, {
+  await fetch(`${HORIZON_URL}/transactions`, {
     method: 'POST',
     body: txBody
   })
