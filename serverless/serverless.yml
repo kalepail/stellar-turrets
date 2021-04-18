@@ -14,8 +14,8 @@ provider:
   name: aws
   runtime: nodejs12.x
   environment:
-    turretBaseUrl: ${env:TURRET_BASE_URL}
-    turretSigner: ${env:TURRET_SIGNER_ACCOUNT}
+    turretBaseUrl: ${env:SLS_TURRET_BASE_URL}
+    turretSigner: ${env:SLS_TURRET_SIGNER_ACCOUNT}
   tracing:
     lambda: true
   iamRoleStatements:

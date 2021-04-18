@@ -29,6 +29,10 @@ jobs:
           WRANGLER_TX_FUNCTIONS: ${{ secrets.WRANGLER_TX_FUNCTIONS }}
           WRANGLER_TX_FEES: ${{ secrets.WRANGLER_TX_FEES }}
           WRANGLER_TX_SPONSORS: ${{ secrets.WRANGLER_TX_SPONSORS }}
+          WRANGLER_XLM_FEE_MIN: ${{ secrets.WRANGLER_XLM_FEE_MIN }}
+          WRANGLER_XLM_FEE_MAX: ${{ secrets.WRANGLER_XLM_FEE_MAX }}
+          WRANGLER_UPLOAD_DIVISOR: ${{ secrets.WRANGLER_UPLOAD_DIVISOR }}
+          WRANGLER_RUN_DIVISOR: ${{ secrets.WRANGLER_RUN_DIVISOR }}
         run: npm run init
         working-directory: wrangler
 

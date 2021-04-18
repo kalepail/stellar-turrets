@@ -28,8 +28,8 @@ jobs:
       - run: npx envdist -e
         env:
           SLS_ORG: ${{ secrets.SLS_ORG }}
-          TURRET_BASE_URL: ${{ secrets.TURRET_BASE_URL }}
-          TURRET_SIGNER_ACCOUNT: ${{ secrets.TURRET_SIGNER_ACCOUNT }}
+          SLS_TURRET_BASE_URL: ${{ secrets.SLS_TURRET_BASE_URL }}
+          SLS_TURRET_SIGNER_ACCOUNT: ${{ secrets.SLS_TURRET_SIGNER_ACCOUNT }}
 
       - run: npm ci
       - run: npm run build
