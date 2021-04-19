@@ -4,7 +4,7 @@
   "main": "./src/index.js",
   "scripts": {
     "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist",
-    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs -d '\n') && envsubst < wrangler.toml.dist > wrangler.toml",
+    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs -d '\n') && envsubst < wrangler.toml.dist > wrangler.toml && envsubst < stellar.toml.dist > stellar.toml",
     "deploy": "wrangler publish"
   },
   "dependencies": {
