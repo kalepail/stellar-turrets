@@ -41,7 +41,7 @@ functions:
             allowedOrigins:
               - ${self:provider.environment.turretBaseUrl}
             allowedHeaders:
-              - Content-Type 
+              - Content-Type
               - X-Turret-Data
               - X-Turret-Signature
             allowedMethods:
