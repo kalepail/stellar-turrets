@@ -11,4 +11,4 @@
 | https://tss-wrangler-test.lumensspace.workers.dev |  | [hanseartic](https://github.com/hanseartic) |  |
 | https://tss-wrangler.jesmarsc.workers.dev |  | [jesmarsc](https://github.com/jesmarsc) |  |
 | https://tss-wrangler.mozart.workers.dev |  | [Olvis E. Gil Ríos](https://github.com/Olvisgil) |  |
-| https://tss-wrangler.elliotfriend.workers.dev | | [Elliot Voris](https://github.com/elliotfriend) | |
+| https://tss-wrangler.elliotfriend.workers.dev |  | [Elliot Voris](https://github.com/elliotfriend) | elliot@voris.me |
