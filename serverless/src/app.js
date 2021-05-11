@@ -54,12 +54,12 @@ export default async (event) => {
       STELLAR_NETWORK,
       fetch,
       StellarBase,
-      BigNumber,      
+      BigNumber,
       global,
       globalThis,
       process,
       require
-    `, // leave these (global, globalThis, process) empty to effectively unset them
+    `, // leave [global, globalThis, process, require] empty to effectively unset them
       `'use strict'; ${txFunctionCode}; return module.exports;`
     )(
       {exports: null}, 
