@@ -6,8 +6,7 @@ import { find as loFind } from 'lodash'
 
 import txSponsorsSettle from '../txSponsors/settleCB'
 
-// TODO: 
-  // support a second re-claim predicate after {x} time
+// TODO:
   // Remove all old txSponsor stuff
 
 export default async ({ event, request, params }) => {
@@ -70,7 +69,7 @@ export default async ({ event, request, params }) => {
         ? loFind(claimants, (claimant) => 
           claimant.destination === sponsor
           && claimant.predicate?.not?.abs_before
-          && moment.utc(claimant.predicate.not.abs_before).subtract(28, 'days').isAfter()
+          && moment.utc(claimant.predicate.not.abs_before).subtract(28, 'days').isAfter() // TODO: Days till claimable balance can be recovered by sponsor. Should probably be a configurable TURRET setting
         ) : true
       )
       && claimants.length <= 2
