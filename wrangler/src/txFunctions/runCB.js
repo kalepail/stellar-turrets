@@ -28,7 +28,17 @@ export default async ({ event, request, params }) => {
   if (!claimableBalanceToken)
     throw {message: `txFunctionFee is missing`}
 
-  const [claimableBalanceId, claimableBalanceSignature] = JSON.parse(Buffer.from(claimableBalanceToken, 'base64'))
+  const [
+    claimableBalanceId, 
+    claimableBalanceSignature, 
+    ...txFunctionHashes
+  ] = JSON.parse(Buffer.from(claimableBalanceToken, 'base64'))
+
+  if (
+    txFunctionHashes.length
+    && txFunctionHashes.indexOf(txFunctionHash) === -1
+  ) throw {message: `txFunctionFee is invalid for this txFunction`}
+
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(claimableBalanceId)
 
   let feeTotalBigNumber
@@ -58,7 +68,10 @@ export default async ({ event, request, params }) => {
       asset === 'native'
       && new BigNumber(amount).isGreaterThanOrEqualTo(XLM_FEE_MIN)
       && new BigNumber(amount).isLessThanOrEqualTo(XLM_FEE_MAX)
-      && sponsorKeypair.verify(claimableBalanceId, Buffer.from(claimableBalanceSignature, 'base64'))
+      && sponsorKeypair.verify(JSON.stringify([
+        claimableBalanceId,
+        ...txFunctionHashes
+      ]), Buffer.from(claimableBalanceSignature, 'hex'))
       && claimants.length <= 2
       && loFind(claimants, (claimant) => 
         claimant.destination === TURRET_ADDRESS
@@ -69,7 +82,7 @@ export default async ({ event, request, params }) => {
         ? loFind(claimants, (claimant) => 
           claimant.destination === sponsor
           && claimant.predicate?.not?.abs_before
-          && moment.utc(claimant.predicate.not.abs_before).subtract(28, 'days').isAfter() // TODO: Days till claimable balance can be recovered by sponsor. Should probably be a configurable TURRET setting
+          && moment.utc(claimant.predicate.not.abs_before).subtract(180, 'days').isAfter() // TODO: Days till claimable balance can be recovered by sponsor. Should probably be a configurable TURRET setting
         ) : true
       )
       && claimants.length <= 2
