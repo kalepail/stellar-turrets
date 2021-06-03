@@ -9,9 +9,9 @@ const pkg = require('./package.json')
 const gitRevisionPlugin = new GitRevisionPlugin()
 
 module.exports = {
+  target: 'web',
   mode: 'production',
   entry: './src/index.js',
-  target: 'web',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
