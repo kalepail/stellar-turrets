@@ -3,8 +3,6 @@ type = "javascript"
 usage_model = "bundled"
 webpack_config = "webpack.config.js"
 account_id = "ba55b7ae9acfb3ed152103e3497c0752"
-zone_id = "ac6fd4037592e821162b01bb8faa2f9a"
-route = "api.stellarturrets.com/*"
 workers_dev = true
 
 kv_namespaces = [
