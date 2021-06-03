@@ -1,7 +1,8 @@
 import { response } from 'cfw-easy-utils'
 import { Keypair, TransactionBuilder, Account, BASE_FEE, Networks, Operation } from 'stellar-base'
 
-export default async (claimableBalanceId) => {
+export default async (claimableBalanceId, env) => {
+  const { TURRET_SIGNER, STELLAR_NETWORK, HORIZON_URL } = env
   const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
   const turretSignerPublicKey = turretSignerKeypair.publicKey()
 

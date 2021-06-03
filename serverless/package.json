@@ -12,13 +12,13 @@
     "stellar-base": "^5.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/plugin-proposal-optional-chaining": "^7.13.12",
-    "@babel/preset-env": "^7.14.1",
+    "@babel/core": "^7.14.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "path": "^0.12.7",
-    "webpack": "^5.37.0",
+    "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0"
   }
 }

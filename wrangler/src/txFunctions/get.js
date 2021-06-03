@@ -1,6 +1,7 @@
 import { response } from 'cfw-easy-utils'
 
-export default async ({ params }) => {
+export default async ({ params, env }) => {
+  const { TX_FUNCTIONS } = env
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')

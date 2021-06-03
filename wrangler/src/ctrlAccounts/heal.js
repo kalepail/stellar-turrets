@@ -7,7 +7,8 @@ import { parse } from '@iarna/toml'
 import txFunctionsGet from '../txFunctions/get'
 import turretToml from '../turret/toml'
 
-export default async ({ request, params }) => {
+export default async ({ request, params, env }) => {
+  const { TX_FUNCTIONS, TURRET_ADDRESS, STELLAR_NETWORK, HORIZON_URL } = env
   const { 
     functionHash: txFunctionHash, 
     sourceAccount, 

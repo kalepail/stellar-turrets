@@ -6,7 +6,21 @@ import { find as loFind } from 'lodash'
 
 import txSponsorsSettle from '../txSponsors/settle'
 
-export default async ({ event, request, params }) => {
+export default async ({ request, params, env, ctx }) => {
+  const { 
+    TX_FUNCTIONS, 
+    TX_FEES, 
+    META, 
+    TURRET_RUN_URL, 
+    TURRET_SIGNER, 
+    TURRET_ADDRESS, 
+    STELLAR_NETWORK, 
+    HORIZON_URL, 
+    TX_FUNCTION_FEE_DAYS_TTL, 
+    XLM_FEE_MIN, 
+    XLM_FEE_MAX, 
+    RUN_DIVISOR 
+  } = env
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
@@ -46,7 +60,7 @@ export default async ({ event, request, params }) => {
     feeSpentBigNumber = new BigNumber(feeMetadata.spent)
 
     if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
-      event.waitUntil(txSponsorsSettle(claimableBalanceId))
+      ctx.waitUntil(txSponsorsSettle(claimableBalanceId, env))
       throw {status: 402, message: `txFunctionFee has been spent`}
     }
   }

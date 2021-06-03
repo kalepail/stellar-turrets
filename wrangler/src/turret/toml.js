@@ -1,6 +1,7 @@
 import { response } from 'cfw-easy-utils'
 
-export default async () => {
+export default async ({ env }) => {
+  const { META } = env
   const stellarToml = await META.get('STELLAR_TOML')
 
   if (!stellarToml)
