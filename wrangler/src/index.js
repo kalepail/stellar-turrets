@@ -9,12 +9,9 @@ import turretDetails from './turret/details'
 import txFunctionsGet from './txFunctions/get'
 import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
-import txFunctionsRunCB from './txFunctions/runCB'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
 
-import txSponsorsGet from './txSponsors/get'
-import txSponsorsUpsert from './txSponsors/upsert'
 
 const router = new Router()
 
@@ -26,14 +23,9 @@ router
 .post('/tx-functions', txFunctionsUpload)
 .get('/tx-functions/:txFunctionHash', txFunctionsGet)
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
-.post('/tx-functions/:txFunctionHash/CB', txFunctionsRunCB)
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
-
-router
-.get('/tx-sponsors/:txSponsorAddress', txSponsorsGet)
-.post('/tx-sponsors', txSponsorsUpsert)
 
 async function handleRequest(event) {
   try {

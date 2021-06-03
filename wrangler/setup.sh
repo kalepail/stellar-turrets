@@ -6,6 +6,4 @@ npx wrangler kv:namespace create "TX_FUNCTIONS"
 printf "\n\n"
 npx wrangler kv:namespace create "TX_FEES"
 printf "\n\n"
-npx wrangler kv:namespace create "TX_SPONSORS"
-printf "\n\n"
 npx wrangler secret put TURRET_SIGNER
