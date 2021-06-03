@@ -12,8 +12,6 @@ import txFunctionsRun from './txFunctions/run'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
 
-import txSponsorsGet from './txSponsors/get'
-import txSponsorsUpsert from './txSponsors/upsert'
 
 const router = new Router()
 
@@ -28,10 +26,6 @@ router
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
-
-router
-.get('/tx-sponsors/:txSponsorAddress', txSponsorsGet)
-.post('/tx-sponsors', txSponsorsUpsert)
 
 async function handleRequest(event) {
   try {
