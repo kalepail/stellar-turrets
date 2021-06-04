@@ -1,4 +1,4 @@
-org: tyvdh
+org: script3
 app: tss-serverless
 service: tss-serverless
 
@@ -12,8 +12,8 @@ provider:
   name: aws
   runtime: nodejs12.x
   environment:
-    turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
-    turretSigner: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+    turretBaseUrl: https://tss-wrangler.script3.workers.dev/
+    turretSigner: GBYCSCR2FIR6PEW26FEQH27EBBDUDRSO2FDRGKBIHPLBOOQGFWPKZE2D
   tracing:
     lambda: true
   iamRoleStatements:
@@ -28,7 +28,7 @@ functions:
     handler: dist/app.default
     maximumRetryAttempts: 0
     maximumRecordAgeInSeconds: 60
-    provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
+    #provisionedConcurrency: 4
     memorySize: 256
     timeout: 8
     events:

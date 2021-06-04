@@ -2,15 +2,16 @@ name = "tss-wrangler"
 type = "javascript"
 usage_model = "bundled"
 webpack_config = "webpack.config.js"
-account_id = "ba55b7ae9acfb3ed152103e3497c0752"
+account_id = "ac332ac2cd58b5c38e54788912d1de9a"
 workers_dev = true
 
 kv_namespaces = [
-   { binding = "META", id = "1959d98949ba4c8aa9c333b836cdc5ca" },
-   { binding = "TX_FUNCTIONS", id = "35d9a95d987b449fa44263f42d366429" },
-   { binding = "TX_FEES", id = "6881d21a900540d9b36aa5c6f9465ea5" },
+  { binding = "META", id = "548b7fdb50db490c946212176d86c050" },
+  { binding = "TX_FUNCTIONS", id = "18013dc5d7eb41bd975d0f86ee78806c" },
+  { binding = "TX_FEES", id = "48085fc3eabe4c7989ac67fb00b2546c" }
 ]
-vars = { STELLAR_NETWORK = "TESTNET", HORIZON_URL = "https://horizon-testnet.stellar.org", TURRET_ADDRESS = "GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX", TURRET_RUN_URL = "https://ylorcf18ii.execute-api.us-east-1.amazonaws.com", TX_FUNCTION_FEE_DAYS_TTL = 180, XLM_FEE_MIN = 1, XLM_FEE_MAX = 10, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }
+
+vars = { STELLAR_NETWORK = "TESTNET", HORIZON_URL = "https://horizon-testnet.stellar.org", TURRET_ADDRESS = "GBYCSCR2FIR6PEW26FEQH27EBBDUDRSO2FDRGKBIHPLBOOQGFWPKZE2D", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/", XLM_FEE_MIN = 1, XLM_FEE_MAX = 5000, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }
 
 [build]
 command = "npm i && npm run build"
