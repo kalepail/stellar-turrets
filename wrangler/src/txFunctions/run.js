@@ -1,13 +1,26 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
-import { Transaction, FeeBumpTransaction, Networks, Keypair, BASE_FEE } from 'stellar-base'
+import { Transaction, Networks, Keypair } from 'stellar-base'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
-
-import { Utils } from '../@utils/stellar-sdk-utils'
+import { find as loFind } from 'lodash'
 
 import txSponsorsSettle from '../txSponsors/settle'
 
-export default async ({ event, request, params }) => {
+export default async ({ request, params, env, ctx }) => {
+  const { 
+    TX_FUNCTIONS, 
+    TX_FEES, 
+    META, 
+    TURRET_RUN_URL, 
+    TURRET_SIGNER, 
+    TURRET_ADDRESS, 
+    STELLAR_NETWORK, 
+    HORIZON_URL, 
+    TX_FUNCTION_FEE_DAYS_TTL, 
+    XLM_FEE_MIN, 
+    XLM_FEE_MAX, 
+    RUN_DIVISOR 
+  } = env
   const { txFunctionHash } = params
 
   const { value, metadata } = await TX_FUNCTIONS.getWithMetadata(txFunctionHash, 'arrayBuffer')
@@ -21,132 +34,76 @@ export default async ({ event, request, params }) => {
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
   const body = await request.json()
-  let { txFunctionFee, txFunctionFeeBump } = body
+  const claimableBalanceToken = request.headers.get('authorization')?.split(' ')?.[1]
+
+  if (!claimableBalanceToken)
+    throw {message: `txFunctionFee is missing`}
+
+  const [
+    claimableBalanceId, 
+    claimableBalanceSignature, 
+    ...txFunctionHashes
+  ] = JSON.parse(Buffer.from(claimableBalanceToken, 'base64'))
 
   if (
-    (
-      txFunctionFee 
-      && txFunctionFeeBump 
-    ) // If both fail
-    || (
-      !txFunctionFee 
-      && !txFunctionFeeBump
-    ) // If neither fail
-  ) throw {message: `Please include at least but only one of either txFunctionFee or txFunctionFeeBump`}
+    txFunctionHashes.length
+    && txFunctionHashes.indexOf(txFunctionHash) === -1
+  ) throw {message: `txFunctionFee is invalid for this txFunction`}
 
-  let feeBumpTxn
-  let feeTxn
-  let feeTxnHash
-  let feeTxnSource
+  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(claimableBalanceId)
 
-  if (txFunctionFee) {
-    feeTxn = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-    feeTxnHash = feeTxn.hash().toString('hex')
-    feeTxnSource = feeTxn.source
-  }
+  let feeTotalBigNumber
+  let feeSpentBigNumber
 
-  else if (txFunctionFeeBump) {
-    feeBumpTxn = new FeeBumpTransaction(txFunctionFeeBump, Networks[STELLAR_NETWORK])
-    feeTxnHash = feeBumpTxn.hash().toString('hex')
-    feeTxnSource = feeBumpTxn.feeSource
-    feeTxn = feeBumpTxn.innerTransaction
-    txFunctionFee = txFunctionFeeBump
-  }
+  if (feeMetadata) {
+    feeTotalBigNumber = new BigNumber(feeMetadata.total)
+    feeSpentBigNumber = new BigNumber(feeMetadata.spent)
 
-  delete body.txFunctionFee
-  delete body.txFunctionFeeBump
-
-  await fetch(`${HORIZON_URL}/transactions/${feeTxnHash}`)
-  .then(async (res) => {
-    if (res.ok) {
-      await TX_FEES.delete(feeTxnHash)
-      throw `txFunctionFee ${feeTxnHash} has already been submitted`
+    if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
+      ctx.waitUntil(txSponsorsSettle(claimableBalanceId, env))
+      throw {status: 402, message: `txFunctionFee has been spent`}
     }
-    else if (res.status === 404)
-      return
-    else
-      throw res
-  })
-
-  const { 
-    value: txSponsorFunctions, 
-    metadata: txSponsorMetadata 
-  } = await TX_SPONSORS.getWithMetadata(feeTxnSource, 'json')
-
-  if (!txSponsorFunctions)
-    throw `txSponsor ${feeTxnSource} could not be found on this turret`
-
-  if (txSponsorMetadata.status !== 'OK')
-    throw `txSponsor ${feeTxnSource} is in poor standing with this turret [${txSponsorMetadata.status}]`
-
-  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(feeTxnHash)
-  const feeTotalBigNumber = new BigNumber(feeTxn.operations[0].amount)
-  const feeSpentBigNumber = new BigNumber(feeMetadata?.spent || 0)
-
-  if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
-    event.waitUntil(txSponsorsSettle(txFunctionFee))
-    throw {status: 402, message: `txFunctionFee has been spent`}
   }
 
-  // Support straight payments
-  // Support fee bumping
-  // Support sequence number delegation
+  else {
+    const { asset, amount, sponsor, claimants } = await fetch(`${HORIZON_URL}/claimable_balances/${claimableBalanceId}`)
+    .then(async (res) => {
+      if (res.ok)
+        return res.json()
+      throw res
+    })
 
-  // TODO: throw if extra signers
+    const sponsorKeypair = Keypair.fromPublicKey(sponsor)
 
-  // Fee Checks:
-    // txn has been signed by source
-    // memo hash is hash for txFunctions
-    // fee is greater than or equal to the base fee
-    // sequence # is not 0
-    // timeBounds minTime and maxTime are both 0
-    // only one operation of type payment
-    // source for op must be excluded
-    // payment destination is our TURRET_ADDRESS
-    // payment asset is XLM
-    // payment amount must be within tolerance
-  if (
-    !feeMetadata // Only check incoming feeTxn if it hasn't already been validated and stored in the KV
-
-    && !(
-      Utils.verifyTxSignedBy(feeTxn, feeTxnSource) // ensure payment is signed
-
-      && feeBumpTxn // ensure fee bump is signed
-      ? feeBumpTxn.signatures.length === 1 
-        && Utils.verifyTxSignedBy(feeBumpTxn, feeTxnSource)
-      : true
-
-      && feeTxn.source !== feeTxnSource // sequence number source !== payment operation source
-      ? feeTxn.signatures.length === 2 
-        && Utils.verifyTxSignedBy(feeTxn, feeTxn.source)
-      : feeTxn.signatures.length === 1
-
-      && feeTxn.memo.value?.toString('hex') === txSponsorMetadata.memoHash
-      && txSponsorFunctions.indexOf(txFunctionHash) > -1
-
-      && new BigNumber(feeTxn.fee).isGreaterThanOrEqualTo(
-        feeBumpTxn 
-        ? 0 
-        : BASE_FEE
+    if (!(
+      asset === 'native'
+      && new BigNumber(amount).isGreaterThanOrEqualTo(XLM_FEE_MIN)
+      && new BigNumber(amount).isLessThanOrEqualTo(XLM_FEE_MAX)
+      && sponsorKeypair.verify(JSON.stringify([
+        claimableBalanceId,
+        ...txFunctionHashes
+      ]), Buffer.from(claimableBalanceSignature, 'hex'))
+      && claimants.length <= 2
+      && loFind(claimants, (claimant) => 
+        claimant.destination === TURRET_ADDRESS
+        && claimant.predicate.unconditional
       )
-      && new BigNumber(feeTxn.sequence).isGreaterThan(0)
-      && new BigNumber(feeTxn.timeBounds.minTime).isEqualTo(0)
-      && new BigNumber(feeTxn.timeBounds.maxTime).isEqualTo(0)
-
-      && feeTxn.operations.length === 1
-
-      && feeTxn.operations[0].type === 'payment'
-      && feeTxn.operations[0].destination === TURRET_ADDRESS
-      && feeTxn.operations[0].asset.isNative()
-      && feeTotalBigNumber.isGreaterThanOrEqualTo(XLM_FEE_MIN)
-      && feeTotalBigNumber.isLessThanOrEqualTo(XLM_FEE_MAX)
       && (
-        feeTxn.operations[0].source
-        ? feeTxn.operations[0].source === feeTxnSource 
-        : !feeTxn.operations[0].source
+        claimants.length === 2
+        ? loFind(claimants, (claimant) => 
+          claimant.destination === sponsor
+          && claimant.predicate?.not?.abs_before
+          && moment.utc(claimant.predicate.not.abs_before).subtract(TX_FUNCTION_FEE_DAYS_TTL, 'days').isAfter()
+        ) : true
       )
-    )
-  ) throw `Missing or invalid txFunctionFee`
+      && claimants.length <= 2
+      && claimants[0]?.destination === TURRET_ADDRESS
+      && claimants[0]?.predicate?.unconditional
+    )) throw {message: `txFunctionFee is invalid`}
+
+    feeTotalBigNumber = new BigNumber(amount)
+    feeSpentBigNumber = new BigNumber(0)
+  }
 
   let { 
     value: turretAuthData, 
@@ -195,10 +152,8 @@ export default async ({ event, request, params }) => {
     const feeTotal = feeTotalBigNumber.toFixed(7)
     const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
 
-    await TX_FEES.put(feeTxnHash, 'OK', {metadata: {
+    await TX_FEES.put(claimableBalanceId, 'OK', {metadata: {
       date: now,
-      xdr: txFunctionFee,
-      sponsor: feeTxnSource,
       total: feeTotal,
       spent: feeSpent
     }})
@@ -223,7 +178,7 @@ export default async ({ event, request, params }) => {
 
   if (error) return response.json({
     ...error,
-    cost
+    cost,
   }, {
     status: error.status,
     stopwatch: watch,
@@ -242,7 +197,7 @@ export default async ({ event, request, params }) => {
     xdr,
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature,
-    cost
+    cost,
   }, {
     stopwatch: watch,
     headers: {

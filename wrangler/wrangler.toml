@@ -1,13 +1,20 @@
 name = "tss-wrangler"
-type = "webpack"
+type = "javascript"
+usage_model = "bundled"
 webpack_config = "webpack.config.js"
-account_id = "a57d90a1bc9cddece62bc238e62054d5"
+account_id = "ac332ac2cd58b5c38e54788912d1de9a"
 workers_dev = true
+
 kv_namespaces = [
-   { binding = "META", id = "c71080d059c544f7b6c70a7f0a53a87e" },
-   { binding = "TX_FUNCTIONS", id = "b9b700cdbd1943b8b848a44dc62d5d7f" },
-   { binding = "TX_FEES", id = "5170a0b5ab9f451b9433ad16e25f04ed" },
-   { binding = "TX_SPONSORS", id = "0d4cf078935b4278a8b1670182a4890e" }
+  { binding = "META", id = "548b7fdb50db490c946212176d86c050" },
+  { binding = "TX_FUNCTIONS", id = "18013dc5d7eb41bd975d0f86ee78806c" },
+  { binding = "TX_FEES", id = "48085fc3eabe4c7989ac67fb00b2546c" }
 ]
 
 vars = { STELLAR_NETWORK = "TESTNET", HORIZON_URL = "https://horizon-testnet.stellar.org", TURRET_ADDRESS = "GBYCSCR2FIR6PEW26FEQH27EBBDUDRSO2FDRGKBIHPLBOOQGFWPKZE2D", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/", XLM_FEE_MIN = 1, XLM_FEE_MAX = 5000, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }
+
+[build]
+command = "npm i && npm run build"
+[build.upload]
+format = "modules"
+main = "./shim.mjs"

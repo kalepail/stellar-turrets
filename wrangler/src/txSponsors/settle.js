@@ -1,26 +1,46 @@
 import { response } from 'cfw-easy-utils'
-import { Transaction, Networks } from 'stellar-base'
+import { Keypair, TransactionBuilder, Account, BASE_FEE, Networks, Operation } from 'stellar-base'
 
-export default async (txFunctionFee) => {
-  const transaction = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-  const transactionHash = transaction.hash().toString('hex')
+export default async (claimableBalanceId, env) => {
+  const { TURRET_SIGNER, STELLAR_NETWORK, HORIZON_URL } = env
+  const turretSignerKeypair = Keypair.fromSecret(TURRET_SIGNER)
+  const turretSignerPublicKey = turretSignerKeypair.publicKey()
 
-  const tx = transaction.toXDR()
-  const txBody = new FormData()
-        txBody.append('tx', tx)
-
-  await fetch(`${HORIZON_URL}/transactions`, {
-    method: 'POST',
-    body: txBody
-  })
-  .then(async (res) => {
+  await fetch(`${HORIZON_URL}/accounts/${turretSignerPublicKey}`)
+  .then((res) => {
     if (res.ok)
       return res.json()
-
-    await TX_SPONSORS.put(transaction.source, 'FAIL')
     throw res
+  }).then((account) => {
+    const transaction = new TransactionBuilder(
+      new Account(account.id, account.sequence), 
+      {
+        fee: BASE_FEE,
+        networkPassphrase: Networks[STELLAR_NETWORK]
+      }
+    )
+    .addOperation(Operation.claimClaimableBalance({
+      balanceId: claimableBalanceId
+    }))
+    .setTimeout(0)
+    .build()
+
+    transaction.sign(turretSignerKeypair)
+
+    const tx = transaction.toXDR()
+    const txBody = new FormData()
+          txBody.append('tx', tx)
+
+    return fetch(`${HORIZON_URL}/transactions`, {
+      method: 'POST',
+      body: txBody
+    })
+    .then(async (res) => {
+      if (res.ok)
+        return res.json()
+      throw res
+    })
   })
-  .finally(() => TX_FEES.delete(transactionHash))
 
   return response.text('OK')
 }
