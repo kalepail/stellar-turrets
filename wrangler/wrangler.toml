@@ -10,4 +10,4 @@ kv_namespaces = [
    { binding = "TX_SPONSORS", id = "0d4cf078935b4278a8b1670182a4890e" }
 ]
 
-vars = { STELLAR_NETWORK = "TESTNET", HORIZON_URL = "https://horizon-testnet.stellar.org", TURRET_ADDRESS = "GBYCSCR2FIR6PEW26FEQH27EBBDUDRSO2FDRGKBIHPLBOOQGFWPKZE2D", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/", XLM_FEE_MIN = 1, XLM_FEE_MAX = 10, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }
+vars = { STELLAR_NETWORK = "TESTNET", HORIZON_URL = "https://horizon-testnet.stellar.org", TURRET_ADDRESS = "GBYCSCR2FIR6PEW26FEQH27EBBDUDRSO2FDRGKBIHPLBOOQGFWPKZE2D", TURRET_RUN_URL = "https://eaynlikyh1.execute-api.us-east-1.amazonaws.com/", XLM_FEE_MIN = 1, XLM_FEE_MAX = 5000, UPLOAD_DIVISOR = 1000, RUN_DIVISOR = 100000 }
