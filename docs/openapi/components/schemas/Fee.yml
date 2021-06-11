@@ -1,0 +1,14 @@
+type: object
+properties:
+  min:
+    description: The minimum claimable fee balance allowed
+    type: string
+    example: 1
+  max:
+    description: The maximum claimable fee balance allowed
+    type: string
+    example: 10
+  days:
+    description: The time allowed before the claimable fee balance is reclaimable by the user
+    type: string
+    example: 180

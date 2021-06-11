@@ -1,0 +1,14 @@
+type: object
+properties:
+  message:
+    description: Description of what failed
+    type: string
+    example: Failed to process txFunctionFee
+  turret:
+    description: The public key of the turret requiring payment
+    type: string
+    example: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+  cost:
+    description: The cost of the operation in lumens
+    type: string
+    example: "0.2740000"

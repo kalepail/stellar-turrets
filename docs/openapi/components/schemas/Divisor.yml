@@ -1,0 +1,10 @@
+type: object
+properties:
+  upload:
+    description: The divisor used in fee calculations for uploading functions
+    type: string
+    example: 1000
+  run:
+    description: The divisor used in fee calculations for running functions
+    type: string
+    example: 100000

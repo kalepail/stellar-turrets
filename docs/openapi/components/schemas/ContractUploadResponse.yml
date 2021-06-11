@@ -1,0 +1,10 @@
+type: object
+properties:
+  hash:
+    description: The SHA256 hash value of the contract
+    type: string
+    example: 78565516a844fd4dfc5a7fc7da822028b04ee0aeaf981a4a914d4510906a7a32
+  signer:
+    description: The public key of the signer the turret will use to sign the uploaded contract
+    type: string
+    example: GB6VNMGXKHS4UTIXW7U23ZQFWD7UJIWCJNQZR7ISNKBTYNULCFQKKPIK

@@ -1,0 +1,64 @@
+get:
+  tags:
+    - txFunctions
+  summary: Get txFunction information
+  operationId: getTxFunctionInfo
+  description: |
+    Returns information about an uploaded txFunction
+  parameters:
+    - name: txFunctionHash
+      in: path
+      required: true
+      description: The hash value of the txFunction
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/TxFunctionInfo.yml"
+    "404":
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/NotFound.yml"
+post:
+  tags:
+    - txFunctions
+  summary: Run a txFunction
+  operationId: executeTxFunction
+  description: Executes a txFunction on the turret
+  security:
+    - fee_auth: []
+  parameters:
+    - name: txFunctionHash
+      in: path
+      required: true
+      description: The hash value of the txFunction
+      schema:
+        type: string
+  requestBody:
+    description: The fields for the contract being run.
+    content:
+      application/json:
+        schema:
+          type: object
+        example:
+          txFunctionField: "some input"
+          anotherTxFunctionField: "some other input"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/TxFunctionResult.yml"
+    "404":
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/NotFound.yml"
