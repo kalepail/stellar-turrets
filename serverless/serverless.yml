@@ -2,15 +2,28 @@ org: tyvdh
 app: tss-serverless
 service: tss-serverless
 
+plugins:
+  - serverless-webpack
+
 package:
-  exclude:
-    - '**'
-  include:
-    - dist/**
+  individually: true
+
+custom:
+  webpack:
+    keepOutputDirectory: true
+    webpackConfig: webpack.config.js
+    includeModules:
+      forceInclude:
+        - bignumber.js
+        - node-fetch
+        - stellar-sdk
+      forceExclude:
+        - aws-sdk
+    packager: npm
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   environment:
     turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
     turretSigner: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX

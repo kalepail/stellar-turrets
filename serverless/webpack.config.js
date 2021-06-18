@@ -1,9 +1,13 @@
 const path = require('path')
 const webpack = require('webpack')
+const slsw = require('serverless-webpack')
 const TerserPlugin = require('terser-webpack-plugin')
+const nodeExternals = require('webpack-node-externals')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const pkg = require('./package.json')
+
+const isLocal = slsw.lib.webpack.isLocal
 
 const commitHash = (
   process.env.GITHUB_SHA 
@@ -14,20 +18,21 @@ const commitHash = (
 )
 
 module.exports = {
+  mode: isLocal ? 'development' : 'production',
+  entry: slsw.lib.entries,
   target: 'node',
-  mode: 'production',
-  entry: {
-    app: './src/app.js',
-  },
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-    libraryTarget: 'commonjs',
-  },
+  devtool: isLocal ? 'source-map' : false,
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin()],
   },
+  externalsPresets: { 
+    node: true 
+  },
+  externals: [
+    nodeExternals(),
+    /aws-sdk/
+  ],
   module: {
     rules: [
       {
@@ -35,11 +40,6 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    extensions: ['.js'],
-    mainFields: ['main'],
-  },
-  externalsPresets: { node: true },
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.IgnorePlugin({

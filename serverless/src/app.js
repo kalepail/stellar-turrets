@@ -1,6 +1,6 @@
-import fetch from 'node-fetch'
-import StellarBase from 'stellar-base'
-import BigNumber from 'bignumber.js'
+// import fetch from 'node-fetch'
+// import StellarBase from 'stellar-base'
+// import BigNumber from 'bignumber.js'
 
 const { Keypair, FastSigning } = StellarBase
 
@@ -52,22 +52,15 @@ export default async (event) => {
       module,
       HORIZON_URL,
       STELLAR_NETWORK,
-      fetch,
-      StellarBase,
-      BigNumber,
       global,
       globalThis,
-      process,
-      require
+      process
     `, // leave [global, globalThis, process, require] empty to effectively unset them
       `'use strict'; ${txFunctionCode}; return module.exports;`
     )(
       {exports: null}, 
       HORIZON_URL,
       STELLAR_NETWORK,
-      fetch,
-      StellarBase, 
-      BigNumber
     )
     const result = await txFunction(body)
 
