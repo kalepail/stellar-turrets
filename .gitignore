@@ -2,3 +2,4 @@
 .notes
 *.wiki
 node_modules
+.webpack

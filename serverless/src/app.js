@@ -1,8 +1,4 @@
-// import fetch from 'node-fetch'
-// import StellarBase from 'stellar-base'
-// import BigNumber from 'bignumber.js'
-
-const { Keypair, FastSigning } = StellarBase
+import { Keypair, FastSigning } from 'stellar-sdk'
 
 export default async (event) => {
   try {

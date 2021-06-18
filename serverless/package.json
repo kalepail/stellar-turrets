@@ -20,6 +20,7 @@
     "path": "^0.12.7",
     "serverless-webpack": "^5.5.1",
     "webpack": "^5.39.1",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-node-externals": "^3.0.0"
   }
 }
