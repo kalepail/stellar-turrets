@@ -17,7 +17,7 @@ export default async (event) => {
     }
 
     const body = JSON.parse(event.body)
-    const { HORIZON_URL, STELLAR_NETWORK } = body
+    const { HORIZON_URL, STELLAR_NETWORK } = body // Global variables for use in the txFunction
     const params = event.pathParameters
     const headers = event.headers
 
