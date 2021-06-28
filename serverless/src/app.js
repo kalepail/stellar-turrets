@@ -44,23 +44,36 @@ export default async (event) => {
     delete body.STELLAR_NETWORK
     delete body.txFunction
 
-    const txFunction = new Function(`
-      require,
-      module,
-      HORIZON_URL,
-      STELLAR_NETWORK,
-      global,
-      globalThis,
-      process
-    `, // leave [global, globalThis, process, require] empty to effectively unset them
-      `'use strict'; ${txFunctionCode}; return module.exports;`
-    )(
-      require,
-      {exports: null},
-      HORIZON_URL,
-      STELLAR_NETWORK,
-    )
-    const result = await txFunction(body)
+    // const txFunction = new Function(`
+    //   __filename,
+    //   __dirname,
+    //   require,
+    //   module,
+    //   HORIZON_URL,
+    //   STELLAR_NETWORK,
+    //   global,
+    //   globalThis,
+    //   process
+    // `, // leave [global, globalThis, process] empty to effectively unset them
+    // `
+    //   'use strict'; 
+    //   ${txFunctionCode}; 
+    //   return module.exports;
+    // `)(
+    //   __filename,
+    //   __dirname,
+    //   require,
+    //   {exports: null},
+    //   HORIZON_URL,
+    //   STELLAR_NETWORK,
+    // )
+    // const result = await txFunction(body)
+
+    const result = await eval(`
+      'use strict'; 
+      ${txFunctionCode};
+      module.exports;
+    `)(body)
 
     return {
       statusCode: 200,

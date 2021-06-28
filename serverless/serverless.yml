@@ -31,16 +31,7 @@ provider:
   tracing:
     lambda: true
   httpApi:
-    cors:
-      allowedOrigins:
-        - ${self:provider.environment.turretBaseUrl}
-      allowedHeaders:
-        - Content-Type 
-        - X-Turret-Data
-        - X-Turret-Signature
-      allowedMethods:
-        - OPTIONS
-        - POST
+    cors: true
   iam:
     role:
       statements:
@@ -52,7 +43,7 @@ provider:
 
 functions:
   run:
-    handler: dist/app.default
+    handler: src/app.default
     # provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
     memorySize: 256
     timeout: 8
