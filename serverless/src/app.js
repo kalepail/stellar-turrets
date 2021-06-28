@@ -45,6 +45,7 @@ export default async (event) => {
     delete body.txFunction
 
     const txFunction = new Function(`
+      require,
       module,
       HORIZON_URL,
       STELLAR_NETWORK,
@@ -54,7 +55,8 @@ export default async (event) => {
     `, // leave [global, globalThis, process, require] empty to effectively unset them
       `'use strict'; ${txFunctionCode}; return module.exports;`
     )(
-      {exports: null}, 
+      require,
+      {exports: null},
       HORIZON_URL,
       STELLAR_NETWORK,
     )
