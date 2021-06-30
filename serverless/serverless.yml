@@ -7,6 +7,7 @@ plugins:
 
 package:
   individually: true
+  excludeDevDependencies: false
 
 custom:
   webpack:
@@ -19,7 +20,7 @@ custom:
         - stellar-sdk
       forceExclude:
         - aws-sdk
-    packager: npm
+    packager: yarn
 
 provider:
   name: aws
