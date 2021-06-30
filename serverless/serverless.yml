@@ -7,7 +7,6 @@ plugins:
 
 package:
   individually: true
-  excludeDevDependencies: false
 
 custom:
   webpack:
