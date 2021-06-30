@@ -26,6 +26,7 @@ jobs:
           node-version: '12'
           
       - run: npm ci
+      - run: npm i serverless
       - run: npm run build
 
       - name: Deploy to AWS with Serverless
