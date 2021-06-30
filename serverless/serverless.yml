@@ -2,50 +2,55 @@ org: tyvdh
 app: tss-serverless
 service: tss-serverless
 
+plugins:
+  - serverless-webpack
+
 package:
-  exclude:
-    - '**'
-  include:
-    - dist/**
+  individually: true
+
+custom:
+  webpack:
+    keepOutputDirectory: true
+    webpackConfig: webpack.config.js
+    includeModules:
+      forceInclude:
+        - bignumber.js
+        - node-fetch
+        - stellar-sdk
+      forceExclude:
+        - aws-sdk
+    packager: npm
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
   environment:
     turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
     turretSigner: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
   tracing:
     lambda: true
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - xray:PutTelemetryRecords
-        - xray:PutTraceSegments
-      Resource: '*'
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - xray:PutTelemetryRecords
+            - xray:PutTraceSegments
+          Resource: '*'
 
 functions:
   run:
-    handler: dist/app.default
-    maximumRetryAttempts: 0
-    maximumRecordAgeInSeconds: 60
-    provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
+    handler: src/app.default
+    # provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
     memorySize: 256
     timeout: 8
     events:
       - httpApi:
           method: POST
           path: /{txFunctionHash}
-          cors:
-            allowedOrigins:
-              - ${self:provider.environment.turretBaseUrl}
-            allowedHeaders:
-              - Content-Type 
-              - X-Turret-Data
-              - X-Turret-Signature
-            allowedMethods:
-              - OPTIONS
-              - POST
       - httpApi:
           method: GET
           path: /
-          cors: true
