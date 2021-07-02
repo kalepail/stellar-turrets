@@ -12,6 +12,9 @@ defaults:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./serverless
 
     steps:
       - name: Cancel Previous Runs
@@ -20,18 +23,15 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@v2
-
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
-          
-      - run: npm ci
-      - run: npm run build
+          node-version: '14'
+        
+      - name: Install Serverless Framework
+        run: npm i -g serverless
 
-      - name: Deploy to AWS with Serverless
-        uses: serverless/github-action@v2.17.1
-        with:
-          args: -c "cd serverless && serverless deploy"
-          entrypoint: /bin/bash
-        env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      - name: Install dependencies
+        run: yarn
+
+      - name: Deploy Lambda function
+        run: SLS_DEBUG=* SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_ACCESS_KEY }} sls deploy

@@ -1,24 +1,25 @@
 {
   "private": true,
   "version": "0.0.0",
-  "main": "app.js",
   "scripts": {
-    "deploy": "npm run build && serverless deploy",
-    "build": "webpack build"
+    "build": "sls webpack",
+    "deploy": "sls deploy"
   },
   "dependencies": {
     "bignumber.js": "^9.0.1",
     "node-fetch": "^2.6.1",
-    "stellar-base": "^5.2.1"
+    "stellar-sdk": "^8.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.14.2",
-    "@babel/preset-env": "^7.14.4",
+    "@babel/core": "^7.14.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "path": "^0.12.7",
-    "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.0"
+    "serverless-webpack": "^5.5.1",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-node-externals": "^3.0.0"
   }
 }
