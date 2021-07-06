@@ -11,7 +11,7 @@ info:
     url: "https://raw.githubusercontent.com/tyvdh/stellar-tss/master/assets/tss-logo.png"
     altText: TSS Home Page
   description: >
-    Turing Signing Servers (TSS) provides decentralizated contract creation on Stellar.
+    Turing Signing Servers (TSS) provide decentralizated contract creation on Stellar.
 tags:
   - name: Turret
     description: View information about a Turret
@@ -32,16 +32,7 @@ paths:
     $ref: "paths/ctrl-accounts.yml"
 components:
   securitySchemes:
-    fee_auth:
-      description: >
-        A claimable balance operation submitted to 
-        the ledger payable to the turret within the fee limits
-        of the turret. See creation example in this 
-        [RunKit Example](https://runkit.com/tyvdh/609ae431597d79001ac15ebc)
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      x-examples:
-        header: test
+    Turret Fee Token:
+      $ref: "auth/TurretFeeToken.yml"
 servers:
   - url: "http://valid-tss-address"

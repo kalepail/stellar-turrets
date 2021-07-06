@@ -1,4 +1,4 @@
-post:
+put:
   tags:
     - Control Accounts
   summary: Manage turrets tied to txFunctions
