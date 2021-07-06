@@ -1,0 +1,59 @@
+name: Turret Fee
+description: >
+  The Turret Fee Token is a signed transaction evelope XDR that is signed by the account seeking authentication's public key.
+  The signed XDR, or fee transaction, contains metadata regarding the fee payment and is provided as a JWT Bearer token to the turret.
+
+  ### Fee Transaction Structure
+
+  The Fee Transaction is a Stellar transaction that authenticates an accounts use of a fee payment with the turret.
+  It MUST have a Sequence Number of 0 to ensure the transaction is not malicious and is unable to be submitted.
+  The following information will be pulled from the Fee Transaction:
+
+  * Sequence Number
+    * Verify the sequence number is 0 - if not, reject the token.
+  * Source account
+    * The account that is paying fees in to the turret through the claimable balance
+  * Timebounds
+    * The max time of the timebounds will be the absolute UNIX expiration time of the token.
+  * Operations
+    * ClaimClaimableBalance
+      * The Balance Id of the Claimable Fee Balance (of the structure show below) of the fee payment to the turret.
+    * ManageData
+      * Used to permit the fee to be used on certain txfunction contracts.
+      * Entry name = "txfunction". ManageData entries are ignored without this name.
+      * Entry value is the txfunction hash.
+  * Signature
+    * The Fee Transaction is signed by the account that sponsored the Claimable Fee Balance.
+
+  ### Claimable Balance Structure
+
+  The Fee Payment is in the form of a claimable balance. 
+  This claimable balance allows the turret to collect fees after a certain amount of usage has passed.
+  Some of the details of the claimable balance are dependent on a turrets configuration. Run a `GET /` commend to fetch the relevant information.
+  The following information will be pulled from the Fee Payment:
+
+  * Asset
+    * The payment must be in XLM
+  * Amount
+    * The amount of the payment must be between the Turrets configured fee.max and fee.min values.
+  * Sponsor
+    * The account public key that is paying the fees.
+  * Claimants
+    * Turret
+      * The turret is an unconditional claimaint.
+    * Sponsor
+      * The sponsor of the claimable balance can reclaim the fees after the Turrets configured fee.days time has passed. The predicate form to achieve this is: `NOT(relative(fee.days*24*60*60))`
+
+  ### Example
+  
+  This 
+  <a href="https://runkit.com/mootz12/60d1f69582e0580013bb591e" target="_blank">RunKit Example</a> 
+  showcases how to generate a Turret Fee Token.
+  It creates, signs, and generates a valid JWT token off of a
+  <a href="https://horizon-testnet.stellar.org/claimable_balances/00000000e64996842b53b544ad5963c97fc2d17fa13e403a6daa57b9e7693d74f203f903" target="_blank">Claimable Fee Balance</a>
+  Note, this example was generated on the TESTNET, and will be invalid after 9/15/21.
+type: http
+scheme: bearer
+bearerFormat: JWT
+x-examples:
+  header: test

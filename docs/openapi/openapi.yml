@@ -32,16 +32,7 @@ paths:
     $ref: "paths/ctrl-accounts.yml"
 components:
   securitySchemes:
-    fee_auth:
-      description: >
-        A claimable balance operation submitted to 
-        the ledger payable to the turret within the fee limits
-        of the turret. See creation example in this 
-        [RunKit Example](https://runkit.com/tyvdh/609ae431597d79001ac15ebc)
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      x-examples:
-        header: test
+    Turret Fee Token:
+      $ref: "auth/TurretFeeToken.yml"
 servers:
   - url: "http://valid-tss-address"

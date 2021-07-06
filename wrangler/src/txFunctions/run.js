@@ -1,5 +1,6 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
 import { Transaction, Networks, Keypair } from 'stellar-base'
+import { Utils } from '../@utils/stellar-sdk-utils'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 import { find as loFind } from 'lodash'
@@ -34,27 +35,43 @@ export default async ({ request, params, env, ctx }) => {
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
   const body = await request.json()
-  const claimableBalanceToken = request.headers.get('authorization')?.split(' ')?.[1]
+  const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  if (!claimableBalanceToken)
-    throw {message: `txFunctionFee is missing`}
+  if (!feeToken)
+    throw {message: `feeToken is missing`}
 
-  const [
-    claimableBalanceId, 
-    claimableBalanceSignature, 
-    ...txFunctionHashes
-  ] = JSON.parse(Buffer.from(claimableBalanceToken, 'base64'))
-
+  const feeTransaction = new Transaction(feeToken, Networks[STELLAR_NETWORK]);
   if (
-    txFunctionHashes.length
-    && txFunctionHashes.indexOf(txFunctionHash) === -1
-  ) throw {message: `txFunctionFee is invalid for this txFunction`}
+    feeTransaction.timeBounds?.maxTime != undefined &&
+    moment.unix(feeTransaction.timeBounds?.maxTime).isBefore()
+  ) {
+    throw { message: `feeToken has expired` };
+  }
+  if (feeTransaction.sequence !== '0')
+    throw { message: `feeTokenTransaction has a non-zero sequence number` }
+
+
+  let validTxFunctionHash = false;
+  let claimableBalanceId = undefined;
+  for (const op of feeTransaction.operations) {
+    if (claimableBalanceId == undefined && op.type === "claimClaimableBalance") {
+      claimableBalanceId = op.balanceId;
+    }
+    if (op.type === "manageData" && op.name === "txFunctionHash") {
+      let hash = op.value.toString();
+      if (hash === txFunctionHash) {
+        validTxFunctionHash = true;
+      }
+    }
+  }
+
+  if (!validTxFunctionHash) 
+    throw { message: `txFunctionFee is invalid for this txFunction` }
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(claimableBalanceId)
 
   let feeTotalBigNumber
   let feeSpentBigNumber
-
   if (feeMetadata) {
     feeTotalBigNumber = new BigNumber(feeMetadata.total)
     feeSpentBigNumber = new BigNumber(feeMetadata.spent)
@@ -73,16 +90,11 @@ export default async ({ request, params, env, ctx }) => {
       throw res
     })
 
-    const sponsorKeypair = Keypair.fromPublicKey(sponsor)
-
     if (!(
       asset === 'native'
       && new BigNumber(amount).isGreaterThanOrEqualTo(XLM_FEE_MIN)
       && new BigNumber(amount).isLessThanOrEqualTo(XLM_FEE_MAX)
-      && sponsorKeypair.verify(JSON.stringify([
-        claimableBalanceId,
-        ...txFunctionHashes
-      ]), Buffer.from(claimableBalanceSignature, 'hex'))
+      && Utils.verifyTxSignedBy(feeTransaction, sponsor)
       && claimants.length <= 2
       && loFind(claimants, (claimant) => 
         claimant.destination === TURRET_ADDRESS
