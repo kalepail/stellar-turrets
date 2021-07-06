@@ -1,7 +1,7 @@
 name: Turret Fee
 description: >
   The Turret Fee Token is a signed transaction evelope XDR that is signed by the account seeking authentication's public key.
-  The signed XDR, or fee transaction, contains metadata regarding the fee payment and is provided as a JWT Bearer token to the turret.
+  The signed XDR, or fee transaction, contains metadata regarding the fee payment and is provided as a Authorization Bearer token to the turret.
 
   ### Fee Transaction Structure
 
@@ -49,11 +49,11 @@ description: >
   This 
   <a href="https://runkit.com/mootz12/60d1f69582e0580013bb591e" target="_blank">RunKit Example</a> 
   showcases how to generate a Turret Fee Token.
-  It creates, signs, and generates a valid JWT token off of a
+  It creates, signs, and generates a valid Authorization token off of a
   <a href="https://horizon-testnet.stellar.org/claimable_balances/00000000e64996842b53b544ad5963c97fc2d17fa13e403a6daa57b9e7693d74f203f903" target="_blank">Claimable Fee Balance</a>
   Note, this example was generated on the TESTNET, and will be invalid after 9/15/21.
 type: http
 scheme: bearer
-bearerFormat: JWT
+bearerFormat: XDR
 x-examples:
   header: test

@@ -50,7 +50,8 @@ export default async ({ request, params, env, ctx }) => {
   if (!new BigNumber(feeTransaction.sequence).isEqualTo(0))
     throw { message: `feeTokenTransaction has a non-zero sequence number` }
 
-  let validTxFunctionHash = false
+  let matchedTxFunctionHash = false
+  let specifiedTxFuncHashes = false
   let claimableBalanceId
 
   for (const op of feeTransaction.operations) {
@@ -65,13 +66,15 @@ export default async ({ request, params, env, ctx }) => {
     ) {
       const hash = op.value.toString()
 
+      specifiedTxFuncHashes = true;
+      
       if (hash === txFunctionHash)
-        validTxFunctionHash = true
+        matchedTxFunctionHash = true;
     }
   }
 
-  if (!validTxFunctionHash) 
-    throw { message: `txFunctionFee is invalid for this txFunction` }
+  if (specifiedTxFuncHashes && !matchedTxFunctionHash)
+    throw { message: `txFunctionFee is invalid for this txFunction` };
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(claimableBalanceId)
 
