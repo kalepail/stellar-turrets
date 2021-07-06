@@ -40,28 +40,33 @@ export default async ({ request, params, env, ctx }) => {
   if (!feeToken)
     throw {message: `feeToken is missing`}
 
-  const feeTransaction = new Transaction(feeToken, Networks[STELLAR_NETWORK]);
+  const feeTransaction = new Transaction(feeToken, Networks[STELLAR_NETWORK])
+
   if (
-    feeTransaction.timeBounds?.maxTime != undefined &&
+    feeTransaction.timeBounds?.maxTime !== undefined &&
     moment.unix(feeTransaction.timeBounds?.maxTime).isBefore()
-  ) {
-    throw { message: `feeToken has expired` };
-  }
-  if (feeTransaction.sequence !== '0')
+  ) throw { message: `feeToken has expired` }
+
+  if (!new BigNumber(feeTransaction.sequence).isEqualTo(0))
     throw { message: `feeTokenTransaction has a non-zero sequence number` }
 
+  let validTxFunctionHash = false
+  let claimableBalanceId
 
-  let validTxFunctionHash = false;
-  let claimableBalanceId = undefined;
   for (const op of feeTransaction.operations) {
-    if (claimableBalanceId == undefined && op.type === "claimClaimableBalance") {
-      claimableBalanceId = op.balanceId;
-    }
-    if (op.type === "manageData" && op.name === "txFunctionHash") {
-      let hash = op.value.toString();
-      if (hash === txFunctionHash) {
-        validTxFunctionHash = true;
-      }
+    if (
+      claimableBalanceId === undefined 
+      && op.type === 'claimClaimableBalance'
+    ) claimableBalanceId = op.balanceId
+
+    if (
+      op.type === 'manageData' 
+      && op.name === 'txFunctionHash'
+    ) {
+      const hash = op.value.toString()
+
+      if (hash === txFunctionHash)
+        validTxFunctionHash = true
     }
   }
 
@@ -72,6 +77,7 @@ export default async ({ request, params, env, ctx }) => {
 
   let feeTotalBigNumber
   let feeSpentBigNumber
+  
   if (feeMetadata) {
     feeTotalBigNumber = new BigNumber(feeMetadata.total)
     feeSpentBigNumber = new BigNumber(feeMetadata.spent)
