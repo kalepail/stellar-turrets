@@ -1,10 +1,11 @@
 # Extracted from https://github.com/jizt-it/jizt-api-spec/blob/main/.github/workflows/build-docs.yml
 
-name: Build docs
+name: Build Docs
+
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   build:
