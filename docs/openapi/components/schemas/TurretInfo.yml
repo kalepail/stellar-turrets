@@ -1,0 +1,22 @@
+type: object
+properties:
+  turret:
+    description: The public key of the turret owner
+    type: string
+    example: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+  network:
+    description: The Stellar Network the turret is on. TESTNET or PUBLIC
+    type: string
+    example: TESTNET
+  horizon:
+    description: The Horizon API the turret uses
+    type: string
+    example: https://horizon-testnet.stellar.org
+  version:
+    description: The repository version and last commit
+    type: string
+    example: v0.0.0-ff9e9750369cc8aed29af9f08ae34634594cbe41
+  fee:
+    $ref: ./Fee.yml
+  divisor:
+    $ref: ./Divisor.yml

@@ -1,0 +1,11 @@
+get:
+  tags:
+    - Turret
+  summary: Get the turrets toml file
+  operationId: getToml
+  description: |
+    Returns the stellar.toml file associated with the turret
+  responses:
+    '200':
+      description: >
+        A [Stellar TOML](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md) file
