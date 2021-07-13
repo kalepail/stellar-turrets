@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: serverless
+    working-directory: ./serverless
 
 jobs:
   deploy:
@@ -23,32 +23,20 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14'
 
-      - run: npx envdist -e
+      - name: Install Serverless Framework
+        run: npm i -g serverless
+
+      - name: write .env file
+        run: npx envdist -e
         env:
           SLS_ORG: ${{ secrets.SLS_ORG }}
           SLS_TURRET_BASE_URL: ${{ secrets.SLS_TURRET_BASE_URL }}
           SLS_TURRET_SIGNER_ACCOUNT: ${{ secrets.SLS_TURRET_SIGNER_ACCOUNT }}
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependencies
+        run: yarn
 
-      - name: Deploy to AWS with Serverless
-        uses: serverless/github-action@v2.17.1
-        with:
-          args: -c "cd serverless && serverless deploy"
-          entrypoint: /bin/bash
-        env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-
-      - name: Get API URL
-        uses: serverless/github-action@v2.17.1
-        with:
-          args: -c "cd serverless && serverless plugin install --name serverless-manifest-plugin && serverless manifest"
-          entrypoint: /bin/bash
-        env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-
-      - name: Display API URL
-        run: cat .serverless/manifest.json | jq -r '.dev.outputs[]|select(.OutputKey == "HttpApiUrl")|.OutputValue'
+      - name: Deploy Lambda function
+        run: SLS_DEBUG=* SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_ACCESS_KEY }} sls deploy

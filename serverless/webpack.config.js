@@ -1,8 +1,11 @@
-const path = require('path')
 const webpack = require('webpack')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const slsw = require('serverless-webpack')
+const TerserPlugin = require('terser-webpack-plugin')
+const nodeExternals = require('webpack-node-externals')
 
 const pkg = require('./package.json')
+
+const isLocal = slsw.lib.webpack.isLocal
 
 const commitHash = (
   process.env.GITHUB_SHA 
@@ -13,40 +16,35 @@ const commitHash = (
 )
 
 module.exports = {
-  mode: 'production',
-  optimization: {
-    minimize: true
-  },
-  // mode: 'development',
-  // devtool: false,
-  entry: {
-    app: './src/app.js',
-  },
-  output: {
-    libraryTarget: 'commonjs-module',
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-  },
+  mode: isLocal ? 'development' : 'production',
+  entry: slsw.lib.entries,
   target: 'node',
-  externalsPresets: { node: true },
-  resolve: {
-    extensions: ['.js'],
-    mainFields: ['main'],
+  devtool: isLocal ? 'source-map' : false,
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
   },
+  externalsPresets: { 
+    node: true 
+  },
+  externals: [
+    nodeExternals(),
+    /aws-sdk/
+  ],
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: __dirname,
-        exclude: /node_modules/
+        test: /\.c?js$/, exclude: /node_modules/, loader: 'babel-loader'
       }
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(`v${pkg.version}-${commitHash}`),
-    })
+    }),
   ]
 }

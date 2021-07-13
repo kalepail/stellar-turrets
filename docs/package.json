@@ -1,0 +1,13 @@
+{
+  "name": "tss-ref-docs",
+  "version": "0.1.0",
+  "dependencies": {
+    "@redocly/openapi-cli": "*"
+  },
+  "private": true,
+  "scripts": {
+    "start": "openapi preview-docs",
+    "build": "openapi bundle -o dist",
+    "test": "openapi lint"
+  }
+}

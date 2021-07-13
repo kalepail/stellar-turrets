@@ -10,16 +10,15 @@ If you haven't already go ahead and [signup for Cloudflare workers](https://dash
 Next generate the `.env` and `wrangler.toml` files from their templates. Just run `npm run init` inside the `wrangler` subdirectory. The script will ask for a bunch of values, which you'll need at hand in order to successfully finish the init step. If there are default-values, they will be prefilled (e.g. `HORIZON_URL` defaults to the test net). If you don't have the value at hand (i.e. you can only run the wrangler cli to create KV namespaces (step 2 below) *after* providing `WRANGLER_ACCOUNT_ID`) just hit enter. You can repeat this step as often as you want to. Variables in `.env` that already have values assigned won't be updated again by this step.
 
 1. For the `account_id` go to the workers page on [dash.cloudflare.com](https://dash.cloudflare.com) and copy your `Account ID`.
-2. For `kv_namespaces` create four new kv namespaces via the wrangler cli:
+2. For `kv_namespaces` create three new kv namespaces via the wrangler cli:
 ```
 $ npx wrangler kv:namespace create "META"
 $ npx wrangler kv:namespace create "TX_FUNCTIONS"
 $ npx wrangler kv:namespace create "TX_FEES"
-$ npx wrangler kv:namespace create "TX_SPONSORS"
 ```
 Each of those commands will spit out the object you should use to provide in the init-step.
 
-3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar network passphrases. For `HORIZON_URL` place in the url for the horizon service your Turret will consume. This should match with either the Test or Public network passphrase which you just set for the `STELLAR_NETWORK` variable. For `TURRET_ADDRESS` just use any valid, funded, Stellar account you privately own. This is the account into which fees will be paid as txFunctions are uploaded and run on your Turret. Next set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url. Finally set the `XLM_FEE_MIN`, `XLM_FEE_MAX`, `UPLOAD_DIVISOR`, and  `RUN_DIVISOR` values to reasonable defaults. (For more info on these fee variables review the [Fee Wiki](https://github.com/tyvdh/stellar-tss/wiki/fees).)
+3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar network passphrases. For `HORIZON_URL` place in the url for the horizon service your Turret will consume. This should match with either the Test or Public network passphrase which you just set for the `STELLAR_NETWORK` variable. For `TURRET_ADDRESS` just use any valid, funded, Stellar account you privately own. This is the account into which fees will be paid as txFunctions are uploaded and run on your Turret. Next set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url. Finally set the `TX_FUNCTION_FEE_DAYS_TTL`, `XLM_FEE_MIN`, `XLM_FEE_MAX`, `UPLOAD_DIVISOR`, and  `RUN_DIVISOR` values to reasonable defaults. (For more info on these fee variables review the [Fee Wiki](https://github.com/tyvdh/stellar-tss/wiki/fees).)
 
 Now that the `wrangler.toml` file has been created let's move to the `stellar.toml` file. This file is served as your Turret's `stellar.toml` file. Particularly note the `[TSS].TURRETS` array; this will be an array of other Turret addresses that you trust to cohost txFunctions with in the case of txFunction healing. For now just make sure to include your own `TURRET_ADDRESS` which should be the first entry. There are already a few other turrets in the file as well. You can add or remove those entries to your liking/trust.
 
@@ -82,7 +81,6 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 | WRANGLER_META | KV namesapace for worker's META information |  |
 | WRANGLER_TX_FUNCTIONS | KV namespace for worker's functions |  |
 | WRANGLER_TX_FEES | KV namesapce for worker's fees |  |
-| WRANGLER_TX_SPONSORS | KV namespace for worker's sponsors |  |
 | *WRANGLER_XLM_FEE_MIN* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **1** |
 | *WRANGLER_XLM_FEE_MAX* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **10** |
 | *WRANGLER_UPLOAD_DIVISOR* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **1000** |

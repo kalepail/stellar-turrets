@@ -1,0 +1,19 @@
+put:
+  tags:
+    - Control Accounts
+  summary: Manage turrets tied to txFunctions
+  operationId: updateCtrlAccounts
+  description: Allows for healing a signer on a txFunction if the majority of trusted turrets approve it.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/CtrlAccounts.yml"
+    required: true
+  responses:
+    "200":
+      description: txFunction uploaded
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/CtrlAccountsResult.yml"

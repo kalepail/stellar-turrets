@@ -1,0 +1,10 @@
+type: object
+properties:
+  message:
+    description: The error message
+    type: string
+    example: txFunction could not be found this turret
+  status:
+    description: The status code of the message
+    type: integer
+    example: 404

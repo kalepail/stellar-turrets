@@ -1,8 +1,4 @@
-import fetch from 'node-fetch'
-import StellarBase from 'stellar-base'
-import BigNumber from 'bignumber.js'
-
-const { Keypair, FastSigning } = StellarBase
+import { Keypair, FastSigning } from 'stellar-sdk'
 
 export default async (event) => {
   try {
@@ -21,7 +17,7 @@ export default async (event) => {
     }
 
     const body = JSON.parse(event.body)
-    const { HORIZON_URL, STELLAR_NETWORK } = body
+    const { HORIZON_URL, STELLAR_NETWORK } = body // Global variables for use in the txFunction
     const params = event.pathParameters
     const headers = event.headers
 
@@ -48,28 +44,36 @@ export default async (event) => {
     delete body.STELLAR_NETWORK
     delete body.txFunction
 
-    const txFunction = new Function(`
-      module,
-      HORIZON_URL,
-      STELLAR_NETWORK,
-      fetch,
-      StellarBase,
-      BigNumber,      
-      global,
-      globalThis,
-      process,
-      require
-    `, // leave these (global, globalThis, process) empty to effectively unset them
-      `'use strict'; ${txFunctionCode}; return module.exports;`
-    )(
-      {exports: null}, 
-      HORIZON_URL,
-      STELLAR_NETWORK,
-      fetch,
-      StellarBase, 
-      BigNumber
-    )
-    const result = await txFunction(body)
+    // const txFunction = new Function(`
+    //   __filename,
+    //   __dirname,
+    //   require,
+    //   module,
+    //   HORIZON_URL,
+    //   STELLAR_NETWORK,
+    //   global,
+    //   globalThis,
+    //   process
+    // `, // leave [global, globalThis, process] empty to effectively unset them
+    // `
+    //   'use strict'; 
+    //   ${txFunctionCode}; 
+    //   return module.exports;
+    // `)(
+    //   __filename,
+    //   __dirname,
+    //   require,
+    //   {exports: null},
+    //   HORIZON_URL,
+    //   STELLAR_NETWORK,
+    // )
+    // const result = await txFunction(body)
+
+    const result = await eval(`
+      'use strict'; 
+      ${txFunctionCode};
+      module.exports;
+    `)(body)
 
     return {
       statusCode: 200,

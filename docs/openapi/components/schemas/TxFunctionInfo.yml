@@ -1,0 +1,22 @@
+type: object
+properties:
+  function:
+    description: The source code the function will execute
+    type: string
+    example: "(body) => {\n  return fetch('https://tss-contract-5wkzvvzhfmmp.runkit.sh', {\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json'\n    },\n    body: JSON.stringify(body)\n  })\n  .then((res) => {\n    if (res.ok)\n      return res.text()\n    throw res\n  })\n}"
+  fields:
+    description: An array of input fields the turret accepts
+    type: array
+    example:
+      [
+        {
+          "name": "destination",
+          "type": "string",
+          "description": "Stellar public key you'd like to pay",
+          "rule": "Must be a valid and funded Stellar public key",
+        },
+      ]
+  signer:
+    description: The public key that signs for the contract
+    type: string
+    example: GB2BZXNG3JLUX4HYWRHREDMPJ4YINBLEHGZB4US2NJ2IPFNK65MCOOLG

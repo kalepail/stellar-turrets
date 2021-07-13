@@ -1,0 +1,29 @@
+post:
+  tags:
+    - txFunctions
+  summary: Upload a txFunction
+  operationId: uploadTxFunction
+  description: Uploads a txFunction to the turret.
+  requestBody:
+    content:
+      multipart/form-data:
+        schema:
+          $ref: "../components/schemas/TxFuncUploadForm.yml"
+        example:
+          txFunction: /some/path/txFunction.js
+          txFunctionFields: W3sibmFtZSI6ImRlc3RpbmF0aW9uIiwidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiU3RlbGxhciBwdWJsaWMga2V5IHlvdSdkIGxpa2UgdG8gcGF5IiwicnVsZSI6Ik11c3QgYmUgYSB2YWxpZCBhbmQgZnVuZGVkIFN0ZWxsYXIgcHVibGljIGtleSJ9XQ
+          txFunctionFee: AAAAAgAAAABTqjFHz0quLSka8SOrkw7R07aqDNUHAe+Qm5PX0jMiGwAAAGQAHfBZAAAADgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAB47DPzhNMoutc7krUC+kJ1BvEel4wkn4w1qzA7sOje0AAAAAAAAAAAAJiWgAAAAAAAAAAB0jMiGwAAAEAZjWTnxXY2lxVt0VSos6/Uvpoo3pXo6l+0Xk/P+sE5KDPwhAYkVQyXEBb8prEYprzp3aSlLF4TKcw3m/RM5IMK
+    required: true
+  responses:
+    "200":
+      description: txFunction uploaded
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/ContractUploadResponse.yml"
+    "402":
+      description: payment required
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/PaymentRequired.yml"

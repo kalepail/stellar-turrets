@@ -12,8 +12,6 @@ import txFunctionsRun from './txFunctions/run'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
 
-import txSponsorsGet from './txSponsors/get'
-import txSponsorsUpsert from './txSponsors/upsert'
 
 const router = new Router()
 
@@ -29,14 +27,9 @@ router
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
 
-router
-.get('/tx-sponsors/:txSponsorAddress', txSponsorsGet)
-.post('/tx-sponsors', txSponsorsUpsert)
-
-async function handleRequest(event) {
+async function handleRequest(request, env, ctx) {
   try {
     const cache = caches.default
-    const { request } = event
     const { method, url } = request
     const { href, pathname } = new URL(url)
 
@@ -59,16 +52,17 @@ async function handleRequest(event) {
     if (routerMatch) {
       const routerResponse = await routerMatch.handler({
         ...routerMatch,
-        event,
-        request,
         cache,
+        request,
+        env,
+        ctx
       })
 
       if (
         method === 'GET'
         && routerResponse.status >= 200
         && routerResponse.status <= 299
-      ) event.waitUntil(cache.put(href, routerResponse.clone()))
+      ) ctx.waitUntil(cache.put(href, routerResponse.clone()))
 
       return routerResponse
     }
@@ -81,6 +75,8 @@ async function handleRequest(event) {
   }
 }
 
-addEventListener('fetch', (event) =>
-  event.respondWith(handleRequest(event))
-)
+exports.handlers = {
+  async fetch(request, env, ctx) {
+    return handleRequest(request, env, ctx)
+  }
+}

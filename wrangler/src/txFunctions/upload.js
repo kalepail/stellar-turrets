@@ -4,7 +4,8 @@ import BigNumber from 'bignumber.js'
 import { Transaction, Keypair, Networks } from 'stellar-base'
 import { find } from 'lodash'
 
-export default async ({ request }) => {
+export default async ({ request, env }) => {
+  const { TX_FUNCTIONS, TURRET_ADDRESS, STELLAR_NETWORK, HORIZON_URL, UPLOAD_DIVISOR } = env
   const body = await request.formData()
 
   const txFunctionFields = body.get('txFunctionFields')

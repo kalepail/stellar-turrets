@@ -1,0 +1,43 @@
+openapi: 3.1.0
+info:
+  version: 0.1.0
+  title: Turing Signing Server Reference Documentation
+  contact:
+    url: "https://tss.stellar.com/"
+  license:
+    name: GPL-3.0 License
+    url: "https://www.gnu.org/licenses/gpl-3.0.en.html"
+  x-logo:
+    url: "https://raw.githubusercontent.com/tyvdh/stellar-tss/master/assets/tss-logo.png"
+    altText: TSS Home Page
+  description: >
+    Turing Signing Servers (TSS) provide decentralizated contract creation on Stellar.
+tags:
+  - name: Turret
+    description: View information about a Turret
+  - name: txFunctions
+    description: >
+      Manage and run txFunctions on the Turret. A txFuntion is a JavaScript file that outputs an valid Transaction Evelope XDR.
+      The txFunction will be executed in a node environment with the following default node_module packages:
+        * bignumber.js
+        * node-fetch
+        * stellar-sdk
+  - name: Control Accounts
+    description: Control Turret account information
+paths:
+  /:
+    $ref: "paths/root.yml"
+  /.well-known/stellar.toml:
+    $ref: "paths/well-known/toml.yml"
+  /tx-functions:
+    $ref: "paths/tx-functions.yml"
+  /tx-functions/{txFunctionHash}:
+    $ref: "paths/tx-functions@{txFunctionHash}.yml"
+  /ctrl-accounts:
+    $ref: "paths/ctrl-accounts.yml"
+components:
+  securitySchemes:
+    Turret Fee Token:
+      $ref: "auth/TurretFeeToken.yml"
+servers:
+  - url: "http://valid-tss-address"

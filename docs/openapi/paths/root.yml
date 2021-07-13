@@ -1,0 +1,14 @@
+get:
+  tags:
+    - Turret
+  summary: Get turret information
+  operationId: getTurretInfo
+  description: |
+    Returns basic information about the turret
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/TurretInfo.yml'

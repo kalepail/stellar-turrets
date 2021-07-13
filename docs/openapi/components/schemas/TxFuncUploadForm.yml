@@ -1,0 +1,28 @@
+type: object
+properties:
+  txFunction:
+    description: The source code to be uploaded
+    type: string
+    example: /some/path/txFunction.js
+  txFunctionFields:
+    description: > 
+      A Base64 encoded array of json object of the input fields for the contract in this format:
+      <pre>
+        <code>
+        [
+          { 
+            "name": "paramName", 
+            "type": "string", 
+            "description": "This is a param", 
+            "rule": "Required"
+          }
+        ]
+        </code>
+      </pre>
+      Valid `rules` are `Required` and `Optional`
+    type: string
+    example: W3sibmFtZSI6ImRlc3RpbmF0aW9uIiwidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiU3RlbGxhciBwdWJsaWMga2V5IHlvdSdkIGxpa2UgdG8gcGF5IiwicnVsZSI6Ik11c3QgYmUgYSB2YWxpZCBhbmQgZnVuZGVkIFN0ZWxsYXIgcHVibGljIGtleSJ9XQ
+  txFunctionFee:
+    description: A signed, non-submitted transaction envelope XDR for a fee payment to the TURRET_ADDRESS that is greater than or equal to the byte length of the contract divided by the UPLOAD_DIVISOR set by the turret
+    type: string
+    example: AAAAAgAAAABTqjFHz0quLSka8SOrkw7R07aqDNUHAe+Qm5PX0jMiGwAAAGQAHfBZAAAADgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAB47DPzhNMoutc7krUC+kJ1BvEel4wkn4w1qzA7sOje0AAAAAAAAAAAAJiWgAAAAAAAAAAB0jMiGwAAAEAZjWTnxXY2lxVt0VSos6/Uvpoo3pXo6l+0Xk/P+sE5KDPwhAYkVQyXEBb8prEYprzp3aSlLF4TKcw3m/RM5IMK

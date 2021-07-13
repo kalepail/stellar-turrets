@@ -1,0 +1,18 @@
+type: object
+properties:
+  functionHash:
+    description: The hash of the txFunction to manage the turret access of
+    type: string
+    example: 78565516a844fd4dfc5a7fc7da822028b04ee0aeaf981a4a914d4510906a7a32
+  sourceAccount:
+    description: The source account to create the transaction to heal with
+    type: string
+    example: GB2BZXNG3JLUX4HYWRHREDMPJ4YINBLEHGZB4US2NJ2IPFNK65MCOOLG
+  removeTurret:
+    description: The public address of a turret to remove signing power for a txFunction
+    type: string
+    example: GDLXUEYABS4ZR7XA4YYY7VKVD6DHFP7TFF2N2OXGBL6JL73HCXUFVDKX
+  addTurret:
+    description: The public address of a turret to add signing powers for a txFunction
+    type: string
+    example: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX

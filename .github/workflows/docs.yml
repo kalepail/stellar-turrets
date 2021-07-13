@@ -1,0 +1,24 @@
+# Extracted from https://github.com/jizt-it/jizt-api-spec/blob/main/.github/workflows/build-docs.yml
+
+name: Build Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build docs
+      working-directory: ./docs
+      run: ./build.sh
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3 # https://github.com/peaceiris/actions-gh-pages
+      with:
+        github_token: ${{ github.token }}
+        publish_dir: ./docs/dist
+        force_orphan: true
+#       cname: docs.api.jizt.it
