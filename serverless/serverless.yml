@@ -22,6 +22,9 @@ custom:
       forceExclude:
         - aws-sdk
     packager: yarn
+  provisionedConcurrency:
+    paid: 4
+    free: 0
 
 provider:
   name: aws
@@ -38,7 +41,8 @@ provider:
 functions:
   run:
     handler: src/app.default
-    # provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
+    # If you're not on a paid plan with AWS you'll need to use 0 (i.e. 'free'), otherwise you'll get an RunLambdaEvConf error
+    provisionedConcurrency: ${self:custom.provisionedConcurrency.${env:SLS_AWS_PLAN}, self:custom.provisionedConcurrency.free}
     memorySize: 256
     timeout: 8
     events:

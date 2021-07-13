@@ -88,6 +88,7 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 | SLS_ORG | The serverless organization to deploy to |  |
 | SLS_TURRET_BASE_URL | Base URL of turret (wrangler URL) |  |
 | SLS_TURRET_SIGNER_ACCOUNT | Public key of function signer (counterpart to turret's **private** signer key) |  |
+| *SLS_AWS_PLAN* | Indicate if you are using a free or paid plan | **free** |
 | SERVERLESS_ACCESS_KEY | Token for SLS API access |  |
 
 optional values are *italic* (i.e. will be using defaults if not set)
