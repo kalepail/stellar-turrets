@@ -1,6 +1,8 @@
-org: tyvdh
+org: ${env:SLS_ORG}
 app: tss-serverless
 service: tss-serverless
+useDotenv: true
+variablesResolutionMode: 20210326
 
 plugins:
   - serverless-webpack
@@ -20,14 +22,17 @@ custom:
       forceExclude:
         - aws-sdk
     packager: yarn
+  provisionedConcurrency:
+    paid: 4
+    free: 0
 
 provider:
   name: aws
   runtime: nodejs14.x
   lambdaHashingVersion: 20201221
   environment:
-    turretBaseUrl: 'https://tss-wrangler.tyler.workers.dev'
-    turretSigner: GB4OYM7TQTJSROWXHOJLKAX2IJ2QN4I6S6GCJH4MGWVTAO5Q5DPNADXX
+    turretBaseUrl: ${env:SLS_TURRET_BASE_URL}
+    turretSigner: ${env:SLS_TURRET_SIGNER_ACCOUNT}
   tracing:
     lambda: true
   httpApi:
@@ -36,7 +41,8 @@ provider:
 functions:
   run:
     handler: src/app.default
-    # provisionedConcurrency: 4 # If you're not on a paid plan with AWS you'll need to comment this line out, otherwise you'll get an RunLambdaEvConf error
+    # If you're not on a paid plan with AWS you'll need to use 0 (i.e. 'free'), otherwise you'll get an RunLambdaEvConf error
+    provisionedConcurrency: ${self:custom.provisionedConcurrency.${env:SLS_AWS_PLAN}, self:custom.provisionedConcurrency.free}
     memorySize: 256
     timeout: 8
     events:

@@ -71,6 +71,7 @@ web_modules/
 # dotenv environment variables file
 .env
 .env.test
+!.env.dist
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -117,3 +118,6 @@ dist
 
 # Cloudflare Workers dist builds.
 worker
+
+wrangler.toml
+stellar.toml

@@ -4,7 +4,9 @@
   "module": "./dist/shim.mjs",
   "scripts": {
     "build": "webpack",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish",
+    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs) && envsubst < wrangler.toml.dist > wrangler.toml",
+    "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",

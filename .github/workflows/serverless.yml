@@ -4,17 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
-  
+
 defaults:
   run:
-    working-directory: serverless
+    working-directory: ./serverless
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./serverless
 
     steps:
       - name: Cancel Previous Runs
@@ -23,12 +20,21 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@v2
+
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-        
+
       - name: Install Serverless Framework
         run: npm i -g serverless
+
+      - name: write .env file
+        run: npx envdist -e
+        env:
+          SLS_ORG: ${{ secrets.SLS_ORG }}
+          SLS_TURRET_BASE_URL: ${{ secrets.SLS_TURRET_BASE_URL }}
+          SLS_TURRET_SIGNER_ACCOUNT: ${{ secrets.SLS_TURRET_SIGNER_ACCOUNT }}
+          SLS_AWS_PLAN: ${{ secrets.SLS_AWS_PLAN }}
 
       - name: Install dependencies
         run: yarn

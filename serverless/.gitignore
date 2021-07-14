@@ -4,5 +4,10 @@ coverage
 node_modules
 build/
 .env*
+!.env.dist
 dist
 .serverless
+
+# Ignore serverless manifest files
+serverless.manifest.json
+.serverless/manifest.json
