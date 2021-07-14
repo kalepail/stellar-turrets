@@ -79,12 +79,13 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 | WRANGLER_API_TOKEN | Token for cloudflare API access |  |
 | *WRANGLER_WORKER_NAME* | name of your worker inside cloudflare | **tss-wrangler** |
 | WRANGLER_META | KV namesapace for worker's META information |  |
+| *WRANGLER_TX_FUNCTION_FEE_DAYS_TTL* | Days before a user can reclaim fees from the turret. See [turret_info] | **180** |
 | WRANGLER_TX_FUNCTIONS | KV namespace for worker's functions |  |
 | WRANGLER_TX_FEES | KV namesapce for worker's fees |  |
-| *WRANGLER_XLM_FEE_MIN* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **1** |
-| *WRANGLER_XLM_FEE_MAX* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **10** |
-| *WRANGLER_UPLOAD_DIVISOR* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **1000** |
-| *WRANGLER_RUN_DIVISOR* | see https://github.com/tyvdh/stellar-tss/wiki/fees | **100000** |
+| *WRANGLER_XLM_FEE_MIN* | The minimum claimable fee balance allowed. See [turret_info] | **1** |
+| *WRANGLER_XLM_FEE_MAX* | The maximum claimable fee balance allowed. See [turret_info] | **10** |
+| *WRANGLER_UPLOAD_DIVISOR* | The divisor used in fee calculations for uploading functions. See [turret_info] | **1000** |
+| *WRANGLER_RUN_DIVISOR* | The divisor used in fee calculations for running functions. See [turret_info] | **100000** |
 | SLS_ORG | The serverless organization to deploy to |  |
 | SLS_TURRET_BASE_URL | Base URL of turret (wrangler URL) |  |
 | SLS_TURRET_SIGNER_ACCOUNT | Public key of function signer (counterpart to turret's **private** signer key) |  |
@@ -101,3 +102,5 @@ This is alpha software representing a reference implementation for the [TSS prot
 For this reason I strongly suggest either:  
 A) Leaving your `STELLAR_NETWORK` set to `TESTNET`  
 or B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching Turret signers to
+
+[turret_info]: https://tyvdh.github.io/stellar-tss/#operation/getTurretInfo

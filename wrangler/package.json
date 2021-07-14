@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack",
     "deploy": "wrangler publish",
-    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs -d '\n') && envsubst < wrangler.toml.dist > wrangler.toml",
+    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs) && envsubst < wrangler.toml.dist > wrangler.toml",
     "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist"
   },
   "dependencies": {
