@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { Keypair, FastSigning } from 'stellar-sdk'
 
 export default async (event) => {
