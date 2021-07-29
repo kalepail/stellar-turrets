@@ -48,7 +48,7 @@ Next we have the Serverless lambda endpoint which is hosted with AWS but deploye
 
 Now it'll be the fun task of getting:
 ```
-$ npm i
+$ yarn
 $ npm run deploy
 ```
 To successfully run from within the `./serverless` directory.
