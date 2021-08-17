@@ -9,6 +9,7 @@
     "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist"
   },
   "dependencies": {
+    "@cloudflare/wrangler": "^1.19.0",
     "@iarna/toml": "^2.2.5",
     "bignumber.js": "^9.0.1",
     "bluebird": "^3.7.2",
