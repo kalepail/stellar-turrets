@@ -3,3 +3,6 @@
 *.wiki
 node_modules
 .webpack
+
+# Vim
+.*.sw?
