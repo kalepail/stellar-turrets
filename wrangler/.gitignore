@@ -121,6 +121,7 @@ worker
 
 #Vim
 .*.sw?
+*.vim
 
 wrangler.toml
 stellar.toml

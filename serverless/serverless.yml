@@ -1,4 +1,4 @@
-org: amissine
+org: ${env:SLS_ORG}
 app: tss-serverless
 service: tss-serverless
 useDotenv: true
