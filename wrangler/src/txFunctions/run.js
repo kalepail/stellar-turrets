@@ -35,7 +35,7 @@ export default async ({ request, params, env, ctx }) => {
   const txFunction = txFunctionBuffer.slice(0, length).toString()
 
   const body = await request.json()
-  const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
+  const feeToken = request.headers.get('authorization')
 
   if (!feeToken)
     throw {message: `feeToken is missing`}
