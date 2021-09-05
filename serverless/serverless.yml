@@ -17,6 +17,7 @@ custom:
     includeModules:
       forceInclude:
         - bignumber.js
+        - moment
         - node-fetch
         - stellar-sdk
       forceExclude:
@@ -41,8 +42,7 @@ provider:
 functions:
   run:
     handler: src/app.default
-    # If you're not on a paid plan with AWS you'll need to use 0 (i.e. 'free'), otherwise you'll get an RunLambdaEvConf error
-    provisionedConcurrency: ${self:custom.provisionedConcurrency.${env:SLS_AWS_PLAN}, self:custom.provisionedConcurrency.free}
+    provisionedConcurrency: 1
     memorySize: 256
     timeout: 8
     events:

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bignumber.js": "^9.0.1",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "stellar-sdk": "^8.2.4"
   },
