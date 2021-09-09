@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { clone } from "lodash";
-import { Keypair, Transaction } from "stellar-base";
+import { Keypair, Transaction, Networks } from "stellar-base";
 /**
  * Verifies if a transaction was signed by the given account id.
  *
@@ -80,6 +80,8 @@ export function gatherTxSigners(transaction, signers) {
 
 /**
  * Process a fee payment made to the Turret
+ * 
+ * @param {Object} env The current node env variables
  * @param {string} xdr The XDR of the fee payment to submit
  * @param {string | number} min The minimum fee payment amount
  * @param {string | number} max The maximum fee payment amount
@@ -91,7 +93,7 @@ export function gatherTxSigners(transaction, signers) {
  * @returns {PaymentResult} The result of the payment
  * @throws If the transaction is unable to be submitted for any reason
  */
-export async function processFeePayment(xdr, min, max) {
+export async function processFeePayment(env, xdr, min, max) {
   const { HORIZON_URL, STELLAR_NETWORK, TURRET_ADDRESS } = env
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])
@@ -122,7 +124,7 @@ export async function processFeePayment(xdr, min, max) {
   if (submissionCheckResult.ok) {
     throw { message: `Fee payment with hash ${transactionHash} has already been submitted` }
   } else if (submissionCheckResult.status === 404) {
-    let txHash = await processTransaction(transaction);
+    let txHash = await processTransaction(HORIZON_URL, transaction);
     return {
       hash: txHash,
       amount: op.amount
@@ -135,18 +137,18 @@ export async function processFeePayment(xdr, min, max) {
 /**
  * Process a transaction
  * 
+ * @param {string} horizonUrl The Horizon endpoint to submit the tx to
  * @param {Transaction} transaction The transaction to submit
  * 
  * @returns {string} The resultant transaction hash.
  * @throws If the transaction failed to submit
  */
-async function processTransaction(transaction) {
-  const { HORIZON_URL } = env
+async function processTransaction(horizonUrl, transaction) {
   const xdr = transaction.toXDR()
   const txBody = new FormData();
   txBody.append('tx', xdr)
 
-  let txResult = await fetch(`${HORIZON_URL}/transactions`, {
+  let txResult = await fetch(`${horizonUrl}/transactions`, {
     method: 'POST',
     body: txBody
   });

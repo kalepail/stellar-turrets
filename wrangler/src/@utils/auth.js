@@ -2,12 +2,14 @@
  * Helper functions for managing authentication against a Turret
  */
 import BigNumber from 'bignumber.js'
+import moment from 'moment'
 import { Transaction, Networks } from 'stellar-base'
-import { Utils } from './stellar-sdk-utils'
+import { verifyTxSignedBy } from './stellar-sdk-utils'
 
 /**
  * Determine the authenticated user and contracts with the provided token.
  * 
+ * @param {string} network The Stellar Network to validate the token on
  * @param {string} authToken - The provided auth token
  * @param {string?} dataKey - (Optional) Fetch all ManageData operations such that the key matches this dataKey.
  *                           All ManageData values whose keys match will be included in the data output array.
@@ -21,13 +23,13 @@ import { Utils } from './stellar-sdk-utils'
  *
  * @returns {AuthResult} - The result of the authentication
  */
-export function authTxToken(authToken, dataKey) {
+export function authTxToken(network, authToken, dataKey) {
   try {
     if (authToken === undefined) {
       throw { message: 'Unable to find an auth token' };
     }
 
-    const authTx = new Transaction(authToken, Networks[STELLAR_NETWORK]);
+    const authTx = new Transaction(authToken, Networks[network]);
 
     // validate tx structure
     if (!new BigNumber(authTx.sequence).isEqualTo(0)) {
@@ -44,7 +46,7 @@ export function authTxToken(authToken, dataKey) {
 
     // ensure tx is signed
     const authPublicKey = authTx.source;
-    if (!Utils.verifyTxSignedBy(authTx, authPublicKey)) {
+    if (!verifyTxSignedBy(authTx, authPublicKey)) {
       throw { message: `AuthToken not signed` };
     }
     
@@ -64,6 +66,6 @@ export function authTxToken(authToken, dataKey) {
       data: enteredData
     }
   } catch (e) {
-    throw { message: e.message ?? `Failed to parse Auth Token` }
+    throw { message: e.message != undefined ? `${e.message}: Failed during auth` : `Failed to parse Auth Token` }
   }
 }

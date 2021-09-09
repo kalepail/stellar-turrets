@@ -1,16 +1,16 @@
 import { response } from 'cfw-easy-utils'
 import { authTxToken } from '../@utils/auth'
 
-export default async ({ params, env }) => {
-  const { TX_FEES } = env
+export default async ({ request, params, env }) => {
+  const { TX_FEES, STELLAR_NETWORK } = env
   const { publicKey } = params
 
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  const { publicKey: authedPublicKey } = authTxToken(feeToken)
+  const { publicKey: authedPublicKey } = authTxToken(STELLAR_NETWORK, feeToken)
 
   if (authedPublicKey !== publicKey) {
-    throw { status: 403, message: `Not authorized to view resource` }
+    throw { status: 403, message: `Not authorized to view resource ${authedPublicKey} : ${publicKey}` }
   }
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(publicKey)

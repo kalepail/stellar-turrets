@@ -6,7 +6,7 @@ import { find } from 'lodash'
 import { processFeePayment } from '../@utils/stellar-sdk-utils'
 
 export default async ({ request, env }) => {
-  const { TX_FUNCTIONS, TURRET_ADDRESS, STELLAR_NETWORK, HORIZON_URL, UPLOAD_DIVISOR } = env
+  const { TX_FUNCTIONS, TURRET_ADDRESS, UPLOAD_DIVISOR } = env
   const body = await request.formData()
 
   const txFunctionFields = body.get('txFunctionFields')
@@ -39,7 +39,7 @@ export default async ({ request, env }) => {
     const txFunctionFee = body.get('txFunctionFee')
 
     // throws if payment fails
-    await processFeePayment(txFunctionFee, cost);
+    await processFeePayment(env, txFunctionFee, cost);
 
   } catch (err) {
     return response.json({

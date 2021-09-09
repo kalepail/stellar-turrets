@@ -1,12 +1,8 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
 import { Transaction, Networks, Keypair } from 'stellar-base'
-import { Utils } from '../@utils/stellar-sdk-utils'
 import { authTxToken } from '../@utils/auth'
 import BigNumber from 'bignumber.js'
-import moment from 'moment'
-import { find as loFind } from 'lodash'
 
-import txSponsorsSettle from '../txSponsors/settle'
 
 export default async ({ request, params, env, ctx }) => {
   const { 
@@ -15,12 +11,8 @@ export default async ({ request, params, env, ctx }) => {
     META, 
     TURRET_RUN_URL, 
     TURRET_SIGNER, 
-    TURRET_ADDRESS, 
     STELLAR_NETWORK, 
     HORIZON_URL, 
-    TX_FUNCTION_FEE_DAYS_TTL, 
-    XLM_FEE_MIN, 
-    XLM_FEE_MAX, 
     RUN_DIVISOR 
   } = env
   const { txFunctionHash } = params
@@ -38,7 +30,7 @@ export default async ({ request, params, env, ctx }) => {
   const body = await request.json()
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  const { publicKey: authedPublicKey, data: authedContracts } = authTxToken(feeToken, 'txFunctionHash')
+  const { publicKey: authedPublicKey, data: authedContracts } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
 
   // if no contracts are specified in the auth token, allow any contract to be run
   if (authedContracts.length != 0 && !authedContracts.some(hash => hash === txFunctionHash)) {
@@ -46,16 +38,12 @@ export default async ({ request, params, env, ctx }) => {
   }
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(authedPublicKey)
-
-  let feeTotalBigNumber
-  let feeSpentBigNumber
   
+  let feeBalance
   if (feeMetadata) {
-    feeTotalBigNumber = new BigNumber(feeMetadata.total)
-    feeSpentBigNumber = new BigNumber(feeMetadata.spent)
+    feeBalance = new BigNumber(feeMetadata.balance)
 
-    if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
-      ctx.waitUntil(txSponsorsSettle(claimableBalanceId, env))
+    if (feeBalance.isLessThanOrEqualTo(0)) {
       throw { status: 402, message: `Turret fees have been spent for account ${authedPublicKey}` }
     }
   } else {
@@ -85,8 +73,8 @@ export default async ({ request, params, env, ctx }) => {
     xdr,
     error,
     cost,
-    feeTotal,
-    feeSpent
+    feeSponsor,
+    feeBalanceRemaining
   } = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
@@ -104,22 +92,19 @@ export default async ({ request, params, env, ctx }) => {
   .then(async (res) => {
     watch.mark('Ran txFunction')
 
-    const now = moment.utc().format('x')
     const cost = new BigNumber(watch.getTotalTime()).dividedBy(RUN_DIVISOR).toFixed(7)
-    const feeTotal = feeTotalBigNumber.toFixed(7)
-    const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
+    const feeBalanceRemaining = feeBalance.minus(cost).toFixed(7)
 
-    await TX_FEES.put(claimableBalanceId, 'OK', {metadata: {
-      date: now,
-      total: feeTotal,
-      spent: feeSpent
+    await TX_FEES.put(authedPublicKey, 'OK', {metadata: {
+      lastModifiedTime: Date.now(),
+      balance: feeBalanceRemaining
     }})
 
     if (res.ok) return {
       xdr: await res.text(),
-      cost,
-      feeTotal,
-      feeSpent,
+      cost: cost,
+      feeSponsor: authedPublicKey,
+      feeBalanceRemaining: feeBalanceRemaining,
     }
 
     return {
@@ -127,22 +112,20 @@ export default async ({ request, params, env, ctx }) => {
         status: res.status || 400,
         ...res.headers.get('content-type').indexOf('json') > -1 ? await res.json() : await res.text()
       },
-      cost,
-      feeTotal,
-      feeSpent,
+      cost: cost,
+      feeSponsor: authedPublicKey,
+      feeBalanceRemaining: feeBalanceRemaining,
     }
   })
 
   if (error) return response.json({
     ...error,
-    cost,
+    cost: cost,
+    feeSponsor: authedPublicKey,
+    feeBalanceRemaining: feeBalanceRemaining,
   }, {
     status: error.status,
     stopwatch: watch,
-    headers: {
-      'X-Fee-Total': feeTotal,
-      'X-Fee-Spent': feeSpent
-    }
   })
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])
@@ -154,12 +137,10 @@ export default async ({ request, params, env, ctx }) => {
     xdr,
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature,
-    cost,
+    cost: cost,
+    feeSponsor: feeSponsor,
+    feeBalanceRemaining: feeBalanceRemaining,
   }, {
     stopwatch: watch,
-    headers: {
-      'X-Fee-Total': feeTotal,
-      'X-Fee-Spent': feeSpent
-    }
   })
 }
