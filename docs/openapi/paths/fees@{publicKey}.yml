@@ -1,0 +1,68 @@
+post:
+  tags:
+    - Fees
+  summary: Send a fee payment to the turret
+  operationId: payFees
+  description: Sends a fee payment to the turret
+  parameters:
+    - name: publicKey
+      in: path
+      required: true
+      description: The Stellar public address of the account to apply the fee payment to
+      schema:
+        type: string
+  requestBody:
+    content:
+      multipart/form-data:
+        schema:
+          $ref: "../components/schemas/FeePaymentForm.yml"
+        example:
+          txFunctionFee: AAAAAgAAAABTqjFHz0quLSka8SOrkw7R07aqDNUHAe+Qm5PX0jMiGwAAAGQAHfBZAAAADgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAB47DPzhNMoutc7krUC+kJ1BvEel4wkn4w1qzA7sOje0AAAAAAAAAAAAJiWgAAAAAAAAAAB0jMiGwAAAEAZjWTnxXY2lxVt0VSos6/Uvpoo3pXo6l+0Xk/P+sE5KDPwhAYkVQyXEBb8prEYprzp3aSlLF4TKcw3m/RM5IMK
+    required: true
+  responses:
+    "200":
+      description: Fee payment applied
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/FeePaymentResponse.yml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/Error.yml"
+          example:
+            message: Error message specific to failure
+            status: 404
+get:
+  tags:
+    - Fees
+  summary: View the fee balance for a public key
+  operationId: getFees
+  description: View the fee balance for a public key
+  security:
+    - XdrToken: []
+  parameters:
+    - name: publicKey
+      in: path
+      required: true
+      description: The Stellar public address of the account to get the fee balance of
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Fee payment applied
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/FeePaymentResponse.yml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/Error.yml"
+          example:
+            message: Error message specific to failure
+            status: 404
