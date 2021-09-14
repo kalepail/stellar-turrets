@@ -13,5 +13,3 @@
 | https://tss-wrangler.mozart.workers.dev |  | [Olvis E. Gil Ríos](https://github.com/Olvisgil) |  |
 | https://tss-wrangler.elliotfriend.workers.dev |  | [Elliot Voris](https://github.com/elliotfriend) | elliot@voris.me |
 | https://tss-wrangler.yarvis.workers.dev |  | [John Ciprian](https://github.com/jarvisuser90) |  |
-| https://tss-wrangler.anclap.workers.dev |  | [Anclap](https://anclap.com) | info@anclap.com |
-
