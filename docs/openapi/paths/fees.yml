@@ -1,0 +1,24 @@
+get:
+  tags:
+    - Fees
+  summary: View the fee balance for a public key
+  operationId: getFees
+  description: View the fee balance for a public key based on the authorized public key.
+  security:
+    - XdrToken: []
+  responses:
+    "200":
+      description: Fee payment applied
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/FeePaymentResponse.yml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/Error.yml"
+          example:
+            message: Error message specific to failure
+            status: 404
