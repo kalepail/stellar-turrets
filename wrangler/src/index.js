@@ -28,7 +28,7 @@ router
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
 
 router
-.get('/fees/:publicKey', feesGet)
+.get('/fees', feesGet)
 .post('/fees/:publicKey', feesPay)
 
 router

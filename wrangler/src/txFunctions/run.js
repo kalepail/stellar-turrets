@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { authTxToken } from '../@utils/auth'
 
-export default async ({ request, params, env, ctx }) => {
+export default async ({ request, params, env }) => {
   const { 
     TX_FUNCTIONS, 
     TX_FEES, 
@@ -108,9 +108,9 @@ export default async ({ request, params, env, ctx }) => {
 
     if (res.ok) return {
       xdr: await res.text(),
-      cost: cost,
+      cost,
       feeSponsor: authedPublicKey,
-      feeBalanceRemaining: feeBalanceRemaining,
+      feeBalanceRemaining,
     }
 
     return {
@@ -118,17 +118,17 @@ export default async ({ request, params, env, ctx }) => {
         status: res.status || 400,
         ...res.headers.get('content-type').indexOf('json') > -1 ? await res.json() : await res.text()
       },
-      cost: cost,
+      cost,
       feeSponsor: authedPublicKey,
-      feeBalanceRemaining: feeBalanceRemaining,
+      feeBalanceRemaining,
     }
   })
 
   if (error) return response.json({
     ...error,
-    cost: cost,
+    cost,
     feeSponsor: authedPublicKey,
-    feeBalanceRemaining: feeBalanceRemaining,
+    feeBalanceRemaining,
   }, {
     status: error.status,
     stopwatch: watch,
@@ -143,9 +143,9 @@ export default async ({ request, params, env, ctx }) => {
     xdr,
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature,
-    cost: cost,
-    feeSponsor: feeSponsor,
-    feeBalanceRemaining: feeBalanceRemaining,
+    cost,
+    feeSponsor,
+    feeBalanceRemaining,
   }, {
     stopwatch: watch,
   })

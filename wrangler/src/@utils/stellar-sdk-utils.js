@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js";
-import { clone } from "lodash";
 import { Keypair, Transaction, Networks } from "stellar-base";
 /**
  * Verifies if a transaction was signed by the given account id.
@@ -49,7 +48,6 @@ export function verifyTxSignedBy(transaction, accountID) {
  */
 export function gatherTxSigners(transaction, signers) {
   const hashedSignatureBase = transaction.hash();
-  const txSignatures = clone(transaction.signatures);
   const signersFound = new Set();
   for (const signer of signers) {
     if (txSignatures.length === 0) {
@@ -62,14 +60,13 @@ export function gatherTxSigners(transaction, signers) {
     catch (err) {
       throw new Error("Signer is not a valid address: " + err.message);
     }
-    for (let i = 0; i < txSignatures.length; i++) {
-      const decSig = txSignatures[i];
+    for (let decSig of transaction.signatures)
+    {
       if (!decSig.hint().equals(keypair.signatureHint())) {
         continue;
       }
       if (keypair.verify(hashedSignatureBase, decSig.signature())) {
         signersFound.add(signer);
-        txSignatures.splice(i, 1);
         break;
       }
     }
@@ -124,9 +121,9 @@ export async function processFeePayment(env, xdr, min, max) {
   if (submissionCheckResult.ok) {
     throw { message: `Fee payment with hash ${transactionHash} has already been submitted` }
   } else if (submissionCheckResult.status === 404) {
-    let txHash = await processTransaction(HORIZON_URL, transaction);
+    await processTransaction(HORIZON_URL, transaction);
     return {
-      hash: txHash,
+      hash: transactionHash,
       amount: op.amount
     }
   } else {
