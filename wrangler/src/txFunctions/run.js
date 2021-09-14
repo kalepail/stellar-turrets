@@ -3,7 +3,6 @@ import { Transaction, Networks, Keypair } from 'stellar-base'
 import { authTxToken } from '../@utils/auth'
 import BigNumber from 'bignumber.js'
 
-
 export default async ({ request, params, env, ctx }) => {
   const { 
     TX_FUNCTIONS, 
@@ -30,16 +29,21 @@ export default async ({ request, params, env, ctx }) => {
   const body = await request.json()
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  const { publicKey: authedPublicKey, data: authedContracts } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
+  const { 
+    publicKey: authedPublicKey, 
+    data: authedContracts 
+  } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
 
   // if no contracts are specified in the auth token, allow any contract to be run
-  if (authedContracts.length != 0 && !authedContracts.some(hash => hash === txFunctionHash)) {
-    throw { status: 403, message: `Not authorized to run contract with hash ${txFunctionHash}` }
-  }
+  if (
+    authedContracts.length
+    && !authedContracts.some(hash => hash === txFunctionHash)
+  ) throw { status: 403, message: `Not authorized to run contract with hash ${txFunctionHash}` }
 
   const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(authedPublicKey)
   
   let feeBalance
+  
   if (feeMetadata) {
     feeBalance = new BigNumber(feeMetadata.balance)
 
@@ -96,7 +100,7 @@ export default async ({ request, params, env, ctx }) => {
     const feeBalanceRemaining = feeBalance.minus(cost).toFixed(7)
 
     await TX_FEES.put(authedPublicKey, 'OK', {metadata: {
-      lastModifiedTime: Date.now(),
+      lastModifiedTime: moment.utc().format('x'),
       balance: feeBalanceRemaining
     }})
 

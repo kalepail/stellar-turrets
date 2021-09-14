@@ -19,15 +19,15 @@ export default async ({ request, params, env }) => {
   const { hash: paymentHash, amount: paymentAmount } = await processFeePayment(env, feePaymentXdr, XLM_FEE_MIN, XLM_FEE_MAX)
 
   const finalBalance = outstandingBalance.plus(paymentAmount);
-  const lastModifiedTime = Date.now();
+  const lastModifiedTime = moment.utc().format('x')
   await TX_FEES.put(publicKey, 'OK', {metadata: {
-    lastModifiedTime: lastModifiedTime,
+    lastModifiedTime,
     balance: finalBalance
   }})
   return response.json({
-    publicKey: publicKey,
-    paymentHash: paymentHash,
-    lastModifiedTime: lastModifiedTime,
+    publicKey,
+    paymentHash,
+    lastModifiedTime,
     balance: finalBalance.toString()
   }, {
     headers: {

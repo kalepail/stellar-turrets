@@ -39,7 +39,7 @@ export function authTxToken(network, authToken, dataKey) {
     // validate token expiration
     if (
       authTx.timeBounds?.maxTime !== undefined &&
-      moment.unix(authTx.timeBounds?.maxTime).isBefore()
+      moment.utc(authTx.timeBounds?.maxTime).isBefore()
     ) {
       throw { message: `AuthToken has expired` };
     }
