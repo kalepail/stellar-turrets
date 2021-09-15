@@ -10,6 +10,9 @@ import txFunctionsGet from './txFunctions/get'
 import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
 
+import feesGet from './fees/get'
+import feesPay from './fees/pay'
+
 import ctrlAccountsHeal from './ctrlAccounts/heal'
 
 
@@ -23,6 +26,10 @@ router
 .post('/tx-functions', txFunctionsUpload)
 .get('/tx-functions/:txFunctionHash', txFunctionsGet)
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
+
+router
+.get('/fees', feesGet)
+.post('/fees/:publicKey', feesPay)
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)

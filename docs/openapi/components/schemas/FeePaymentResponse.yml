@@ -1,0 +1,16 @@
+type: object
+properties:
+  publicKey:
+    description: The public key of the Stellar account that owns the fees
+    type: string
+    example: GB6VNMGXKHS4UTIXW7U23ZQFWD7UJIWCJNQZR7ISNKBTYNULCFQKKPIK
+    lastModifiedTime: feeMetadata.lastModifiedTime,
+    balance: feeMetadata.balance
+  lastModifiedTime:
+    description: The epoch timestamp in milliseconds of the last time the fee balance modified
+    type: number
+    example: 1631468533000
+  balance:
+    description: The current fee balance in XLM
+    type: string
+    example: 1.4234001

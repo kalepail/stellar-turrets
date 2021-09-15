@@ -24,7 +24,11 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/NotFound.yml"
+            $ref: "../components/schemas/Error.yml"
+          example:
+            message: Unable to find txFunction
+            status: 404
+
 post:
   tags:
     - txFunctions
@@ -32,7 +36,7 @@ post:
   operationId: executeTxFunction
   description: Executes a txFunction on the turret
   security:
-    - fee_auth: []
+    - XdrToken: []
   parameters:
     - name: txFunctionHash
       in: path
@@ -61,4 +65,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/NotFound.yml"
+            $ref: "../components/schemas/Error.yml"
+          example:
+            message: Unable to find txFunction
+            status: 404

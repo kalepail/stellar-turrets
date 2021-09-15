@@ -79,7 +79,6 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 | WRANGLER_API_TOKEN | Token for cloudflare API access |  |
 | *WRANGLER_WORKER_NAME* | name of your worker inside cloudflare | **tss-wrangler** |
 | WRANGLER_META | KV namesapace for worker's META information |  |
-| *WRANGLER_TX_FUNCTION_FEE_DAYS_TTL* | Days before a user can reclaim fees from the turret. See [turret_info] | **180** |
 | WRANGLER_TX_FUNCTIONS | KV namespace for worker's functions |  |
 | WRANGLER_TX_FEES | KV namesapce for worker's fees |  |
 | *WRANGLER_XLM_FEE_MIN* | The minimum claimable fee balance allowed. See [turret_info] | **1** |
