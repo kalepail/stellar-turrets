@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import { NodeVM } from 'vm2'
 import { Keypair, FastSigning } from 'stellar-sdk'
 
 export default async (event) => {
@@ -70,10 +71,32 @@ export default async (event) => {
     // )
     // const result = await txFunction(body)
 
-    const result = await eval(`
+    // const result = await eval(`
+    //   'use strict'; 
+    //   ${txFunctionCode};
+    //   module.exports;
+    // `)(body)
+
+    const vm = new NodeVM({
+      console: 'off',
+      eval: false,
+      wasm: false,
+      strict: true,
+      fixAsync: true,
+      sandbox: {
+        HORIZON_URL,
+        STELLAR_NETWORK
+      },
+      require: {
+        builtin: null,
+        external: ['bignumber.js', 'node-fetch', 'stellar-sdk', 'lodash'],
+        context: 'host'
+      }
+    })
+
+    const result = await vm.run(`
       'use strict'; 
       ${txFunctionCode};
-      module.exports;
     `)(body)
 
     return {
