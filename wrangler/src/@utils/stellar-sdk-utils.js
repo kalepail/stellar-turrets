@@ -50,7 +50,7 @@ export function gatherTxSigners(transaction, signers) {
   const hashedSignatureBase = transaction.hash();
   const signersFound = new Set();
   for (const signer of signers) {
-    if (txSignatures.length === 0) {
+    if (transaction.signatures.length === 0) {
       break;
     }
     let keypair;

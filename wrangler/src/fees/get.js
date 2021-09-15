@@ -8,7 +8,7 @@ export default async ({ request, env }) => {
 
   const { publicKey: authedPublicKey } = authTxToken(STELLAR_NETWORK, feeToken)
 
-  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(publicKey)
+  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(authedPublicKey)
 
   if (!feeMetadata)
     throw {status: 404, message: `Fee balance could not be found this turret` }
