@@ -92,12 +92,12 @@ export default async (event) => {
         external: ['bignumber.js', 'node-fetch', 'stellar-sdk', 'lodash'],
         context: 'host'
       }
-    }, 'vm.js')
+    })
 
     const result = await vm.run(`
       'use strict'; 
       ${txFunctionCode};
-    `)(body)
+    `, 'vm.js')(body)
 
     return {
       statusCode: 200,
