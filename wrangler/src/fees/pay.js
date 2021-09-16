@@ -1,38 +1,33 @@
 import { response } from 'cfw-easy-utils'
 import { processFeePayment } from '../@utils/stellar-sdk-utils'
-import BigNumber from 'bignumber.js'
-import moment from 'moment'
+import { handleResponse } from '../@utils/fetch'
 
 export default async ({ request, params, env }) => {
   const { TX_FEES, XLM_FEE_MIN, XLM_FEE_MAX,  } = env
   const { publicKey } = params
 
-  const body = await request.formData()
-  const feePaymentXdr = body.get('txFunctionFee')
+  const body = await request.json()
+  const { txFunctionFee: feePaymentXdr } = body
 
-  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(publicKey)
-  
-  let outstandingBalance = new BigNumber(0);
-  if (feeMetadata) {
-    outstandingBalance = outstandingBalance.plus(feeMetadata.balance)
-  }
+  const txFeesId = TX_FEES.idFromName(publicKey)
+  const txFeesStub = TX_FEES.get(txFeesId)
 
   const { hash: paymentHash, amount: paymentAmount } = await processFeePayment(env, feePaymentXdr, XLM_FEE_MIN, XLM_FEE_MAX)
 
-  const finalBalance = outstandingBalance.plus(paymentAmount);
-  const lastModifiedTime = moment.utc().format('x')
-  await TX_FEES.put(publicKey, 'OK', {metadata: {
-    lastModifiedTime,
-    balance: finalBalance
-  }})
+  const { lastModifiedTime, balance } = await txFeesStub.fetch('/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      plus: paymentAmount
+    })
+  }).then(handleResponse)
+
   return response.json({
     publicKey,
     paymentHash,
     lastModifiedTime,
-    balance: finalBalance.toString()
-  }, {
-    headers: {
-      'Cache-Control': 'public, max-age=30', // 30 sec
-    }
+    balance,
   })
 }

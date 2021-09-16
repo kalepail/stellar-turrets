@@ -1,9 +1,9 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
 import { Transaction, Networks, Keypair } from 'stellar-base'
 import BigNumber from 'bignumber.js'
-import moment from 'moment'
 
 import { authTxToken } from '../@utils/auth'
+import { handleResponse } from '../@utils/fetch'
 
 export default async ({ request, params, env }) => {
   const { 
@@ -42,7 +42,10 @@ export default async ({ request, params, env }) => {
     && !authedContracts.some(hash => hash === txFunctionHash)
   ) throw { status: 403, message: `Not authorized to run contract with hash ${txFunctionHash}` }
 
-  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(authedPublicKey)
+  const txFeesId = TX_FEES.idFromName(authedPublicKey)
+  const txFeesStub = TX_FEES.get(txFeesId)
+
+  const feeMetadata = await txFeesStub.fetch('/').then(handleResponse)
   
   let feeBalance
   
@@ -99,12 +102,16 @@ export default async ({ request, params, env }) => {
     watch.mark('Ran txFunction')
 
     const cost = new BigNumber(watch.getTotalTime()).dividedBy(RUN_DIVISOR).toFixed(7)
-    const feeBalanceRemaining = feeBalance.minus(cost).toFixed(7)
 
-    await TX_FEES.put(authedPublicKey, 'OK', {metadata: {
-      lastModifiedTime: moment.utc().format('x'),
-      balance: feeBalanceRemaining
-    }})
+    const { balance: feeBalanceRemaining } = await txFeesStub.fetch('/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        minus: cost
+      })
+    }).then(handleResponse)
 
     if (res.ok) return {
       xdr: await res.text(),

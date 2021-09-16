@@ -3,6 +3,8 @@ import { response } from 'cfw-easy-utils'
 
 import { parseError } from './@utils/parse'
 
+import TxFees from './@utils/do-tx-fees'
+
 import turretToml from './turret/toml'
 import turretDetails from './turret/details'
 
@@ -14,7 +16,6 @@ import feesGet from './fees/get'
 import feesPay from './fees/pay'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
-
 
 const router = new Router()
 
@@ -82,6 +83,7 @@ async function handleRequest(request, env, ctx) {
   }
 }
 
+exports.TxFees = TxFees
 exports.handlers = {
   async fetch(request, env, ctx) {
     return handleRequest(request, env, ctx)
