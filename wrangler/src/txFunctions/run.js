@@ -1,25 +1,19 @@
 import { response, Stopwatch } from 'cfw-easy-utils'
 import { Transaction, Networks, Keypair } from 'stellar-base'
-import { Utils } from '../@utils/stellar-sdk-utils'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
-import { find as loFind } from 'lodash'
 
-import txSponsorsSettle from '../txSponsors/settle'
+import { authTxToken } from '../@utils/auth'
 
-export default async ({ request, params, env, ctx }) => {
+export default async ({ request, params, env }) => {
   const { 
     TX_FUNCTIONS, 
     TX_FEES, 
     META, 
     TURRET_RUN_URL, 
     TURRET_SIGNER, 
-    TURRET_ADDRESS, 
     STELLAR_NETWORK, 
     HORIZON_URL, 
-    TX_FUNCTION_FEE_DAYS_TTL, 
-    XLM_FEE_MIN, 
-    XLM_FEE_MAX, 
     RUN_DIVISOR 
   } = env
   const { txFunctionHash } = params
@@ -37,93 +31,29 @@ export default async ({ request, params, env, ctx }) => {
   const body = await request.json()
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  if (!feeToken)
-    throw {message: `feeToken is missing`}
+  const { 
+    publicKey: authedPublicKey, 
+    data: authedContracts 
+  } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
 
-  const feeTransaction = new Transaction(feeToken, Networks[STELLAR_NETWORK])
-
+  // if no contracts are specified in the auth token, allow any contract to be run
   if (
-    feeTransaction.timeBounds?.maxTime !== undefined &&
-    moment.unix(feeTransaction.timeBounds?.maxTime).isBefore()
-  ) throw { message: `feeToken has expired` }
+    authedContracts.length
+    && !authedContracts.some(hash => hash === txFunctionHash)
+  ) throw { status: 403, message: `Not authorized to run contract with hash ${txFunctionHash}` }
 
-  if (!new BigNumber(feeTransaction.sequence).isEqualTo(0))
-    throw { message: `feeTokenTransaction has a non-zero sequence number` }
-
-  let matchedTxFunctionHash = false
-  let specifiedTxFuncHashes = false
-  let claimableBalanceId
-
-  for (const op of feeTransaction.operations) {
-    if (
-      claimableBalanceId === undefined 
-      && op.type === 'claimClaimableBalance'
-    ) claimableBalanceId = op.balanceId
-
-    if (
-      op.type === 'manageData' 
-      && op.name === 'txFunctionHash'
-    ) {
-      const hash = op.value.toString()
-
-      specifiedTxFuncHashes = true;
-      
-      if (hash === txFunctionHash)
-        matchedTxFunctionHash = true;
-    }
-  }
-
-  if (specifiedTxFuncHashes && !matchedTxFunctionHash)
-    throw { message: `txFunctionFee is invalid for this txFunction` };
-
-  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(claimableBalanceId)
-
-  let feeTotalBigNumber
-  let feeSpentBigNumber
+  const { metadata: feeMetadata } = await TX_FEES.getWithMetadata(authedPublicKey)
+  
+  let feeBalance
   
   if (feeMetadata) {
-    feeTotalBigNumber = new BigNumber(feeMetadata.total)
-    feeSpentBigNumber = new BigNumber(feeMetadata.spent)
+    feeBalance = new BigNumber(feeMetadata.balance)
 
-    if (feeSpentBigNumber.isGreaterThanOrEqualTo(feeTotalBigNumber)) {
-      ctx.waitUntil(txSponsorsSettle(claimableBalanceId, env))
-      throw {status: 402, message: `txFunctionFee has been spent`}
+    if (feeBalance.isLessThanOrEqualTo(0)) {
+      throw { status: 402, message: `Turret fees have been spent for account ${authedPublicKey}` }
     }
-  }
-
-  else {
-    const { asset, amount, sponsor, claimants } = await fetch(`${HORIZON_URL}/claimable_balances/${claimableBalanceId}`)
-    .then(async (res) => {
-      if (res.ok)
-        return res.json()
-      throw res
-    })
-
-    if (!(
-      asset === 'native'
-      && new BigNumber(amount).isGreaterThanOrEqualTo(XLM_FEE_MIN)
-      && new BigNumber(amount).isLessThanOrEqualTo(XLM_FEE_MAX)
-      && Utils.verifyTxSignedBy(feeTransaction, sponsor)
-      && claimants.length <= 2
-      && loFind(claimants, (claimant) => 
-        claimant.destination === TURRET_ADDRESS
-        && claimant.predicate.unconditional
-      )
-      && (
-        claimants.length === 2
-        ? loFind(claimants, (claimant) => 
-          claimant.destination === sponsor
-          && claimant.predicate?.not?.abs_before
-          && moment.utc(claimant.predicate.not.abs_before).subtract(TX_FUNCTION_FEE_DAYS_TTL, 'days').isAfter()
-        ) : true
-      )
-      && claimants.length <= 2
-      && claimants[0]?.destination === TURRET_ADDRESS
-      && claimants[0]?.predicate?.unconditional
-    )) throw {message: `txFunctionFee is invalid`}
-
-    feeTotalBigNumber = new BigNumber(amount)
-    feeSpentBigNumber = new BigNumber(0)
+  } else {
+    throw { status: 402, message: `No payment was found for account ${authedPublicKey}` }
   }
 
   let { 
@@ -149,8 +79,8 @@ export default async ({ request, params, env, ctx }) => {
     xdr,
     error,
     cost,
-    feeTotal,
-    feeSpent
+    feeSponsor,
+    feeBalanceRemaining
   } = await fetch(`${TURRET_RUN_URL}/${txFunctionHash}`, {
     method: 'POST',
     headers: {
@@ -168,22 +98,19 @@ export default async ({ request, params, env, ctx }) => {
   .then(async (res) => {
     watch.mark('Ran txFunction')
 
-    const now = moment.utc().format('x')
     const cost = new BigNumber(watch.getTotalTime()).dividedBy(RUN_DIVISOR).toFixed(7)
-    const feeTotal = feeTotalBigNumber.toFixed(7)
-    const feeSpent = feeSpentBigNumber.plus(cost).toFixed(7)
+    const feeBalanceRemaining = feeBalance.minus(cost).toFixed(7)
 
-    await TX_FEES.put(claimableBalanceId, 'OK', {metadata: {
-      date: now,
-      total: feeTotal,
-      spent: feeSpent
+    await TX_FEES.put(authedPublicKey, 'OK', {metadata: {
+      lastModifiedTime: moment.utc().format('x'),
+      balance: feeBalanceRemaining
     }})
 
     if (res.ok) return {
       xdr: await res.text(),
       cost,
-      feeTotal,
-      feeSpent,
+      feeSponsor: authedPublicKey,
+      feeBalanceRemaining,
     }
 
     return {
@@ -192,21 +119,19 @@ export default async ({ request, params, env, ctx }) => {
         ...res.headers.get('content-type').indexOf('json') > -1 ? await res.json() : await res.text()
       },
       cost,
-      feeTotal,
-      feeSpent,
+      feeSponsor: authedPublicKey,
+      feeBalanceRemaining,
     }
   })
 
   if (error) return response.json({
     ...error,
     cost,
+    feeSponsor: authedPublicKey,
+    feeBalanceRemaining,
   }, {
     status: error.status,
     stopwatch: watch,
-    headers: {
-      'X-Fee-Total': feeTotal,
-      'X-Fee-Spent': feeSpent
-    }
   })
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])
@@ -219,11 +144,9 @@ export default async ({ request, params, env, ctx }) => {
     signer: txFunctionSignerPublicKey,
     signature: txFunctionSignature,
     cost,
+    feeSponsor,
+    feeBalanceRemaining,
   }, {
     stopwatch: watch,
-    headers: {
-      'X-Fee-Total': feeTotal,
-      'X-Fee-Spent': feeSpent
-    }
   })
 }

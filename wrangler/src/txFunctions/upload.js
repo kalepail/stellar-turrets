@@ -3,9 +3,10 @@ import shajs from 'sha.js'
 import BigNumber from 'bignumber.js'
 import { Transaction, Keypair, Networks } from 'stellar-base'
 import { find } from 'lodash'
+import { processFeePayment } from '../@utils/stellar-sdk-utils'
 
 export default async ({ request, env }) => {
-  const { TX_FUNCTIONS, TURRET_ADDRESS, STELLAR_NETWORK, HORIZON_URL, UPLOAD_DIVISOR } = env
+  const { TX_FUNCTIONS, TURRET_ADDRESS, UPLOAD_DIVISOR } = env
   const body = await request.formData()
 
   const txFunctionFields = body.get('txFunctionFields')
@@ -37,43 +38,12 @@ export default async ({ request, env }) => {
   try {
     const txFunctionFee = body.get('txFunctionFee')
 
-    const transaction = new Transaction(txFunctionFee, Networks[STELLAR_NETWORK])
-          transactionHash = transaction.hash().toString('hex')
+    // throws if payment fails
+    await processFeePayment(env, txFunctionFee, cost);
 
-    if (!find(transaction._operations, (op) => 
-      op.type === 'payment'
-      && op.destination === TURRET_ADDRESS
-      && new BigNumber(op.amount).isGreaterThanOrEqualTo(cost)
-      && op.asset.isNative()
-    )) throw 'Missing or invalid txFunctionFee'
-
-    await fetch(`${HORIZON_URL}/transactions/${transactionHash}`)
-    .then((res) => {
-      if (res.ok)
-        throw `txFunctionFee ${transactionHash} has already been submitted`
-      else if (res.status === 404)
-        return
-      else
-        throw res
-    })
-
-    const tx = transaction.toXDR()
-    const txBody = new FormData()
-          txBody.append('tx', tx)
-
-    await fetch(`${HORIZON_URL}/transactions`, {
-      method: 'POST',
-      body: txBody
-    }).then((res) => {
-      if (res.ok)
-        return res.json()
-      throw res
-    })
-  }
-  
-  catch(err) {
+  } catch (err) {
     return response.json({
-      message: typeof err === 'string' ? err : 'Failed to process txFunctionFee',
+      message: typeof err.message === 'string' ? err.message : 'Failed to process txFunctionFee',
       status: 402,
       turret: TURRET_ADDRESS,
       cost,

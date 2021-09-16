@@ -1,0 +1,6 @@
+type: object
+properties:
+  txFunctionFee:
+    description: A signed, non-submitted transaction envelope XDR for a fee payment to the TURRET_ADDRESS that is greater than or equal to the byte length of the contract divided by the UPLOAD_DIVISOR set by the turret
+    type: string
+    example: AAAAAgAAAABTqjFHz0quLSka8SOrkw7R07aqDNUHAe+Qm5PX0jMiGwAAAGQAHfBZAAAADgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAB47DPzhNMoutc7krUC+kJ1BvEel4wkn4w1qzA7sOje0AAAAAAAAAAAAJiWgAAAAAAAAAAB0jMiGwAAAEAZjWTnxXY2lxVt0VSos6/Uvpoo3pXo6l+0Xk/P+sE5KDPwhAYkVQyXEBb8prEYprzp3aSlLF4TKcw3m/RM5IMK

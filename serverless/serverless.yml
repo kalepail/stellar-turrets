@@ -19,6 +19,7 @@ custom:
         - bignumber.js
         - node-fetch
         - stellar-sdk
+        - lodash
       forceExclude:
         - aws-sdk
     packager: yarn
