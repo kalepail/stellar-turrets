@@ -14,11 +14,10 @@ Next generate the `.env` and `wrangler.toml` files from their templates. Just ru
 ```
 $ npx wrangler kv:namespace create "META"
 $ npx wrangler kv:namespace create "TX_FUNCTIONS"
-$ npx wrangler kv:namespace create "TX_FEES"
 ```
 Each of those commands will spit out the object you should use to provide in the init-step.
 
-3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar network passphrases. For `HORIZON_URL` place in the url for the horizon service your Turret will consume. This should match with either the Test or Public network passphrase which you just set for the `STELLAR_NETWORK` variable. For `TURRET_ADDRESS` just use any valid, funded, Stellar account you privately own. This is the account into which fees will be paid as txFunctions are uploaded and run on your Turret. Next set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url. Finally set the `TX_FUNCTION_FEE_DAYS_TTL`, `XLM_FEE_MIN`, `XLM_FEE_MAX`, `UPLOAD_DIVISOR`, and  `RUN_DIVISOR` values to reasonable defaults. (For more info on these fee variables review the [Fee Wiki](https://github.com/tyvdh/stellar-tss/wiki/fees).)
+3. Finally for `vars` set `STELLAR_NETWORK` to either `TESTNET` or `PUBLIC` to toggle this Turret between using either the Test or Public Stellar network passphrases. For `HORIZON_URL` place in the url for the horizon service your Turret will consume. This should match with either the Test or Public network passphrase which you just set for the `STELLAR_NETWORK` variable. For `TURRET_ADDRESS` just use any valid, funded, Stellar account you privately own. This is the account into which fees will be paid as txFunctions are uploaded and run on your Turret. Next set `TURRET_RUN_URL` to `null` for now until we've got the Serverless AWS lambda setup with it's endpoint, at which point you'll update this value to that url. Finally set the `XLM_FEE_MIN`, `XLM_FEE_MAX`, `UPLOAD_DIVISOR`, and  `RUN_DIVISOR` values to reasonable defaults.
 
 Now that the `wrangler.toml` file has been created let's move to the `stellar.toml` file. This file is served as your Turret's `stellar.toml` file. Particularly note the `[TSS].TURRETS` array; this will be an array of other Turret addresses that you trust to cohost txFunctions with in the case of txFunction healing. For now just make sure to include your own `TURRET_ADDRESS` which should be the first entry. There are already a few other turrets in the file as well. You can add or remove those entries to your liking/trust.
 
@@ -31,7 +30,7 @@ Make sure to run these wrangler commands from the `./wrangler` directory
 Finally to deploy the project run:
 ```
 $ npm i
-$ npm run deploy
+$ wrangler publish --new-class TxFees
 ```
 From within the `./wrangler` directory.
 
@@ -42,6 +41,16 @@ You may have to work through a few errors to get logged into your Cloudflare acc
 $ npx wrangler secret put TURRET_SIGNER
 ```
 When the dialog asks your for a value paste in a valid Stellar **secret key**. Most often this will be the secret key counterpart to your `TURRET_ADDRESS` but this isn't a requirement. This key is used to authenticate requests between your Cloudflare and Serverless services, nothing else.
+
+5. Whenever you need to redeploy the project in the future either run
+```
+$ npm run deploy
+```
+or
+```
+$ wrangler publish
+```
+The `--new-class TxFees` you included in the first deploy was just an initializer argument for the `TxFees` Durable Object. Once it's run successfully once it will fail if included again.
 
 ## Serverless (AWS)
 Next we have the Serverless lambda endpoint which is hosted with AWS but deployed using the far more sane [serverless.com](https://serverless.com) cli tool. If you haven't go create both an [AWS console account](https://www.amazon.com/) and a [serverless.com account](https://www.serverless.com/dashboard/). Once you have those setup ensure you've got the [serverless cli installed](https://github.com/serverless/components#quick-start).
@@ -80,7 +89,6 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 | *WRANGLER_WORKER_NAME* | name of your worker inside cloudflare | **tss-wrangler** |
 | WRANGLER_META | KV namesapace for worker's META information |  |
 | WRANGLER_TX_FUNCTIONS | KV namespace for worker's functions |  |
-| WRANGLER_TX_FEES | KV namesapce for worker's fees |  |
 | *WRANGLER_XLM_FEE_MIN* | The minimum claimable fee balance allowed. See [turret_info] | **1** |
 | *WRANGLER_XLM_FEE_MAX* | The maximum claimable fee balance allowed. See [turret_info] | **10** |
 | *WRANGLER_UPLOAD_DIVISOR* | The divisor used in fee calculations for uploading functions. See [turret_info] | **1000** |

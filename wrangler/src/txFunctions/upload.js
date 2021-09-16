@@ -10,7 +10,7 @@ export default async ({ request, env }) => {
   const body = await request.formData()
 
   const txFunctionFields = body.get('txFunctionFields')
-  const txFunctionFieldsBuffer = txFunctionFields ? Buffer.from(txFunctionFields, 'base64') : Buffer.from('')
+  const txFunctionFieldsBuffer = txFunctionFields ? Buffer.from(txFunctionFields, 'base64') : Buffer.alloc(0)
 
   // Test to ensure txFunctionFields is valid JSON
   if (txFunctionFields)

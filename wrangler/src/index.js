@@ -3,6 +3,8 @@ import { response } from 'cfw-easy-utils'
 
 import { parseError } from './@utils/parse'
 
+import TxFees from './@utils/do-tx-fees'
+
 import turretToml from './turret/toml'
 import turretDetails from './turret/details'
 
@@ -10,11 +12,10 @@ import txFunctionsGet from './txFunctions/get'
 import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
 
-import feesGet from './fees/get'
-import feesPay from './fees/pay'
+import txFeesGet from './txFees/get'
+import txFeesPay from './txFees/pay'
 
 import ctrlAccountsHeal from './ctrlAccounts/heal'
-
 
 const router = new Router()
 
@@ -28,8 +29,8 @@ router
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
 
 router
-.get('/fees', feesGet)
-.post('/fees/:publicKey', feesPay)
+.get('/tx-fees', txFeesGet)
+.post('/tx-fees/:publicKey', txFeesPay)
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
@@ -82,6 +83,7 @@ async function handleRequest(request, env, ctx) {
   }
 }
 
+exports.TxFees = TxFees
 exports.handlers = {
   async fetch(request, env, ctx) {
     return handleRequest(request, env, ctx)
