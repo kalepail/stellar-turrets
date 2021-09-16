@@ -63,7 +63,6 @@ export default async (event) => {
       }
     })
 
-    // TODO: handle cases where the module.exports function returned is not a promise
     const result = await vm.run(`
       'use strict'; 
       ${txFunctionCode};
