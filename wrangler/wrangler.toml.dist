@@ -19,7 +19,7 @@ UPLOAD_DIVISOR = ${WRANGLER_UPLOAD_DIVISOR}
 RUN_DIVISOR = ${WRANGLER_RUN_DIVISOR}
 
 [build]
-command = "npm run build"
+command = "npm i && npm run build"
 
 [build.upload]
 format = "modules"
