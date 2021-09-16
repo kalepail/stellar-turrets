@@ -1,18 +1,31 @@
-name = "${WRANGLER_WORKER_NAME}"
 type = "javascript"
-usage_model = "bundled"
-webpack_config = "webpack.config.js"
 account_id = "${WRANGLER_ACCOUNT_ID}"
+usage_model = "bundled"
 workers_dev = true
+name = "${WRANGLER_WORKER_NAME}"
 kv_namespaces = [
-   { binding = "META", id = "${WRANGLER_META}" },
-   { binding = "TX_FUNCTIONS", id = "${WRANGLER_TX_FUNCTIONS}" },
-   { binding = "TX_FEES", id = "${WRANGLER_TX_FEES}" },
+  { binding = "META", id = "${WRANGLER_META}" },
+  { binding = "TX_FUNCTIONS", id = "${WRANGLER_TX_FUNCTIONS}" },
 ]
-vars = { STELLAR_NETWORK = "${STELLAR_NETWORK}", HORIZON_URL = "${HORIZON_URL}", TURRET_ADDRESS = "${TURRET_ADDRESS}", TURRET_RUN_URL = "${TURRET_FUNCTION_RUNNER_URL}", XLM_FEE_MIN = ${WRANGLER_XLM_FEE_MIN}, XLM_FEE_MAX = ${WRANGLER_XLM_FEE_MAX}, UPLOAD_DIVISOR = ${WRANGLER_UPLOAD_DIVISOR}, RUN_DIVISOR = ${WRANGLER_RUN_DIVISOR} }
+
+[vars]
+STELLAR_NETWORK = "${STELLAR_NETWORK}"
+HORIZON_URL = "${HORIZON_URL}"
+TURRET_ADDRESS = "${TURRET_ADDRESS}"
+TURRET_RUN_URL = "${TURRET_FUNCTION_RUNNER_URL}"
+XLM_FEE_MIN = ${WRANGLER_XLM_FEE_MIN}
+XLM_FEE_MAX = ${WRANGLER_XLM_FEE_MAX}
+UPLOAD_DIVISOR = ${WRANGLER_UPLOAD_DIVISOR}
+RUN_DIVISOR = ${WRANGLER_RUN_DIVISOR}
 
 [build]
-command = "npm i && npm run build"
+command = "npm run build"
+
 [build.upload]
 format = "modules"
 main = "./shim.mjs"
+
+[durable_objects]
+bindings = [
+  { name = "TX_FEES", class_name = "TxFees" }
+]

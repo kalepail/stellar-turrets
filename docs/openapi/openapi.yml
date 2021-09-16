@@ -37,10 +37,10 @@ paths:
     $ref: "paths/tx-functions.yml"
   /tx-functions/{txFunctionHash}:
     $ref: "paths/tx-functions@{txFunctionHash}.yml"
-  /fees:
-    $ref: "paths/fees.yml"
-  /fees/{publicKey}:
-    $ref: "paths/fees@{publicKey}.yml"
+  /tx-fees:
+    $ref: "paths/tx-fees.yml"
+  /tx-fees/{publicKey}:
+    $ref: "paths/tx-fees@{publicKey}.yml"
   /ctrl-accounts:
     $ref: "paths/ctrl-accounts.yml"
 components:
