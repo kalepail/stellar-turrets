@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import { NodeVM } from 'vm2'
 import { Keypair, FastSigning } from 'stellar-sdk'
 
 export default async (event) => {
@@ -45,36 +46,27 @@ export default async (event) => {
     delete body.STELLAR_NETWORK
     delete body.txFunction
 
-    // const txFunction = new Function(`
-    //   __filename,
-    //   __dirname,
-    //   require,
-    //   module,
-    //   HORIZON_URL,
-    //   STELLAR_NETWORK,
-    //   global,
-    //   globalThis,
-    //   process
-    // `, // leave [global, globalThis, process] empty to effectively unset them
-    // `
-    //   'use strict'; 
-    //   ${txFunctionCode}; 
-    //   return module.exports;
-    // `)(
-    //   __filename,
-    //   __dirname,
-    //   require,
-    //   {exports: null},
-    //   HORIZON_URL,
-    //   STELLAR_NETWORK,
-    // )
-    // const result = await txFunction(body)
+    const vm = new NodeVM({
+      console: 'off',
+      eval: false,
+      wasm: false,
+      strict: true,
+      fixAsync: true,
+      sandbox: {
+        HORIZON_URL,
+        STELLAR_NETWORK
+      },
+      require: {
+        builtin: null,
+        external: ['bignumber.js', 'node-fetch', 'stellar-sdk', 'lodash'],
+        context: 'host'
+      }
+    })
 
-    const result = await eval(`
+    const result = await vm.run(`
       'use strict'; 
       ${txFunctionCode};
-      module.exports;
-    `)(body)
+    `, 'vm.js')(body)
 
     return {
       statusCode: 200,

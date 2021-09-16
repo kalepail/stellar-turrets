@@ -10,7 +10,8 @@
     "bignumber.js": "^9.0.1",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.2",
-    "stellar-sdk": "^8.2.5"
+    "stellar-sdk": "^8.2.5",
+    "vm2": "^3.9.3"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
