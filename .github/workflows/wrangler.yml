@@ -3,7 +3,7 @@ name: Deploy Wrangler
 on:
   workflow_dispatch:
   push:
-    branches: [ master, BasicPaymentFees ] # temp include BasicPaymentFees
+    branches: [ master ]
 
 defaults:
   run:
