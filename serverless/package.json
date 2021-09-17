@@ -2,7 +2,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "install": "npx envdist",
+    "install": "npx envdist testnet",
     "build": "sls webpack",
     "deploy": "sls deploy"
   },
@@ -19,10 +19,16 @@
     "@babel/preset-env": "^7.15.6",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0",
+    "envdist": "^1.0.14",
     "path": "^0.12.7",
     "serverless-webpack": "^5.5.4",
     "webpack": "^5.52.1",
     "webpack-cli": "^4.8.0",
     "webpack-node-externals": "^3.0.0"
+  },
+  "env": {
+    "path": ".",
+    "dist": ".env.dist",
+    "pattern": ".env.*"
   }
 }

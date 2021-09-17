@@ -1,12 +1,11 @@
 import { response } from 'cfw-easy-utils'
 import shajs from 'sha.js'
 import BigNumber from 'bignumber.js'
-import { Transaction, Keypair, Networks } from 'stellar-base'
-import { find } from 'lodash'
+import { Keypair } from 'stellar-base'
 import { processFeePayment } from '../@utils/stellar-sdk-utils'
 
 export default async ({ request, env }) => {
-  const { TX_FUNCTIONS, TURRET_ADDRESS, UPLOAD_DIVISOR } = env
+  const { TX_FUNCTIONS, TURRET_ADDRESS, UPLOAD_DIVISOR, STELLAR_NETWORK, ALLOWED } = env
   const body = await request.formData()
 
   const txFunctionFields = body.get('txFunctionFields')
@@ -26,6 +25,11 @@ export default async ({ request, env }) => {
 
   if (txFunctionExists)
     throw `txFunction ${txFunctionHash} has already been uploaded to this turret`
+
+  if (
+    STELLAR_NETWORK === 'PUBLIC'
+    && await ALLOWED.get(txFunctionHash) === null
+  ) throw `txFunction ${txFunctionHash} is not allowed on this turret`
 
   const txFunctionSignerKeypair = Keypair.random()
   const txFunctionSignerSecret = txFunctionSignerKeypair.secret()
