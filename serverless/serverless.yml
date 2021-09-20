@@ -1,6 +1,6 @@
 org: ${env:SLS_ORG}
-app: tss-serverless
-service: tss-serverless
+app: stellar-turrets
+service: stellar-turrets
 useDotenv: true
 variablesResolutionMode: 20210326
 
