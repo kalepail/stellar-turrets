@@ -64,7 +64,6 @@ export default async (event) => {
     })
 
     const result = await vm.run(`
-      'use strict'; 
       ${txFunctionCode};
     `, 'vm.js')(body)
 
