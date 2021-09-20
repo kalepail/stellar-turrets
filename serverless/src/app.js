@@ -63,9 +63,7 @@ export default async (event) => {
       }
     })
 
-    const result = await vm.run(`
-      ${txFunctionCode};
-    `, 'vm.js')(body)
+    const result = await vm.run(txFunctionCode, 'vm.js')(body)
 
     return {
       statusCode: 200,

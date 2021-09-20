@@ -1,6 +1,6 @@
 org: ${env:SLS_ORG}
-app: stellar-turrets
-service: stellar-turrets
+app: ${env:SLS_APP}
+service: ${env:SLS_SERVICE}
 useDotenv: true
 variablesResolutionMode: 20210326
 
@@ -30,6 +30,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs14.x
+  stage: ${opt:stage, 'testnet'}
   lambdaHashingVersion: 20201221
   environment:
     turretBaseUrl: ${env:SLS_TURRET_BASE_URL}
