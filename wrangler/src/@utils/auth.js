@@ -8,16 +8,16 @@ import { verifyTxSignedBy } from './stellar-sdk-utils'
 
 /**
  * Determine the authenticated user and contracts with the provided token.
- * 
+ *
  * @param {string} network The Stellar Network to validate the token on
  * @param {string} authToken - The provided auth token
- * 
- * @link https://tyvdh.github.io/stellar-tss/#section/Authentication
- * 
+ *
+ * @link https://tyvdh.github.io/stellar-turrets/#section/Authentication
+ *
  *
  * @typedef {Object} AuthResult
  * @property {string} publicKey - The authenticated public key from the token.
- * @property {string[]} data - The data collected. Returns an empty array if no matching ManageData values are 
+ * @property {string[]} data - The data collected. Returns an empty array if no matching ManageData values are
  *                             found
  *
  * @returns {AuthResult} - The result of the authentication
@@ -48,7 +48,7 @@ export function authTxToken(network, authToken) {
     if (!verifyTxSignedBy(authTx, authPublicKey)) {
       throw { message: `AuthToken not signed` };
     }
-    
+
     let enteredData = [];
     let singleUse = false
 

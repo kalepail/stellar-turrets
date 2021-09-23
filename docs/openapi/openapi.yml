@@ -8,10 +8,10 @@ info:
     name: GPL-3.0 License
     url: "https://www.gnu.org/licenses/gpl-3.0.en.html"
   x-logo:
-    url: "https://raw.githubusercontent.com/tyvdh/stellar-tss/master/assets/tss-logo.png"
-    altText: TSS Home Page
+    url: "https://raw.githubusercontent.com/tyvdh/stellar-turrets/master/assets/tss-logo.png"
+    altText: Stellar Turrets Home Page
   description: >
-    Turing Signing Servers (TSS) provide decentralizated contract creation on Stellar.
+    Stellar Turrets provide decentralizated contract creation on Stellar.
 tags:
   - name: Turret
     description: View information about a Turret
@@ -48,4 +48,4 @@ components:
     XdrToken:
       $ref: "auth/XdrToken.yml"
 servers:
-  - url: "http://valid-tss-address"
+  - url: "http://valid-turret-address"

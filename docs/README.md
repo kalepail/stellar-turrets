@@ -1,8 +1,8 @@
 <div align="center">
-  <img alt="ReDoc logo" src="https://raw.githubusercontent.com/tyvdh/stellar-tss/master/assets/tss-logo-full.png" width="100px" />
+  <img alt="ReDoc logo" src="https://raw.githubusercontent.com/tyvdh/stellar-turrets/master/assets/tss-logo.png" width="100px" />
 
-  <!--- TODO: Make this go to tss.stellar.com/docs --->
-  [**TSS Reference Documentation**](https://tss.stellar.com)
+  <!--- TODO: Make this go to tss.stellar.org/docs --->
+  [**Stellar Turrets Reference Documentation**](https://tyvdh.github.io/stellar-turrets/)
 
 </div>
 

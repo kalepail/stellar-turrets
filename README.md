@@ -1,6 +1,6 @@
-# Stellar Turing Signing Server Reference Implementation
+# Stellar Turrets Reference Implementation
 
-This TSS reference implementation employs two serverless services. Cloudflare workers and an AWS lambda function. The reason for this is that txFunctions are by their nature unsafe arbitrary Javascript functions. Cloudflare doesn't allow the execution of such functions thus we're splitting the workload between the much more performant and affordable Cloudflare workers and an AWS lambda function which will serve as our txFunction execution environment.
+This Stellar Turrets reference implementation employs two serverless services. Cloudflare workers and an AWS lambda function. The reason for this is that txFunctions are by their nature unsafe arbitrary Javascript functions. Cloudflare doesn't allow the execution of such functions thus we're splitting the workload between the much more performant and affordable Cloudflare workers and an AWS lambda function which will serve as our txFunction execution environment.
 
 See below for specific instructions for setting up and running both services.
 
@@ -73,7 +73,7 @@ Follow any errors carefully and you should be able to get successfully deployed 
 When you finally get success on this task you'll be rewarded with an endpoint where your function is hosted. Copy that base url and paste it as the value for the `TURRET_FUNCTION_RUNNER_URL` `var` back in the `.env` file in the `./wrangler` directory and run `npm run init && npm run deploy` again to update the worker to point to your lambda.
 
 ## Congrats!
-Assuming both `npm run deploy`'s are now firing off without a hitch you should have a fully functional Turing Signing Server ready to participate in the TSS network delivering decentralized smart contracting functionality to anyone and everyone who chooses to use your Turret. Nice!
+Assuming both `npm run deploy`'s are now firing off without a hitch you should have a fully functional Turret ready to participate in the Stellar Turrets network delivering decentralized smart contracting functionality to anyone and everyone who chooses to use your Turret. Nice!
 
 ## CI (github actions)
 There are GH actions defined to actually deploy the serverless and wrangler parts continously. For this to work add the following secrets to your (cloned) repo:
@@ -101,13 +101,13 @@ There are GH actions defined to actually deploy the serverless and wrangler part
 
 optional values are *italic* (i.e. will be using defaults if not set)
 
-## [API Docs](https://github.com/tyvdh/stellar-tss/wiki)
+## [API Docs](https://tyvdh.github.io/stellar-turrets/)
 
 ## Disclaimer
-This is alpha software representing a reference implementation for the [TSS protocol](https://tss.stellar.org/).
+This is alpha software representing a reference implementation for the [Stellar Turrets protocol](https://tss.stellar.org/).
 
 For this reason I strongly suggest either:  
 A) Leaving your `STELLAR_NETWORK` set to `TESTNET`  
 or B) Encouraging users to leave themselves as a majority signer on any controlled account they're attaching Turret signers to
 
-[turret_info]: https://tyvdh.github.io/stellar-tss/#operation/getTurretInfo
+[turret_info]: https://tyvdh.github.io/stellar-turrets/#operation/getTurretInfo
