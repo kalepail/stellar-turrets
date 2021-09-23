@@ -29,9 +29,11 @@ jobs:
         run: npm i -g serverless
 
       - name: write .env file
-        run: npx envdist -e
+        run: npx envdist testnet -e
         env:
           SLS_ORG: ${{ secrets.SLS_ORG }}
+          SLS_APP: ${{ secrets.SLS_APP }}
+          SLS_SERVICE: ${{ secrets.SLS_SERVICE }}
           SLS_TURRET_BASE_URL: ${{ secrets.SLS_TURRET_BASE_URL }}
           SLS_TURRET_SIGNER_ACCOUNT: ${{ secrets.SLS_TURRET_SIGNER_ACCOUNT }}
           SLS_AWS_PLAN: ${{ secrets.SLS_AWS_PLAN }}

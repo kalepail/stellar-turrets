@@ -131,15 +131,22 @@ export default async ({ request, params, env }) => {
     }
   })
 
-  if (error) return response.json({
-    ...error,
-    cost,
-    feeSponsor: authedPublicKey,
-    feeBalanceRemaining,
-  }, {
-    status: error.status,
-    stopwatch: watch,
-  })
+  if (error) {
+    // clear turret auth token cache on an auth failure 
+    if (error.status === 403) {
+      await META.delete('TURRET_AUTH_TOKEN')
+    }
+
+    return response.json({
+      ...error,
+      cost,
+      feeSponsor: authedPublicKey,
+      feeBalanceRemaining,
+    }, {
+      status: error.status,
+      stopwatch: watch,
+    })
+  }
 
   const transaction = new Transaction(xdr, Networks[STELLAR_NETWORK])
 

@@ -1,4 +1,5 @@
 - [ ] Enable [cache](https://github.com/tyvdh/stellar-tss/blob/master/wrangler/src/index.js#L44-L53) in PUBLIC environments
+- [ ] Support nth use txFee auth tokens (maybe token + nonce or sequence number)
 
 # Done
 - [x] Support fee bump txFunctionFees for txFunction runs (Would permit using the same txSponsors for different pending txFunction fees per user. User pays sequence number, txSponsor pays fee)

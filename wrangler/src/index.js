@@ -1,5 +1,4 @@
 import { Router } from 'tiny-request-router'
-import { response } from 'cfw-easy-utils'
 
 import { parseError } from './@utils/parse'
 
@@ -42,7 +41,15 @@ async function handleRequest(request, env, ctx) {
     const { href, pathname } = new URL(url)
 
     if (method === 'OPTIONS')
-      return response.cors()
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, Accept, Cache-Control, Pragma',
+          'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, PATCH, OPTIONS',
+          'Cache-Control': 'public, max-age=2419200', // 28 days
+        }
+      })
 
     // TODO: check and re-enable cache in production
 
