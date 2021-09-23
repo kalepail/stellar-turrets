@@ -38,8 +38,8 @@ export function authTxToken(network, authToken, dataKey) {
 
     // validate token expiration
     if (
-      authTx.timeBounds?.maxTime !== undefined &&
-      moment.utc(authTx.timeBounds?.maxTime, 'X').isBefore()
+      !new BigNumber(authTx.timeBounds.maxTime).isZero(0) &&
+      moment.utc(authTx.timeBounds.maxTime, 'X').isBefore()
     ) {
       throw { message: `AuthToken has expired` };
     }
@@ -61,9 +61,32 @@ export function authTxToken(network, authToken, dataKey) {
       }
     }
 
+    // check for singleUse key
+    let singleUse = false
+    for (const op of authTx.operations) {
+      if (op.type === 'manageData' && op.name === 'singleUse') {
+        let value = op.value.toString();
+        singleUse = value === 'true' ? true : false
+      }
+    }
+
+    // if single use token maxTime cannot be more than 1 hour from now
+    if (
+      singleUse
+      && (
+        new BigNumber(authTx.timeBounds.maxTime).isLessThanOrEqualTo(0)
+        || moment.utc(authTx.timeBounds.maxTime, 'X').isAfter(moment.utc().add(1, 'hour'))
+      )
+    ) {
+      throw { message: `Single use auth tokens must expire in less than 1 hour` };
+    }
+
     return {
+      hash: authTx.hash().toString('hex'),
       publicKey: authPublicKey,
-      data: enteredData
+      data: enteredData,
+      singleUse,
+      exp: authTx.timeBounds.maxTime
     }
   } catch (e) {
     throw { message: e.message != undefined ? `${e.message}: Failed during auth` : `Failed to parse Auth Token` }

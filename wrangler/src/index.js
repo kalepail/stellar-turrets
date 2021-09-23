@@ -1,6 +1,7 @@
 import { Router } from 'tiny-request-router'
 
 import { parseError } from './@utils/parse'
+import flushSingleUseAuthTokens from './@utils/flush-single-use-auth-tokens'
 
 import TxFees from './@utils/do-tx-fees'
 
@@ -33,6 +34,9 @@ router
 
 router
 .put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
+
+// router
+// .get('/test', flushSingleUseAuthTokens)
 
 async function handleRequest(request, env, ctx) {
   try {
@@ -90,9 +94,18 @@ async function handleRequest(request, env, ctx) {
   }
 }
 
+function handleScheduled(metadata, env, ctx) {
+  return Promise.all([
+    flushSingleUseAuthTokens({metadata, env, ctx})
+  ])
+}
+
 exports.TxFees = TxFees
 exports.handlers = {
   async fetch(request, env, ctx) {
     return handleRequest(request, env, ctx)
+  },
+  async scheduled(metadata, env, ctx) {
+    return handleScheduled(metadata, env, ctx)
   }
 }
