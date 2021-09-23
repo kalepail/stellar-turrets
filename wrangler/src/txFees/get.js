@@ -7,7 +7,12 @@ export default async ({ request, env }) => {
 
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
-  const { publicKey: authedPublicKey } = authTxToken(STELLAR_NETWORK, feeToken)
+  const { 
+    hash: authedHash,
+    publicKey: authedPublicKey, 
+    data: authedContracts,
+    singleUse,
+  } = authTxToken(STELLAR_NETWORK, feeToken)
 
   const txFeesId = TX_FEES.idFromName(authedPublicKey)
   const txFeesStub = TX_FEES.get(txFeesId)
@@ -18,9 +23,12 @@ export default async ({ request, env }) => {
     throw {status: 404, message: `Fee balance could not be found this turret` }
 
   return response.json({
+    hash: authedHash,
     publicKey: authedPublicKey,
     lastModifiedTime: feeMetadata.lastModifiedTime,
-    balance: feeMetadata.balance
+    balance: feeMetadata.balance,
+    txFunctionHashes: authedContracts,
+    singleUse
   }, {
     headers: {
       'Cache-Control': 'public, max-age=5',

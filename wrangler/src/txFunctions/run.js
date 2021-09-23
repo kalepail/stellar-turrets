@@ -32,9 +32,12 @@ export default async ({ request, params, env }) => {
   const feeToken = request.headers.get('authorization')?.split(' ')?.[1]
 
   const { 
+    hash: authedHash,
     publicKey: authedPublicKey, 
-    data: authedContracts 
-  } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
+    data: authedContracts,
+    singleUse,
+    exp
+  } = authTxToken(STELLAR_NETWORK, feeToken)
 
   // if no contracts are specified in the auth token, allow any contract to be run
   if (
@@ -44,6 +47,11 @@ export default async ({ request, params, env }) => {
 
   const txFeesId = TX_FEES.idFromName(authedPublicKey)
   const txFeesStub = TX_FEES.get(txFeesId)
+
+  if (singleUse) { // If auth token is single use check if it's already been used
+    await txFeesStub.fetch(`/${authedHash}`, {method: 'POST'}).then(handleResponse)
+    await META.put(`suat:${authedPublicKey}:${authedHash}`, Buffer.alloc(0), {metadata: exp})
+  }
 
   const feeMetadata = await txFeesStub.fetch('/').then(handleResponse)
   
@@ -132,10 +140,8 @@ export default async ({ request, params, env }) => {
   })
 
   if (error) {
-    // clear turret auth token cache on an auth failure 
-    if (error.status === 403) {
+    if (error.status === 403) // clear turret auth token cache on an auth failure 
       await META.delete('TURRET_AUTH_TOKEN')
-    }
 
     return response.json({
       ...error,
