@@ -12,7 +12,7 @@ export default async ({ request, env }) => {
     publicKey: authedPublicKey, 
     data: authedContracts,
     singleUse,
-  } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
+  } = authTxToken(STELLAR_NETWORK, feeToken)
 
   const txFeesId = TX_FEES.idFromName(authedPublicKey)
   const txFeesStub = TX_FEES.get(txFeesId)

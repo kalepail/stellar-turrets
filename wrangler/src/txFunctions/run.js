@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 
 import { authTxToken } from '../@utils/auth'
 import { handleResponse } from '../@utils/fetch'
-import moment from 'moment'
 
 export default async ({ request, params, env }) => {
   const { 
@@ -38,7 +37,7 @@ export default async ({ request, params, env }) => {
     data: authedContracts,
     singleUse,
     exp
-  } = authTxToken(STELLAR_NETWORK, feeToken, 'txFunctionHash')
+  } = authTxToken(STELLAR_NETWORK, feeToken)
 
   // if no contracts are specified in the auth token, allow any contract to be run
   if (
