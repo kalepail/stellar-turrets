@@ -25,6 +25,9 @@ command = "npm i && npm run build"
 format = "modules"
 main = "./shim.mjs"
 
+[triggers]
+crons = ["*/5 * * * *"]
+
 [durable_objects]
 bindings = [
   { name = "TX_FEES", class_name = "TxFees" }
