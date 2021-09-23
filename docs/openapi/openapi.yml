@@ -17,7 +17,7 @@ tags:
     description: View information about a Turret
   - name: txFunctions
     description: >
-      Manage and run txFunctions on the Turret. A txFuntion is a JavaScript file that outputs an valid Transaction Evelope XDR.
+      Manage and run txFunctions on the Turret. A txFuntion is a JavaScript file that outputs a valid Transaction Envelope XDR.
       The txFunction will be executed in a node environment with the following default node_module packages:
         * bignumber.js
         * node-fetch

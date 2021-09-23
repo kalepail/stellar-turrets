@@ -2,7 +2,7 @@
   <img alt="ReDoc logo" src="https://raw.githubusercontent.com/tyvdh/stellar-tss/master/assets/tss-logo-full.png" width="100px" />
 
   <!--- TODO: Make this go to tss.stellar.com/docs --->
-  [**TSS Reference Documentation**](tss.stellar.com)
+  [**TSS Reference Documentation**](https://tss.stellar.com)
 
 </div>
 

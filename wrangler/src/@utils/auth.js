@@ -11,19 +11,18 @@ import { verifyTxSignedBy } from './stellar-sdk-utils'
  * 
  * @param {string} network The Stellar Network to validate the token on
  * @param {string} authToken - The provided auth token
- * @param {string?} dataKey - (Optional) Fetch all ManageData operations such that the key matches this dataKey.
- *                           All ManageData values whose keys match will be included in the data output array.
+ * 
  * @link https://tyvdh.github.io/stellar-tss/#section/Authentication
  * 
  *
  * @typedef {Object} AuthResult
  * @property {string} publicKey - The authenticated public key from the token.
  * @property {string[]} data - The data collected. Returns an empty array if no matching ManageData values are 
- *                             found or no dataKey was provided.
+ *                             found
  *
  * @returns {AuthResult} - The result of the authentication
  */
-export function authTxToken(network, authToken, dataKey) {
+export function authTxToken(network, authToken) {
   try {
     if (authToken === undefined) {
       throw { message: 'Unable to find an auth token' };
@@ -50,23 +49,18 @@ export function authTxToken(network, authToken, dataKey) {
       throw { message: `AuthToken not signed` };
     }
     
-    // fetch dataKey portions
     let enteredData = [];
-    if (dataKey) {
-      for (const op of authTx.operations) {
-        if (op.type === 'manageData' && op.name === dataKey) {
-          let value = op.value.toString();
-          enteredData.push(value);
-        }
-      }
-    }
-
-    // check for singleUse key
     let singleUse = false
+
     for (const op of authTx.operations) {
-      if (op.type === 'manageData' && op.name === 'singleUse') {
+      if (op.type === 'manageData') {
         let value = op.value.toString();
-        singleUse = value === 'true' ? true : false
+
+        if (op.name === 'singleUse')
+          singleUse = value === 'true' ? true : false
+
+        else if (op.name === 'txFunctionHash')
+          enteredData.push(value)
       }
     }
 
