@@ -5,6 +5,7 @@
   "scripts": {
     "build": "webpack",
     "deploy": "wrangler publish",
+    "deploy:alpha": "wrangler publish --env alpha",
     "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs) && envsubst < wrangler.toml.dist > wrangler.toml",
     "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist"
   },

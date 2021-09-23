@@ -4,7 +4,8 @@
   "scripts": {
     "install": "npx envdist testnet",
     "build": "sls webpack",
-    "deploy": "sls deploy"
+    "deploy": "sls deploy",
+    "deploy:alpha": "sls deploy --stage alpha"
   },
   "dependencies": {
     "bignumber.js": "^9.0.1",
