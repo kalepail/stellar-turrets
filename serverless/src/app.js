@@ -57,7 +57,7 @@ export default async (event) => {
         STELLAR_NETWORK
       },
       require: {
-        builtin: null,
+        builtin: ['util'],
         external: ['bignumber.js', 'node-fetch', 'stellar-sdk', 'lodash'],
         context: 'host'
       }
