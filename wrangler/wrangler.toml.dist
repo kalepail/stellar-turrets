@@ -3,6 +3,7 @@ account_id = "${WRANGLER_ACCOUNT_ID}"
 usage_model = "bundled"
 workers_dev = true
 name = "${TESTNET_WRANGLER_WORKER_NAME}"
+compatibility_date = "2021-10-03"
 kv_namespaces = [
   { binding = "META", id = "${TESTNET_WRANGLER_META}" },
   { binding = "TX_FUNCTIONS", id = "${TESTNET_WRANGLER_TX_FUNCTIONS}" },
