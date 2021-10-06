@@ -1,3 +1,5 @@
+const fetch = require('node-fetch')
+
 module.exports = (body) => {
   return fetch('https://tss-contract-5wkzvvzhfmmp.runkit.sh', {
     method: 'POST',
