@@ -54,8 +54,7 @@ export default async (event) => {
       fixAsync: true,
       sandbox: {
         HORIZON_URL,
-        STELLAR_NETWORK,
-        window: {}
+        STELLAR_NETWORK
       },
       require: {
         builtin: ['util'],
