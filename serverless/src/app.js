@@ -51,7 +51,6 @@ export default async (event) => {
       eval: false,
       wasm: false,
       strict: true,
-      fixAsync: true,
       sandbox: {
         HORIZON_URL,
         STELLAR_NETWORK
