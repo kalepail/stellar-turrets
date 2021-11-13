@@ -4,6 +4,7 @@
 | https://stellar-turrets-testnet.sdf-ecosystem.workers.dev |  | [Tyler van der Hoeven](https://tyvdh.com/) | hi@tyvdh.com |
 | https://stellar-turrets-testnet.script3.workers.dev | [Script3](https://www.script3.io/) |  |  |
 | https://stellar-turrets-testnet.taskio.workers.dev | [Task.io](https://task.io/) | | |
+| https://stellar-turrets-testnet.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
 | https://tss-wrangler.litemint.workers.dev | [Litemint](https://litemint.io/) |  |  |
 | https://tss-wrangler.anclap.workers.dev |  | [Anclap](https://anclap.com) | info@anclap.com |
 | https://tss-wrangler.elliotfriend.workers.dev |  | [Elliot Voris](https://github.com/elliotfriend) | elliot@voris.me |
@@ -23,5 +24,6 @@
 | https://stellar-turrets-alpha.sdf-ecosystem.workers.dev |  | [Tyler van der Hoeven](https://tyvdh.com/) | hi@tyvdh.com |
 | https://stellar-turrets-alpha.script3.workers.dev | [Script3](https://www.script3.io/) |  |  |
 | https://stellar-turrets-alpha.taskio.workers.dev | [Task.io](https://task.io/) | | |
+| https://stellar-turrets-alpha.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
 
 * alpha
