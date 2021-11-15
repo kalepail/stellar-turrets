@@ -51,13 +51,12 @@ export default async (event) => {
       eval: false,
       wasm: false,
       strict: true,
-      fixAsync: true,
       sandbox: {
         HORIZON_URL,
         STELLAR_NETWORK
       },
       require: {
-        builtin: null,
+        builtin: ['util'],
         external: ['bignumber.js', 'node-fetch', 'stellar-sdk', 'lodash'],
         context: 'host'
       }
