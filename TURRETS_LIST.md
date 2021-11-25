@@ -28,4 +28,4 @@
 | https://stellar-turrets-alpha.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
 | https://stellar-turrets.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
 
-* alpha
+\* alpha
