@@ -26,6 +26,6 @@
 | https://stellar-turrets-alpha.script3.workers.dev | [Script3](https://www.script3.io/) |  |  |
 | https://stellar-turrets-alpha.taskio.workers.dev | [Task.io](https://task.io/) | | |
 | https://stellar-turrets-alpha.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
-| stellar-turrets.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
+| https://stellar-turrets.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
 
 * alpha
