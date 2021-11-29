@@ -5,6 +5,7 @@
 | https://stellar-turrets-testnet.script3.workers.dev | [Script3](https://www.script3.io/) |  |  |
 | https://stellar-turrets-testnet.taskio.workers.dev | [Task.io](https://task.io/) | | |
 | https://stellar-turrets-testnet.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
+| https://stellar-turrets-testnet.turretsdao.workers.dev | [Turrets DAO](https://turretsdao.org/) | |hi@turretsdao.org|
 | https://tss-wrangler.litemint.workers.dev | [Litemint](https://litemint.io/) |  |  |
 | https://tss-wrangler.anclap.workers.dev |  | [Anclap](https://anclap.com) | info@anclap.com |
 | https://tss-wrangler.elliotfriend.workers.dev |  | [Elliot Voris](https://github.com/elliotfriend) | elliot@voris.me |
@@ -27,5 +28,6 @@
 | https://stellar-turrets-alpha.taskio.workers.dev | [Task.io](https://task.io/) | | |
 | https://stellar-turrets-alpha.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
 | https://stellar-turrets.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
+| https://stellar-turrets-alpha.turretsdao.workers.dev | [Turrets DAO](https://turretsdao.org/)| |hi@turretsdao.org|
 
 \* alpha
