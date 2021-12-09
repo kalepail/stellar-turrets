@@ -5,6 +5,7 @@
 | https://stellar-turrets-testnet.script3.workers.dev | [Script3](https://www.script3.io/) |  |  |
 | https://stellar-turrets-testnet.taskio.workers.dev | [Task.io](https://task.io/) | | |
 | https://stellar-turrets-testnet.soneso.workers.dev | [soneso](https://soneso.com/) | |hi@soneso.com|
+| https://stellar-turrets-testnet.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
 | https://stellar-turrets-testnet.turretsdao.workers.dev | [Turrets DAO](https://turretsdao.org/) | |hi@turretsdao.org|
 | https://tss-wrangler.litemint.workers.dev | [Litemint](https://litemint.io/) |  |  |
 | https://tss-wrangler.anclap.workers.dev |  | [Anclap](https://anclap.com) | info@anclap.com |
@@ -18,7 +19,6 @@
 | https://tss-wrangler.atemosta.workers.dev | [Atemosta](https://atemosta.com/) |  |  |
 | https://tss-wrangler.zig3.workers.dev | [Zig3.uk](https://zig3.uk/) |  |  |
 | https://tss-wrangler.yarvis.workers.dev |  | [John Ciprian](https://github.com/jarvisuser90) |  |
-| https://stellar-turrets-testnet.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
 
 # \*PUBLIC
 | Turret URL | Company | Individual | Contact |
