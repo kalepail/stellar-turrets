@@ -18,6 +18,7 @@
 | https://tss-wrangler.zig3.workers.dev | [Zig3.uk](https://zig3.uk/) |  |  |
 | https://tss-wrangler.yarvis.workers.dev |  | [John Ciprian](https://github.com/jarvisuser90) |  |
 | https://stellar-turrets-testnet.matusv.workers.dev |  | [Matus Vojcik](https://github.com/matusv) |  |
+| https://stellar-turrets-testnet.turretsdev.workers.dev |  | [Tom Kiljo](https://www.turrets.dev/) | hi@turrets.dev |
 
 # \*PUBLIC
 | Turret URL | Company | Individual | Contact |
