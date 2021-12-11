@@ -9,6 +9,7 @@ import turretToml from './turret/toml'
 import turretDetails from './turret/details'
 
 import txFunctionsGet from './txFunctions/get'
+import txFunctionsList from './txFunctions/list'
 import txFunctionsUpload from './txFunctions/upload'
 import txFunctionsRun from './txFunctions/run'
 
@@ -25,6 +26,7 @@ router
 
 router
 .post('/tx-functions', txFunctionsUpload)
+.get('/tx-functions', txFunctionsList)
 .get('/tx-functions/:txFunctionHash', txFunctionsGet)
 .post('/tx-functions/:txFunctionHash', txFunctionsRun)
 
