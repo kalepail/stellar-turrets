@@ -1,12 +1,14 @@
 {
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "module": "./dist/shim.mjs",
   "scripts": {
     "build": "webpack",
     "deploy": "wrangler publish",
     "deploy:alpha": "wrangler publish --env alpha",
-    "init": "export $(cat .env|tr -d \"[:blank:]\"|xargs) && envsubst < wrangler.toml.dist > wrangler.toml",
+    "init": "run-script-os",
+    "init:darwin:linux": "export $(cat .env|tr -d \"[:blank:]\"|xargs) && envsubst < wrangler.toml.dist > wrangler.toml",
+    "init:win32": "echo 'running in windows please run in linux'",
     "preinit": "[ \"${CI}\" = true ] && npx envdist -e || npx envdist"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
     "cfw-easy-utils": "^1.0.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
+    "run-script-os": "^1.1.6",
     "sha.js": "^2.4.11",
     "stellar-base": "^6.0.2",
     "tiny-request-router": "^1.2.2"
