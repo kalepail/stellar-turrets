@@ -1,10 +1,10 @@
 /**
  * Helper functions for managing authentication against a Turret
  */
-import BigNumber from 'bignumber.js'
-import moment from 'moment'
-import { Transaction, Networks } from 'stellar-base'
-import { verifyTxSignedBy } from './stellar-sdk-utils'
+import BigNumber from 'bignumber.js';
+import moment from 'moment';
+import { Transaction, Networks } from 'stellar-base';
+import { verifyTxSignedBy } from './stellar-sdk-utils';
 
 /**
  * Determine the authenticated user and contracts with the provided token.
@@ -50,29 +50,29 @@ export function authTxToken(network, authToken) {
     }
 
     let enteredData = [];
-    let singleUse = false
+    let singleUse = false;
 
     for (const op of authTx.operations) {
       if (op.type === 'manageData') {
         let value = op.value.toString();
 
         if (op.name === 'singleUse')
-          singleUse = value === 'true' ? true : false
-
-        else if (op.name === 'txFunctionHash')
-          enteredData.push(value)
+          singleUse = value === 'true' ? true : false;
+        else if (op.name === 'txFunctionHash') enteredData.push(value);
       }
     }
 
     // if single use token maxTime cannot be more than 1 hour from now
     if (
-      singleUse
-      && (
-        new BigNumber(authTx.timeBounds.maxTime).isLessThanOrEqualTo(0)
-        || moment.utc(authTx.timeBounds.maxTime, 'X').isAfter(moment.utc().add(1, 'hour'))
-      )
+      singleUse &&
+      (new BigNumber(authTx.timeBounds.maxTime).isLessThanOrEqualTo(0) ||
+        moment
+          .utc(authTx.timeBounds.maxTime, 'X')
+          .isAfter(moment.utc().add(1, 'hour')))
     ) {
-      throw { message: `Single use auth tokens must expire in less than 1 hour` };
+      throw {
+        message: `Single use auth tokens must expire in less than 1 hour`,
+      };
     }
 
     return {
@@ -80,9 +80,14 @@ export function authTxToken(network, authToken) {
       publicKey: authPublicKey,
       data: enteredData,
       singleUse,
-      exp: authTx.timeBounds.maxTime
-    }
+      exp: authTx.timeBounds.maxTime,
+    };
   } catch (e) {
-    throw { message: e.message != undefined ? `${e.message}: Failed during auth` : `Failed to parse Auth Token` }
+    throw {
+      message:
+        e.message != undefined
+          ? `${e.message}: Failed during auth`
+          : `Failed to parse Auth Token`,
+    };
   }
 }

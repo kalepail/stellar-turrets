@@ -1,61 +1,60 @@
-import { Router } from 'tiny-request-router'
+import { Router } from 'tiny-request-router';
 
-import { parseError } from './@utils/parse'
-import flushSingleUseAuthTokens from './@utils/flush-single-use-auth-tokens'
+import { parseError } from './@utils/parse';
+import flushSingleUseAuthTokens from './@utils/flush-single-use-auth-tokens';
 
-import TxFees from './@utils/do-tx-fees'
+import TxFees from './@utils/do-tx-fees';
 
-import turretToml from './turret/toml'
-import turretDetails from './turret/details'
+import turretToml from './turret/toml';
+import turretDetails from './turret/details';
 
-import txFunctionsGet from './txFunctions/get'
-import txFunctionsList from './txFunctions/list'
-import txFunctionsUpload from './txFunctions/upload'
-import txFunctionsRun from './txFunctions/run'
+import txFunctionsGet from './txFunctions/get';
+import txFunctionsList from './txFunctions/list';
+import txFunctionsUpload from './txFunctions/upload';
+import txFunctionsRun from './txFunctions/run';
+import trustTxFunctionHash from './txFunctions/trust';
 
-import txFeesGet from './txFees/get'
-import txFeesPay from './txFees/pay'
+import txFeesGet from './txFees/get';
+import txFeesPay from './txFees/pay';
 
-import ctrlAccountsHeal from './ctrlAccounts/heal'
+import ctrlAccountsHeal from './ctrlAccounts/heal';
 
-const router = new Router()
+const router = new Router();
 
-router
-.get('/', turretDetails)
-.get('/.well-known/stellar.toml', turretToml)
-
-router
-.post('/tx-functions', txFunctionsUpload)
-.get('/tx-functions', txFunctionsList)
-.get('/tx-functions/:txFunctionHash', txFunctionsGet)
-.post('/tx-functions/:txFunctionHash', txFunctionsRun)
+router.get('/', turretDetails).get('/.well-known/stellar.toml', turretToml);
 
 router
-.get('/tx-fees', txFeesGet)
-.post('/tx-fees/:publicKey', txFeesPay)
+  .post('/tx-functions', txFunctionsUpload)
+  .get('/tx-functions', txFunctionsList)
+  .get('/tx-functions/:txFunctionHash', txFunctionsGet)
+  .post('/tx-functions/:txFunctionHash', txFunctionsRun)
+  .post('/tx-functions/trust/:txFunctionHash', trustTxFunctionHash);
 
-router
-.put('/ctrl-accounts/:ctrlAccount', ctrlAccountsHeal)
+router.get('/tx-fees', txFeesGet).post('/tx-fees/:publicKey', txFeesPay);
+
+router.put('/ctrl-accounts/:txFunctionHash', ctrlAccountsHeal);
 
 // router
 // .get('/test', flushSingleUseAuthTokens)
 
 async function handleRequest(request, env, ctx) {
   try {
-    const cache = caches.default
-    const { method, url } = request
-    const { href, pathname } = new URL(url)
+    const cache = caches.default;
+    const { method, url } = request;
+    const { href, pathname } = new URL(url);
 
     if (method === 'OPTIONS')
       return new Response(null, {
         status: 204,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, Accept, Cache-Control, Pragma',
-          'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, PATCH, OPTIONS',
+          'Access-Control-Allow-Headers':
+            'Authorization, Origin, Content-Type, Accept, Cache-Control, Pragma',
+          'Access-Control-Allow-Methods':
+            'GET, PUT, POST, DELETE, PATCH, OPTIONS',
           'Cache-Control': 'public, max-age=2419200', // 28 days
-        }
-      })
+        },
+      });
 
     // TODO: check and re-enable cache in production
 
@@ -68,7 +67,7 @@ async function handleRequest(request, env, ctx) {
 
     ////
 
-    const routerMatch = router.match(method, pathname)
+    const routerMatch = router.match(method, pathname);
 
     if (routerMatch) {
       const routerResponse = await routerMatch.handler({
@@ -76,38 +75,35 @@ async function handleRequest(request, env, ctx) {
         cache,
         request,
         env,
-        ctx
-      })
+        ctx,
+      });
 
       if (
-        method === 'GET'
-        && routerResponse.status >= 200
-        && routerResponse.status <= 299
-      ) ctx.waitUntil(cache.put(href, routerResponse.clone()))
+        method === 'GET' &&
+        routerResponse.status >= 200 &&
+        routerResponse.status <= 299
+      )
+        ctx.waitUntil(cache.put(href, routerResponse.clone()));
 
-      return routerResponse
+      return routerResponse;
     }
 
-    throw {status: 404}
-  }
-
-  catch(err) {
-    return parseError(err)
+    throw { status: 404 };
+  } catch (err) {
+    return parseError(err);
   }
 }
 
 function handleScheduled(metadata, env, ctx) {
-  return Promise.all([
-    flushSingleUseAuthTokens({metadata, env, ctx})
-  ])
+  return Promise.all([flushSingleUseAuthTokens({ metadata, env, ctx })]);
 }
 
-exports.TxFees = TxFees
+exports.TxFees = TxFees;
 exports.handlers = {
   async fetch(request, env, ctx) {
-    return handleRequest(request, env, ctx)
+    return handleRequest(request, env, ctx);
   },
   async scheduled(metadata, env, ctx) {
-    return handleScheduled(metadata, env, ctx)
-  }
-}
+    return handleScheduled(metadata, env, ctx);
+  },
+};
