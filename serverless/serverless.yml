@@ -22,6 +22,7 @@ custom:
         - lodash
       forceExclude:
         - aws-sdk
+        - sodium-native
     packager: yarn
     packagerOptions:
       noInstall: true
