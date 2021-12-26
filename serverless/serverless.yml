@@ -23,6 +23,10 @@ custom:
       forceExclude:
         - aws-sdk
     packager: yarn
+    packagerOptions:
+      noInstall: true
+      scripts:
+        - yarn --ignore-optional
   provisionedConcurrency:
     paid: 4
     free: 0
