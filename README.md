@@ -1,3 +1,8 @@
+# ⚠️ !! WE'VE MOVED !! ⚠️
+### The Stellar Turrets repo now exists [here](https://github.com/stellar/stellar-turrets⚠️)
+
+---
+
 # Stellar Turrets Reference Implementation
 
 This Stellar Turrets reference implementation employs two serverless services. Cloudflare workers and an AWS lambda function. The reason for this is that txFunctions are by their nature unsafe arbitrary Javascript functions. Cloudflare doesn't allow the execution of such functions thus we're splitting the workload between the much more performant and affordable Cloudflare workers and an AWS lambda function which will serve as our txFunction execution environment.
