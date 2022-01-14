@@ -1,5 +1,5 @@
 # ⚠️ !! WE'VE MOVED !! ⚠️
-### The Stellar Turrets repo now exists [here](https://github.com/stellar/stellar-turrets⚠️)
+### The Stellar Turrets repo now exists [here](https://github.com/stellar/stellar-turrets)
 
 ---
 
